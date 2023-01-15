@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13-alpine
+    environment:
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER}
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+  
+  db-adminer:
+    depends_on:
+      - db
+    image: adminer:4.8.1
+    ports:
+      - 8083:8080
+  
+  api:
+    depends_on:
+      - db
+    build: ./docker/api
+    volumes:
+      - ./api:/api
+    ports:
+      - 8000:8000
+
+  front:
+    depends_on:
+      - api
+    build: ./docker/front
+    volumes:
+      - ./front:/front
+    ports:
+      - 3000:5173
+
+volumes:
+  db-data: {}
