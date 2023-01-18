@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -42,6 +44,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private array $role = [];
+
+    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: ForgotPasswordToken::class)]
+    private Collection $forgotPasswordTokens;
+
+    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: RegisterToken::class)]
+    private Collection $registerTokens;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Subscription $subscriptionId = null;
+
+    #[ORM\OneToMany(mappedBy: 'creatorId', targetEntity: Content::class)]
+    private Collection $contents;
+
+    #[ORM\OneToMany(mappedBy: 'reporterId', targetEntity: ReportedContent::class)]
+    private Collection $reportedContents;
+
+    #[ORM\OneToMany(mappedBy: 'commenterId', targetEntity: Comment::class)]
+    private Collection $comments;
+
+    public function __construct()
+    {
+        $this->forgotPasswordTokens = new ArrayCollection();
+        $this->registerTokens = new ArrayCollection();
+        $this->contents = new ArrayCollection();
+        $this->reportedContents = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -169,6 +199,168 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRole(array $role): self
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ForgotPasswordToken>
+     */
+    public function getForgotPasswordTokens(): Collection
+    {
+        return $this->forgotPasswordTokens;
+    }
+
+    public function addForgotPasswordToken(ForgotPasswordToken $forgotPasswordToken): self
+    {
+        if (!$this->forgotPasswordTokens->contains($forgotPasswordToken)) {
+            $this->forgotPasswordTokens->add($forgotPasswordToken);
+            $forgotPasswordToken->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForgotPasswordToken(ForgotPasswordToken $forgotPasswordToken): self
+    {
+        if ($this->forgotPasswordTokens->removeElement($forgotPasswordToken)) {
+            // set the owning side to null (unless already changed)
+            if ($forgotPasswordToken->getUserId() === $this) {
+                $forgotPasswordToken->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RegisterToken>
+     */
+    public function getRegisterTokens(): Collection
+    {
+        return $this->registerTokens;
+    }
+
+    public function addRegisterToken(RegisterToken $registerToken): self
+    {
+        if (!$this->registerTokens->contains($registerToken)) {
+            $this->registerTokens->add($registerToken);
+            $registerToken->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRegisterToken(RegisterToken $registerToken): self
+    {
+        if ($this->registerTokens->removeElement($registerToken)) {
+            // set the owning side to null (unless already changed)
+            if ($registerToken->getUserId() === $this) {
+                $registerToken->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSubscriptionId(): ?Subscription
+    {
+        return $this->subscriptionId;
+    }
+
+    public function setSubscriptionId(Subscription $subscriptionId): self
+    {
+        $this->subscriptionId = $subscriptionId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Content>
+     */
+    public function getContents(): Collection
+    {
+        return $this->contents;
+    }
+
+    public function addContent(Content $content): self
+    {
+        if (!$this->contents->contains($content)) {
+            $this->contents->add($content);
+            $content->setCreatorId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContent(Content $content): self
+    {
+        if ($this->contents->removeElement($content)) {
+            // set the owning side to null (unless already changed)
+            if ($content->getCreatorId() === $this) {
+                $content->setCreatorId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReportedContent>
+     */
+    public function getReportedContents(): Collection
+    {
+        return $this->reportedContents;
+    }
+
+    public function addReportedContent(ReportedContent $reportedContent): self
+    {
+        if (!$this->reportedContents->contains($reportedContent)) {
+            $this->reportedContents->add($reportedContent);
+            $reportedContent->setReporterId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReportedContent(ReportedContent $reportedContent): self
+    {
+        if ($this->reportedContents->removeElement($reportedContent)) {
+            // set the owning side to null (unless already changed)
+            if ($reportedContent->getReporterId() === $this) {
+                $reportedContent->setReporterId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setCommenterId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getCommenterId() === $this) {
+                $comment->setCommenterId(null);
+            }
+        }
 
         return $this;
     }
