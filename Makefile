@@ -16,3 +16,10 @@ start:
 #php bin/console with args
 console:
 	 docker-compose --env-file "./api/.env.local" exec api bin/console $(filter-out $@,$(MAKECMDGOALS))
+
+
+#php Make migration
+mi:
+    docker-compose --env-file "./api/.env.local" exec api bin/console make:migration
+    docker-compose --env-file "./api/.env.local" exec api bin/console doctrine:migrations:migrate
+
