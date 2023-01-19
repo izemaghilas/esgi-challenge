@@ -8,20 +8,43 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\ApiResource;
+use App\State\UserPasswordHasher;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Post(processor: UserPasswordHasher::class),
+        new Get(),
+        new Patch(processor: UserPasswordHasher::class),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:create', 'user:update']],
+)]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
+    #[Groups(['user:create', 'user:read', 'user:update'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
@@ -30,38 +53,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Groups(['user:create', 'user:update'])]
+    private ?string $plainPassword = null;
+
+    #[Groups(['user:create', 'user:read'])]
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:create', 'user:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:create', 'user:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column]
+    #[Groups(['user:create', 'user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    private array $role = [];
-
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: ForgotPasswordToken::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $forgotPasswordTokens;
 
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: RegisterToken::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $registerTokens;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['user:read'])]
     private ?Subscription $subscriptionId = null;
 
     #[ORM\OneToMany(mappedBy: 'creatorId', targetEntity: Content::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $contents;
 
     #[ORM\OneToMany(mappedBy: 'reporterId', targetEntity: ReportedContent::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $reportedContents;
 
     #[ORM\OneToMany(mappedBy: 'commenterId', targetEntity: Comment::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $comments;
 
     public function __construct()
@@ -134,6 +167,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $painPassword): self
+    {
+        $this->plainPassword = $painPassword;
+
+        return $this;
+    }
+    
     /**
      * @see UserInterface
      */
@@ -187,18 +232,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getRole(): array
-    {
-        return $this->role;
-    }
-
-    public function setRole(array $role): self
-    {
-        $this->role = $role;
 
         return $this;
     }

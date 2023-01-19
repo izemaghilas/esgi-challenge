@@ -20,6 +20,6 @@ console:
 
 #php Make migration
 mi:
-    docker-compose --env-file "./api/.env.local" exec api bin/console make:migration
-    docker-compose --env-file "./api/.env.local" exec api bin/console doctrine:migrations:migrate
+	docker-compose --env-file "./api/.env.local" exec api bin/console make:migration
+	docker-compose --env-file "./api/.env.local" exec api bin/console doctrine:migrations:migrate
 
