@@ -6,6 +6,7 @@ use App\Repository\ContentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ContentRepository::class)]
 class Content
@@ -16,6 +17,7 @@ class Content
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
@@ -35,10 +37,12 @@ class Content
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
     private ?User $creatorId = null;
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
     private ?Category $categoryId = null;
 
     #[ORM\OneToMany(mappedBy: 'contentId', targetEntity: ReportedContent::class)]
