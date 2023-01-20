@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReportedContentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: ReportedContentRepository::class)]
@@ -18,13 +19,16 @@ class ReportedContent
 
     #[ORM\ManyToOne(inversedBy: 'reportedContents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
     private ?Content $contentId = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'reportedContents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
     private ?User $reporterId = null;
 
     public function getId(): ?int

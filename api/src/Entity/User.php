@@ -17,6 +17,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\UserPasswordHasher;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
@@ -40,6 +41,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[Groups(['user:create', 'user:read', 'user:update'])]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
@@ -54,9 +58,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[Groups(['user:create', 'user:update'])]
+    #[Assert\NotCompromisedPassword]
     private ?string $plainPassword = null;
 
     #[Groups(['user:create', 'user:read'])]
+    #[Assert\Positive]
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $phoneNumber = null;
 
