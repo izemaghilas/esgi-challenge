@@ -6,10 +6,14 @@ use App\Repository\ReportedContentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use ApiPlatform\Metadata\Post;
 
 #[ORM\Entity(repositoryClass: ReportedContentRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(),
+    ]
+)]
 class ReportedContent
 {
     #[ORM\Id]
