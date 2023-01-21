@@ -1,6 +1,6 @@
 name: test and deploy application (api + front) 
 
-on: [push, pull_request]
+on: push
 
 jobs:
   test-front:
