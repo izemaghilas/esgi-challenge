@@ -2,11 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(security: "is_granted(ROLE_ADMIN)"),
+        new Post(),
+        new Delete(security: "is_granted('COMMENT_DELETE')"),
+    ]
+)]
 class Comment
 {
     #[ORM\Id]
