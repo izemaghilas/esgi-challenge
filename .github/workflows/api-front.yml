@@ -1,6 +1,6 @@
 name: test and deploy application (api + front) 
 
-on: [push, pull_request]
+on: push
 
 jobs:
   test-front:
@@ -43,7 +43,7 @@ jobs:
   
   deploy-front:
     runs-on: ubuntu-latest
-    needs: test-api
+    needs: test-front
     if: github.refs == 'refs/heads/main'
     permissions:
       contents: write
