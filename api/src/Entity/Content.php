@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Put;
 use App\Repository\ContentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,15 +17,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ContentRepository::class)]
-#[ApiResource(
-    operations: [
-        new GetCollection(),
-        new Post(securityPostDenormalize: "is_granted('CONTENT_CREATE')"),
-        new Get(),
-        new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
-        new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
-    ]
-)]
+#[
+    ApiResource(
+        operations: [
+            new GetCollection(),
+            new Post(securityPostDenormalize: "is_granted('CONTENT_CREATE')"),
+            new Get(),
+            new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
+            new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
+        ]
+    ),
+    ApiFilter(SearchFilter::class, properties: [
+        'categoryId' => 'exact',
+        'creatorId' => 'exact',
+    ])
+]
 class Content
 {
     #[ORM\Id]
@@ -64,9 +71,13 @@ class Content
     #[ORM\OneToMany(mappedBy: 'contentId', targetEntity: ReportedContent::class)]
     private Collection $reportedContents;
 
+    #[ORM\OneToMany(mappedBy: 'course', targetEntity: Comment::class, orphanRemoval: true)]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->reportedContents = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,6 +205,36 @@ class Content
             // set the owning side to null (unless already changed)
             if ($reportedContent->getContentId() === $this) {
                 $reportedContent->setContentId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getCourse() === $this) {
+                $comment->setCourse(null);
             }
         }
 

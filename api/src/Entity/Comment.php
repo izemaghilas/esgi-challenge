@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
@@ -11,13 +13,19 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-#[ApiResource(
-    operations: [
-        new GetCollection(security: "is_granted(ROLE_ADMIN)"),
-        new Post(),
-        new Delete(security: "is_granted('COMMENT_DELETE')"),
-    ]
-)]
+#[
+    ApiResource(
+        operations: [
+            new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+            new Post(),
+            new Delete(security: "is_granted('COMMENT_DELETE')"),
+        ]
+    ), 
+    ApiFilter(SearchFilter::class, properties: [
+        'commenterId' => 'exact',
+        'course' => 'exact',
+    ])
+]
 class Comment
 {
     #[ORM\Id]
@@ -33,6 +41,10 @@ class Comment
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
     private ?User $commenterId = null;
+
+    #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Content $course = null;
 
     public function getId(): ?int
     {
@@ -59,6 +71,18 @@ class Comment
     public function setCommenterId(?User $commenterId): self
     {
         $this->commenterId = $commenterId;
+
+        return $this;
+    }
+
+    public function getCourse(): ?Content
+    {
+        return $this->course;
+    }
+
+    public function setCourse(?Content $course): self
+    {
+        $this->course = $course;
 
         return $this;
     }
