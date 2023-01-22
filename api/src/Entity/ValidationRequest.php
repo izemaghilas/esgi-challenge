@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
@@ -9,12 +11,18 @@ use App\Repository\ValidationRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource(
-    operations: [
+#[
+    ApiResource(
+        operations: [
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE')"),
     ]
-)]
+    ),
+    ApiFilter(SearchFilter::class, properties: [
+        'reviewerId' => 'exact',
+        'contentId' => 'exact',
+    ])
+]
 #[ORM\Entity(repositoryClass: ValidationRequestRepository::class)]
 class ValidationRequest
 {

@@ -2,18 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\ReportedContentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Metadata\Post;
 
 #[ORM\Entity(repositoryClass: ReportedContentRepository::class)]
-#[ApiResource(
-    operations: [
-        new Post(),
-    ]
-)]
+#[
+    ApiResource(
+        operations: [
+            new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+            new Post(),
+        ]
+    ),
+    ApiFilter(SearchFilter::class, properties: [
+        'contentId' => 'exact',
+        'reporterId' => 'exact',
+    ])
+]
 class ReportedContent
 {
     #[ORM\Id]
