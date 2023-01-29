@@ -1,8 +1,12 @@
 <script setup>
+import { provide } from "vue";
+import store from "./store";
+
+provide("store", store);
 </script>
 
 <template>
-  <span>interface utilisateur</span>
+  <router-view></router-view>
 </template>
 
 <style scoped>
