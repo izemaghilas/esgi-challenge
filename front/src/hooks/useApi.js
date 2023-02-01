@@ -102,5 +102,5 @@ export default function useApi() {
         });
     }
 
-    return { signup, login, logout };
+    return { login };
 }
