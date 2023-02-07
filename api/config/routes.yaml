@@ -6,8 +6,3 @@ controllers:
 auth:
     path: /api/login
     methods: ['POST']
-
-register:
-    path: /register
-    methods: [POST]
-    controller: App\Controller\UserController::register
