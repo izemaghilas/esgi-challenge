@@ -26,6 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(security: "is_granted('USER_VIEW', object)"),
         new Patch(security: "is_granted('USER_EDIT', object)", processor: UserPasswordHasher::class),
         new Delete(security: "is_granted('USER_DELETE', object)"),
+        new Post('/register', processor: UserPasswordHasher::class)
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create', 'user:update']],
@@ -104,6 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->forgotPasswordTokens = new ArrayCollection();
         $this->registerTokens = new ArrayCollection();
         $this->contents = new ArrayCollection();
