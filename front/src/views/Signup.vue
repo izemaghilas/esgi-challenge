@@ -11,6 +11,16 @@ const registerError = reactive({
     message: ''
 })
 
+const loading = reactive({
+    isLoading: false
+})
+
+const firstNameRef = ref()
+const lastNameRef = ref()
+const emailRef = ref()
+const passwordRef = ref()
+const passwordConfirmaRef = ref()
+
 const mutation = useMutation({
     mutationKey: ['register'],
     mutationFn: function ({ email, password, firstName, lastName }) { return api.register(email, password, firstName, lastName) },
@@ -26,16 +36,19 @@ const mutation = useMutation({
         if (error.response.status === 500) {
             registerError.message = "Le email est déjà utilisé, Veuillez saisir un autre email."
         }
-
+    },
+    onSettled: function () {
+        loading.isLoading = false
     }
 })
 
-const firstNameRef = ref()
-const lastNameRef = ref()
-const emailRef = ref()
-const passwordRef = ref()
-
 function register() {
+    loading.isLoading = true
+    if (passwordRef.value !== passwordConfirmaRef.value) {
+        registerError.message = "Les mots de passe ne correspondent pas."
+        loading.isLoading = false
+        return
+    }
     mutation.mutate({ email: emailRef.value, password: passwordRef.value, firstName: firstNameRef.value, lastName: lastNameRef.value })
 }
 </script>
@@ -61,8 +74,20 @@ function register() {
                 <label for="password">Mot de passe:</label>
                 <input type="password" id="password" v-model="passwordRef" required />
             </div>
-            <button type="submit">Submit</button>
+            <div class="form-group">
+                <label for="passwordConfirmation">Confirmer le mot de passe:</label>
+                <input type="password" id="passwordConfirmation" v-model="passwordConfirmaRef" required />
+            </div>
+            <button type="submit">
+                <div v-if="loading.isLoading">
+                    <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
+                </div>
+                <div v-else>
+                    S'inscrire
+                </div>
+            </button>
         </form>
+        <RouterLink class="login" to="/login">Se connecter</RouterLink>
     </div>
 </template>
 
@@ -73,6 +98,7 @@ function register() {
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 0 auto;
+    margin-top: 50px;
     justify-content: center;
     align-items: center;
     box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
@@ -95,9 +121,25 @@ label {
     margin-bottom: 10px;
 }
 
+.login {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #535693;
+    padding: 3px 0;
+    border-radius: 5px;
+}
+
 button[type="submit"] {
+    width: 100%;
+    height: 45px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    display: block;
     padding: 10px 20px;
-    background-color: blue;
+    background-color: rgb(65, 65, 160);
     color: white;
     border-radius: 5px;
     border: none;
@@ -117,5 +159,11 @@ input[type="password"] {
     color: red;
     margin-top: 10px;
     margin-bottom: 10px
+}
+
+@media (max-width: 768px) {
+    .register-form {
+        width: 96%;
+    }
 }
 </style>
