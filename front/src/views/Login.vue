@@ -1,19 +1,20 @@
 <script setup>
 import { ref } from "vue"
-import { useMutation } from '@tanstack/vue-query';
-import useApi from '../hooks/useApi';
+import useApi from "../hooks/useApi"
+import useStoreActions from "../hooks/useStoreActions"
 
 const api = useApi()
-const mutation = useMutation({
-    mutationKey: ['login'],
-    mutationFn: function ({ email, password }) { return api.login(email, password) }
-})
+const storeActions = useStoreActions()
+const emailRef = ref("")
+const passwordRef = ref("")
 
-const emailRef = ref()
-const passwordRef = ref()
-
-function login() {
-    mutation.mutate({ email: emailRef.value, password: passwordRef.value })
+async function login() {
+    try {
+        const data = await api.login(emailRef.value, passwordRef.value)
+        storeActions.login(data)
+    } catch (error) {
+        console.error("error on login user");
+    }
 }
 </script>
 

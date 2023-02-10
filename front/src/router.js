@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import APP_ROUTES from "./utils/routes";
+import { APP_ROUTES } from "./utils/constants";
 
 const baseUrl = import.meta.env.BASE_URL ?? "";
 
@@ -32,17 +32,26 @@ const router = createRouter({
                         {
                             path: "users",
                             name: dashboardAdmin.views.users,
-                            component: () => import("./components/dashboard/admin/Users.vue"),
+                            component: () =>
+                                import(
+                                    "./components/dashboard/admin/Users.vue"
+                                ),
                         },
                         {
                             path: "courses",
                             name: dashboardAdmin.views.courses,
-                            component: () => import("./components/dashboard/admin/Courses.vue"),
+                            component: () =>
+                                import(
+                                    "./components/dashboard/admin/Courses.vue"
+                                ),
                         },
                         {
                             path: "comments",
                             name: dashboardAdmin.views.comments,
-                            component: () => import("./components/dashboard/admin/Comments.vue" ),
+                            component: () =>
+                                import(
+                                    "./components/dashboard/admin/Comments.vue"
+                                ),
                         },
                     ],
                 },

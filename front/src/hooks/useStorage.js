@@ -3,7 +3,7 @@ export default function useStorage() {
         return JSON.parse(localStorage.getItem(key));
     }
     function set(key, value) {
-        localStorage.setItem(key, value);
+        localStorage.setItem(key, JSON.stringify(value));
     }
     function remove(key) {
         localStorage.removeItem(key);

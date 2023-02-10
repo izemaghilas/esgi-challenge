@@ -1,13 +1,13 @@
 <script setup>
-import NavBar from '../components/dashboard/admin/NavBar.vue';
+import NavBar from '../components/dashboard/admin/NavBar.vue'
 </script>
 
 <template>
     <v-container class="admin-container">
         <NavBar />
-        <v-main style="height: 100%;">
+        <v-container class="admin-main-view">
             <router-view></router-view>
-        </v-main>
+        </v-container>
     </v-container>
 </template>
 
@@ -16,5 +16,12 @@ import NavBar from '../components/dashboard/admin/NavBar.vue';
     display: flex;
     flex-direction: row;
     margin-top: 40px;
+    column-gap: 40px;
+}
+
+.admin-main-view {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
 }
 </style>
