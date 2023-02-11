@@ -1,18 +1,40 @@
 <script setup>
-import APP_ROUTES from '../../../utils/routes';
-const { views: dashboard } = APP_ROUTES.dashboard;
+import { useRoute } from "vue-router"
+import { watch, ref } from 'vue'
+import { APP_ROUTES } from '../../../utils/constants'
+
+const { views: dashboardAdmin } = APP_ROUTES.dashboard.views.admin
+const route = useRoute()
+const links = ref({
+    [dashboardAdmin.users]: {
+        label: "Utilisateurs",
+        to: dashboardAdmin.users,
+        active: route.name === dashboardAdmin.users
+    },
+    [dashboardAdmin.courses]: {
+        label: "Cours",
+        to: dashboardAdmin.courses,
+        active: route.name === dashboardAdmin.courses
+    },
+    [dashboardAdmin.comments]: {
+        label: "Commentaires",
+        to: dashboardAdmin.comments,
+        active: route.name === dashboardAdmin.comments
+    }
+})
+
+watch(() => route.name, (newRouteName, oldRouteName) => {
+    links.value[oldRouteName].active = false
+    links.value[newRouteName].active = true
+})
+
 </script>
 
 <template>
     <nav>
-        <router-link class="link" :to="dashboard.admin.views.users">
-            <span class="link">Utilisateurs</span>
-        </router-link>
-        <router-link class="link" :to="dashboard.admin.views.courses">
-            <span class="link">Cours</span>
-        </router-link>
-        <router-link class="link" :to="dashboard.admin.views.comments">
-            <span class="link">Commentaires</span>
+        <router-link v-for="link in links" :key="link" :class="`link ${link.active ? 'link-active' : ''}`"
+            :to="link.to">
+            <span>{{ link.label }}</span>
         </router-link>
     </nav>
 </template>
@@ -38,5 +60,9 @@ nav {
 
 .link span {
     margin-left: 15px;
+}
+
+.link-active {
+    background-color: #d6dee4;
 }
 </style>

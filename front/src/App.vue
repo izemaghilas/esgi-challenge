@@ -1,8 +1,8 @@
 <script setup>
-import { provide } from "vue";
-import store from "./store";
+import { provide } from "vue"
+import store from "./store"
 
-provide("store", store);
+provide("store", store)
 </script>
 
 <template>
