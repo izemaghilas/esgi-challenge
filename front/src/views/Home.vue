@@ -1,16 +1,16 @@
 <template>
     <div>
-        <LessonCard />
+        <Courses heading="Les cours mis à jour récemment" />
     </div>
 </template>
 
 <script>
-import LessonCard from '../components/LessonCard.vue'
+import Courses from '../components/user/Courses.vue'
 
 export default {
     name: 'Home',
     components: {
-        LessonCard,
+        Courses,
     }
 
 
