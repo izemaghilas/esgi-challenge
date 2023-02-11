@@ -1,6 +1,5 @@
 <script setup>
 import { ref, reactive } from "vue"
-import { useMutation } from '@tanstack/vue-query';
 import useApi from '../hooks/useApi';
 import { useRouter } from 'vue-router'
 
@@ -21,35 +20,31 @@ const emailRef = ref()
 const passwordRef = ref()
 const passwordConfirmaRef = ref()
 
-const mutation = useMutation({
-    mutationKey: ['register'],
-    mutationFn: function ({ email, password, firstName, lastName }) { return api.register(email, password, firstName, lastName) },
-    onSuccess: function (response) {
-        if (response.status === 201) {
-            router.push('/login')
+
+async function postNewUser() {
+    try {
+        const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value)
+        if (data.id) {
+            router.push('/esgi-challenge/login')
         }
-    },
-    onError: function (error) {
+    } catch (error) {
         if (error.response.status === 422) {
             registerError.message = "Le mot de passe se retrouve dans la liste des mots de passe les plus utilisés, Veuillez en choisir un autre."
         }
         if (error.response.status === 500) {
             registerError.message = "Le email est déjà utilisé, Veuillez saisir un autre email."
         }
-    },
-    onSettled: function () {
-        loading.isLoading = false
     }
-})
-
-function register() {
+}
+async function register() {
     loading.isLoading = true
     if (passwordRef.value !== passwordConfirmaRef.value) {
         registerError.message = "Les mots de passe ne correspondent pas."
         loading.isLoading = false
         return
     }
-    mutation.mutate({ email: emailRef.value, password: passwordRef.value, firstName: firstNameRef.value, lastName: lastNameRef.value })
+    await postNewUser({ email: emailRef.value, password: passwordRef.value, firstName: firstNameRef.value, lastName: lastNameRef.value })
+    loading.isLoading = false
 }
 </script>
 
@@ -98,7 +93,6 @@ function register() {
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 0 auto;
-    margin-top: 50px;
     justify-content: center;
     align-items: center;
     box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
