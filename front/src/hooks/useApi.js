@@ -6,75 +6,75 @@ const axiosInstance = axios.create({
 });
 
 function getRequestHeaders(
-    options = { token: null, withBody: false, contentType: "application/json" }
+  options = { token: null, withBody: false, contentType: "application/json" }
 ) {
-    const { token, withBody, contentType } = options;
+  const { token, withBody, contentType } = options;
 
-    return {
-        "Content-Type": withBody ? contentType : undefined,
-        Authorization: token != null ? `Bearer ${token}` : undefined,
-    };
+  return {
+    "Content-Type": withBody ? contentType : undefined,
+    Authorization: token != null ? `Bearer ${token}` : undefined,
+  };
 }
 
 const apiClient = {
-    get: async function (url, token = null) {
-        const response = await axiosInstance.get(url, {
-            headers: getRequestHeaders({ token: token }),
-        });
-        const contentType = response.headers["content-type"] ?? "";
-        if (
-            contentType.indexOf("application/ld+json") !== -1 &&
-            response.data["@type"] === "hydra:Collection"
-        ) {
-            return response.data["hydra:member"];
-        }
-        return response.data;
-    },
-
-    post: async function (
-        url,
-        options = { data: null, contentType: "application/json", token: null }
+  get: async function (url, token = null) {
+    const response = await axiosInstance.get(url, {
+      headers: getRequestHeaders({ token: token }),
+    });
+    const contentType = response.headers["content-type"] ?? "";
+    if (
+      contentType.indexOf("application/ld+json") !== -1 &&
+      response.data["@type"] === "hydra:Collection"
     ) {
-        const { data, contentType, token } = options;
-        const response = await axiosInstance.post(url, data, {
-            headers: getRequestHeaders({
-                token: token,
-                withBody: data != null,
-                contentType: contentType,
-            }),
-        });
-        return response.data;
-    },
+      return response.data["hydra:member"];
+    }
+    return response.data;
+  },
 
-    put: async function (
-        url,
-        options = { data: null, contentType: "application/json", token: null }
-    ) {
-        const { data, contentType, token } = options;
-        const response = await axiosInstance.put(url, data, {
-            headers: getRequestHeaders({
-                token: token,
-                withBody: data != null,
-                contentType: contentType,
-            }),
-        });
-        return response.data;
-    },
+  post: async function (
+    url,
+    options = { data: null, contentType: "application/json", token: null }
+  ) {
+    const { data, contentType, token } = options;
+    const response = await axiosInstance.post(url, data, {
+      headers: getRequestHeaders({
+        token: token,
+        withBody: data != null,
+        contentType: contentType,
+      }),
+    });
+    return response.data;
+  },
 
-    patch: async function (
-        url,
-        options = { data: null, contentType: false, token: null }
-    ) {
-        const { data, contentType, token } = options;
-        const response = await axiosInstance.patch(url, data, {
-            headers: getRequestHeaders({
-                token: token,
-                withBody: data != null,
-                contentType: contentType,
-            }),
-        });
-        return response.data;
-    },
+  put: async function (
+    url,
+    options = { data: null, contentType: "application/json", token: null }
+  ) {
+    const { data, contentType, token } = options;
+    const response = await axiosInstance.put(url, data, {
+      headers: getRequestHeaders({
+        token: token,
+        withBody: data != null,
+        contentType: contentType,
+      }),
+    });
+    return response.data;
+  },
+
+  patch: async function (
+    url,
+    options = { data: null, contentType: false, token: null }
+  ) {
+    const { data, contentType, token } = options;
+    const response = await axiosInstance.patch(url, data, {
+      headers: getRequestHeaders({
+        token: token,
+        withBody: data != null,
+        contentType: contentType,
+      }),
+    });
+    return response.data;
+  },
 
   delete: function (url, token = null) {
     return axiosInstance.delete(url, {
@@ -91,59 +91,49 @@ function constructRequestUrl(endpoint, params = null) {
 }
 
 export default function useApi() {
-    const { state } = inject("store");
-    const userRef = ref({ ...state.user });
+  const { state } = inject("store");
+  const userRef = ref({ ...state.user });
 
-    watch(
-        () => state.user,
-        (newState) => {
-            userRef.value = { ...newState };
-        }
+  watch(
+    () => state.user,
+    (newState) => {
+      userRef.value = { ...newState };
+    }
+  );
+
+  function login(email, password) {
+    return apiClient.post(constructRequestUrl("login"), {
+      data: {
+        email: email,
+        password: password,
+      },
+    });
+  }
+
+  function getAllUsers() {
+    return apiClient.get(constructRequestUrl("users"), userRef.value?.token);
+  }
+  function removeUser(userId) {
+    return apiClient.delete(
+      constructRequestUrl(`users/${userId}`),
+      userRef.value?.token
     );
+  }
+  function editUser(userId, changedProperties) {
+    return apiClient.patch(constructRequestUrl(`users/${userId}`), {
+      data: { ...changedProperties },
+      contentType: "application/merge-patch+json",
+      token: userRef.value?.token,
+    });
+  }
 
-    function login(email, password) {
-        return apiClient.post(constructRequestUrl("login"), {
-            data: {
-                email: email,
-                password: password,
-            },
-            contentType: false,
-        });
-    }
+  function getAllCourses() {
+    return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
+  }
 
-    function getAllUsers() {
-        return apiClient.get(
-            constructRequestUrl("users"),
-            userRef.value?.token
-        );
-    }
-    function removeUser(userId) {
-        return apiClient.delete(
-            constructRequestUrl(`users/${userId}`),
-            userRef.value?.token
-        );
-    }
-    function editUser(userId, changedProperties) {
-        return apiClient.patch(constructRequestUrl(`users/${userId}`), {
-            data: { ...changedProperties },
-            contentType: "application/merge-patch+json",
-            token: userRef.value?.token,
-        });
-    }
-
-    function getAllCourses() {
-        return apiClient.get(
-            constructRequestUrl("contents"),
-            userRef.value?.token
-        );
-    }
-
-    function getAllComments() {
-        return apiClient.get(
-            constructRequestUrl("comments"),
-            userRef.value?.token
-        );
-    }
+  function getAllComments() {
+    return apiClient.get(constructRequestUrl("comments"), userRef.value?.token);
+  }
 
   function register(email, password, firstname, lastname) {
     const res = apiClient.post(constructRequestUrl("register"), {
@@ -158,5 +148,13 @@ export default function useApi() {
     return res;
   }
 
-  return { login, getAllUsers, editUser, removeUser, getAllCourses, getAllComments, register };
+  return {
+    login,
+    getAllUsers,
+    editUser,
+    removeUser,
+    getAllCourses,
+    getAllComments,
+    register,
+  };
 }
