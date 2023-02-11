@@ -38,16 +38,20 @@
 </template>
 
 <script>
+import { onMounted } from 'vue';
+
 export default {
     setup() {
-        window.addEventListener("click", function (event) {
-            const hamburger = document.querySelector(".hamburger");
-            const navMenu = document.querySelector(".nav-menu");
+        onMounted(() => {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
 
-            hamburger.classList.toggle("active");
-            navMenu.classList.toggle("active");
-        })
-    }
+            hamburger.addEventListener('click', function () {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+        });
+    },
 }
 </script>
 
@@ -79,6 +83,7 @@ header {
     padding: 0 24px;
     color: #f4a118;
     background-color: #251d5d;
+    z-index: 1000;
 }
 
 .custom-header-menu-text {
@@ -143,6 +148,7 @@ header {
 
     .nav-menu {
         position: fixed;
+        z-index: 100;
         left: -100%;
         top: 70px;
         gap: 0;
