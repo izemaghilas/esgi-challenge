@@ -31,6 +31,12 @@
                 </v-card>
             </v-dialog>
         </v-row>
+        <v-card class="comments">
+            <v-card-title class="title">Commentaires</v-card-title>
+            <v-card-text>
+                <Comments :courseId="data.course.id" />
+            </v-card-text>
+        </v-card>
     </v-container>
 </template>
 
@@ -39,6 +45,7 @@ import useApi from '../../hooks/useApi';
 import { reactive, onMounted, ref } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
+import Comments from './Comments.vue';
 
 const route = useRoute()
 const api = useApi()
@@ -79,6 +86,17 @@ onMounted(async () => {
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+.comments {
+    margin-top: 60px;
+    box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
+    background: rgba(255, 255, 255, 0.19);
+    border-radius: 6px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4.5px);
+    -webkit-backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .video-title {
