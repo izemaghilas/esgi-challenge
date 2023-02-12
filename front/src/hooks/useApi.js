@@ -127,6 +127,13 @@ export default function useApi() {
     });
   }
 
+  function getCourseById(id) {
+    return apiClient.get(
+      constructRequestUrl("contents/" + id),
+      userRef.value?.token
+    );
+  }
+
   function getAllCourses() {
     return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
   }
@@ -153,6 +160,7 @@ export default function useApi() {
     getAllUsers,
     editUser,
     removeUser,
+    getCourseById,
     getAllCourses,
     getAllComments,
     register,

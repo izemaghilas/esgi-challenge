@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-card class="card" :elevation="hover ? 16 : 2" :class="{ 'on-hover': hover }">
-      <router-link :to="`/course/${course.id}`">
+      <router-link :to="`/esgi-challenge/course/${course.id}`">
         <v-img :src="thumbnail" alt="" class=""></v-img>
       </router-link>
       <v-card-title class="title">{{ course.title }}</v-card-title>
