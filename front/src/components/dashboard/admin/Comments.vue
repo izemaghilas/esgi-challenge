@@ -42,10 +42,11 @@ onMounted(async () => {
     align-items: center;
     row-gap: 10px;
 }
+
 .no-comments-container span {
     font-size: 16px;
     font-weight: 600;
-} 
+}
 
 .card-comment {
     display: flex;

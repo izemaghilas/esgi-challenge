@@ -138,6 +138,13 @@ export default function useApi() {
     return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
   }
 
+  function getCommentsByCourse(id) {
+    return apiClient.get(
+      constructRequestUrl("comments?course=" + id),
+      userRef.value?.token
+    );
+  }
+
   function getAllComments() {
     return apiClient.get(constructRequestUrl("comments"), userRef.value?.token);
   }
@@ -164,5 +171,6 @@ export default function useApi() {
     getAllCourses,
     getAllComments,
     register,
+    getCommentsByCourse,
   };
 }
