@@ -15,6 +15,7 @@ const APP_ROUTES = {
   signup: "signup",
   login: "login",
   home: "home",
+  course: "course",
   dashboard: {
     name: "dashboard",
     views: {
