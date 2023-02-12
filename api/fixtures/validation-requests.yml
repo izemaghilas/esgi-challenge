@@ -1,0 +1,13 @@
+App\Entity\ValidationRequest:
+  validation_request_0:
+    active: false
+    reviewerId: '@user_1'
+    contentId: '@content_0'
+  validation_request_1:
+    active: false
+    reviewerId: '@user_2'
+    contentId: '@content_1'
+  validation_request_2:
+    active: true
+    reviewerId: '@user_3'
+    contentId: '@content_4'
