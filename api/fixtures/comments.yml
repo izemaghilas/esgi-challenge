@@ -9,7 +9,7 @@ App\Entity\Comment:
     content: '<randomElement($comments)>'
     commenterId: '<randomElement([@user_7, @user_8, @user_9, @user_10])>'
     course: '<randomElement([@content_0, @content_1, @content_2, @content_3])>'
-
+    createdAt: <(new \DateTimeImmutable())>
 
   
   
