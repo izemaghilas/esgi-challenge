@@ -21,7 +21,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         operations: [
             new GetCollection(security: "is_granted('ROLE_ADMIN')"),
             new Post(),
-            new Patch(),
             new Delete(security: "is_granted('COMMENT_DELETE')"),
         ]
     ), 
