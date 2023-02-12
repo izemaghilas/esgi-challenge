@@ -1,50 +1,65 @@
 <?php
 
 namespace App\Entity;
-
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[
-    ApiResource(
+    ApiResource(paginationItemsPerPage:03,
+        normalizationContext: ['groups' => ['comment:read']],
         operations: [
             new GetCollection(security: "is_granted('ROLE_ADMIN')"),
             new Post(),
+            new Patch(),
             new Delete(security: "is_granted('COMMENT_DELETE')"),
         ]
     ), 
     ApiFilter(SearchFilter::class, properties: [
         'commenterId' => 'exact',
         'course' => 'exact',
-    ])
+    ]),
+    ApiFilter(OrderFilter::class, properties: ['createAt'=> 'ASC'])
+    
 ]
+
+
 class Comment
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['comment:read'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
+    #[Groups(['comment:read'])]
     private ?User $commenterId = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read'])]
     private ?Content $course = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -79,10 +94,22 @@ class Comment
     {
         return $this->course;
     }
-
+    #[Groups(['comment:read'])]
     public function setCourse(?Content $course): self
     {
         $this->course = $course;
+
+        return $this;
+    }
+    #[Groups(['comment:read'])]
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
