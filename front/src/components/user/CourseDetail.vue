@@ -117,7 +117,7 @@ const postReport = async () => {
         loading.value = true
         const data = {
             description: reportInput.value,
-            reporterId: userData.user.id,
+            reporterId: userData.id,
             contentId: route.params.id,
         }
         const response = await api.postReportContent(data)

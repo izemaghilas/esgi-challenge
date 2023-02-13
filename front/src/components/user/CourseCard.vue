@@ -4,7 +4,7 @@
       <router-link :to="`/esgi-challenge/course/${course.id}`">
         <v-img :src="thumbnail" alt="" class=""></v-img>
       </router-link>
-      <v-card-title class="title">{{ course.title }}</v-card-title>
+      <v-card-title>{{ course.title }}</v-card-title>
       <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
       <v-card-text>
         <v-row align="center" class="mx-0">

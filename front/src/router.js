@@ -66,6 +66,11 @@ const router = createRouter({
       component: () => import("./components/user/CourseDetail.vue"),
     },
     {
+      path: `${baseUrl}/list/:id`,
+      name: APP_ROUTES.list,
+      component: () => import("./components/user/CourseList.vue"),
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: { name: "home", replace: true },
     },

@@ -16,7 +16,7 @@ use ApiPlatform\Metadata\Put;use Symfony\Component\Validator\Constraints as Asse
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(),
         new Post(securityPostDenormalize: "is_granted('CATEGORY_CREATE')"),
         new Put(security: "is_granted('CATEGORY_EDIT')"),
         new Delete(security: "is_granted('CATEGORY_DELETE')"),
