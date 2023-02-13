@@ -1,0 +1,1 @@
+import{_,b as e,o as r,c as s,w as o,h as t}from"./index-ec921a45.js";const p={};function i(l,m){const n=e("router-view"),a=e("v-main"),c=e("v-app");return r(),s(c,null,{default:o(()=>[t(a,{style:{height:"100%"}},{default:o(()=>[t(n)]),_:1})]),_:1})}const u=_(p,[["render",i]]);export{u as default};

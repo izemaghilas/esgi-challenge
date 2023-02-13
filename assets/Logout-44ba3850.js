@@ -1,0 +1,1 @@
+import{L as t}from"./Loader-d7d0e367.js";import{u as r}from"./useStoreActions-ca815cb3.js";import{u as s,q as a,A as u,o as c,c as n}from"./index-ec921a45.js";const A={__name:"Logout",setup(m){const o=s(),e=r();return a(()=>{e.logout(),o.push({name:u.home,replace:!0})}),(p,_)=>(c(),n(t))}};export{A as default};
