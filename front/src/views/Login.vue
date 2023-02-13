@@ -23,7 +23,6 @@ async function login() {
         loading.isLoading = true
         const data = await api.login(emailRef.value, passwordRef.value)
         storeActions.login({ token: data.token, ...data.user })
-        router.push(APP_ROUTES.home)
         router.push({ name: getUserRedirectionPage(data.user), replace: true })
     } catch (error) {
         loginError.message = "Email ou mot de passe incorrect"

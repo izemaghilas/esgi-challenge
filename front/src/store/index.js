@@ -12,7 +12,10 @@ function login(data) {
     state.user = data;
     storage.set("user", state.user);
 }
-function logout() {}
+function logout() {
+    state.user = null
+    storage.remove("user")
+}
 
 export default {
     state: readonly(state),
