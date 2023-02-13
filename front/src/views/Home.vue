@@ -4,15 +4,7 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import Courses from '../components/user/Courses.vue'
 
-export default {
-    name: 'Home',
-    components: {
-        Courses,
-    }
-
-
-}
 </script>
