@@ -141,7 +141,24 @@ export default function useApi() {
     );
   }
 
-  function postComment(comment, courseId, commenterId) {
+  function getAllCourses() {
+    return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
+  }
+
+  function postReportContent(data) {
+    const { description, reporterId, contentId } = data;
+    return apiClient.post(constructRequestUrl("reported_contents"), {
+      data: {
+        reporterId: "/api/users/" + reporterId,
+        contentId: "/api/contents/" + contentId,
+        description: description,
+      },
+      token: userRef.value?.token,
+    });
+  }
+
+  function postComment(data) {
+    const { comment, courseId, commenterId } = data;
     return apiClient.post(constructRequestUrl("comments"), {
       data: {
         commenterId: "/api/users/" + commenterId,
@@ -187,5 +204,6 @@ export default function useApi() {
     register,
     getCommentsByCourse,
     postComment,
+    postReportContent,
   };
 }
