@@ -127,15 +127,18 @@ export default function useApi() {
     });
   }
 
+  function getAllCourses() {
+    return apiClient.get(
+      constructRequestUrl("contents?order[createdAt]=desc"),
+      userRef.value?.token
+    );
+  }
+
   function getCourseById(id) {
     return apiClient.get(
       constructRequestUrl("contents/" + id),
       userRef.value?.token
     );
-  }
-
-  function getAllCourses() {
-    return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
   }
 
   function postComment(comment, courseId, commenterId) {
