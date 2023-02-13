@@ -1,29 +1,137 @@
 <script setup>
-import { ref } from "vue"
+import { reactive, ref } from "vue"
 import useApi from "../hooks/useApi"
 import useStoreActions from "../hooks/useStoreActions"
+import { useRouter } from 'vue-router'
+import { APP_ROUTES } from "../utils/constants";
 
 const api = useApi()
 const storeActions = useStoreActions()
 const emailRef = ref("")
 const passwordRef = ref("")
+const router = useRouter()
+const loginError = reactive({
+    message: ''
+})
+const loading = reactive({
+    isLoading: false
+})
 
 async function login() {
     try {
+        loading.isLoading = true
         const data = await api.login(emailRef.value, passwordRef.value)
         storeActions.login(data)
+        router.push(APP_ROUTES.home)
     } catch (error) {
+        loginError.message = "Email ou mot de passe incorrect"
         console.error("error on login user");
+    } finally {
+        loading.isLoading = false
     }
 }
 </script>
 
 <template>
-    <v-sheet width="300" class="mx-auto">
-        <v-form @submit.prevent>
-            <v-text-field v-model="emailRef" label="email" type="email"></v-text-field>
-            <v-text-field v-model="passwordRef" label="mot de passe" type="password"></v-text-field>
-            <v-btn type="submit" block class="mt-2" @click="login">s'identifier</v-btn>
-        </v-form>
-    </v-sheet>
+    <v-container>
+        <div class="login-form">
+            <h1>Se connecter</h1>
+            <p class="error-message">{{ loginError.message }}</p>
+            <form @submit.prevent="login">
+                <div class="form-group">
+                    <label for="firstName">Email:</label>
+                    <input type="email" id="firstName" v-model="emailRef" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" v-model="passwordRef" required />
+                </div>
+                <button type="submit">
+                    <div v-if="loading.isLoading">
+                        <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
+                    </div>
+                    <div v-else>
+                        Se connecter
+                    </div>
+                </button>
+            </form>
+            <RouterLink class="login" to="/esgi-challenge/signup">Se connecter</RouterLink>
+        </div>
+    </v-container>
 </template>
+
+<style scoped>
+.login-form {
+    width: 500px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
+    background: rgba(255, 255, 255, 0.19);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4.5px);
+    -webkit-backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.login {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #535693;
+    padding: 3px 0;
+    border-radius: 5px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    height: 45px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    display: block;
+    padding: 10px 20px;
+    background-color: rgb(65, 65, 160);
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    margin-bottom: 10px
+}
+
+@media (max-width: 768px) {
+    .register-form {
+        width: 96%;
+    }
+}
+</style>
