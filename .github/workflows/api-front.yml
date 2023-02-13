@@ -52,7 +52,7 @@ jobs:
       - name: Build app
         run: |
           cd ./front
-          yarn install --frozen-lockfile --prod
+          yarn install --frozen-lockfile
           yarn build
       - name: Deploy app
         uses: JamesIves/github-pages-deploy-action@v4
