@@ -14,8 +14,10 @@ const COLORS = {
 const APP_ROUTES = {
   signup: "signup",
   login: "login",
+  logout: "logout",
   home: "home",
   course: "course",
+  list: "list",
   dashboard: {
     name: "dashboard",
     views: {
@@ -35,18 +37,22 @@ const ROLES = {
   admin: {
     label: "administrateur",
     value: "ROLE_ADMIN",
+    homepage: "admin",
   },
   reviewer: {
     label: "examinateur",
     value: "ROLE_REVIEWER",
+    homepage: "reviewer",
   },
   contributor: {
     label: "contributeur",
     value: "ROLE_CONTRIBUTOR",
+    homepage: "contributor",
   },
   user: {
     label: "utilisateur",
     value: "ROLE_USER",
+    homepage: "home",
   },
 };
 

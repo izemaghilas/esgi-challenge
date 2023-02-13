@@ -1,30 +1,14 @@
 <template>
     <header>
         <nav class="navbar">
-            <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
+            <RouterLink :to="APP_ROUTES.home">
+                <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
+            </RouterLink>
             <ul class="nav-menu">
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/home"
-                        exact-active-class="active-link">ACCUEIL</RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/courses"
-                        exact-active-class="active-link">LES COURS
-                    </RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/contact"
-                        exact-active-class="active-link">CONTACTER
-                    </RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/login"
-                        exact-active-class="active-link">SE CONNECTER
-                    </RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/signup"
-                        exact-active-class="active-link">S'INSCRIRE
+                <li class="nav-item custom-header-li" v-for="link in links" :key="link.label">
+                    <RouterLink class="custom-header-menu-text" :to="{ name: link.to, replace: true }"
+                        active-class="active-link">
+                        {{ link.label }}
                     </RouterLink>
                 </li>
             </ul>
@@ -37,22 +21,55 @@
     </header>
 </template>
 
-<script>
-import { onMounted } from 'vue';
+<script setup>
+import { onMounted, computed, inject } from 'vue';
+import { APP_ROUTES, ROLES } from '../utils/constants';
+import { getUserRole } from '../utils';
 
-export default {
-    setup() {
-        onMounted(() => {
-            const hamburger = document.querySelector('.hamburger');
-            const navMenu = document.querySelector('.nav-menu');
+const { state } = inject("store");
 
-            hamburger.addEventListener('click', function () {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-        });
-    },
-}
+onMounted(() => {
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+
+    hamburger.addEventListener('click', function () {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
+});
+
+const links = computed(() => {
+    if (state.user != null) {
+        const userRole = getUserRole(state.user)
+        return {
+            [APP_ROUTES.home]: {
+                label: "ACCUEIL",
+                to: APP_ROUTES.home
+            },
+            ...(userRole.value != ROLES.user.value && { [userRole.homepage]: { label: "MON ESPACE", to: userRole.homepage } }),
+            [APP_ROUTES.logout]: {
+                label: "DECONNEXION",
+                to: APP_ROUTES.logout
+            },
+        }
+    }
+    return {
+        [APP_ROUTES.home]: {
+            label: "ACCUEIL",
+            to: APP_ROUTES.home
+        },
+        [APP_ROUTES.login]: {
+            label: "SE CONNECTER",
+            to: APP_ROUTES.login
+        },
+        [APP_ROUTES.signup]: {
+            label: "S'INSCRIRE",
+            to: APP_ROUTES.signup
+        },
+    }
+})
+
+
 </script>
 
 <style scoped>

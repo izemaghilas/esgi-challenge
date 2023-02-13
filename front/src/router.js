@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import("./views/Signup.vue"),
     },
     {
+      path: `${baseUrl}/logout`,
+      name: APP_ROUTES.logout,
+      component: () => import("./views/Logout.vue"),
+    },
+    {
       path: `${baseUrl}/dashboard`,
       name: APP_ROUTES.dashboard.name,
       component: () => import("./views/Dashboard.vue"),
@@ -59,6 +64,11 @@ const router = createRouter({
       path: `${baseUrl}/course/:id`,
       name: APP_ROUTES.course,
       component: () => import("./components/user/CourseDetail.vue"),
+    },
+    {
+      path: `${baseUrl}/list/:id`,
+      name: APP_ROUTES.list,
+      component: () => import("./components/user/CourseList.vue"),
     },
     {
       path: "/:pathMatch(.*)*",

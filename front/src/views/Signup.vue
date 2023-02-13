@@ -2,6 +2,7 @@
 import { ref, reactive } from "vue"
 import useApi from '../hooks/useApi';
 import { useRouter } from 'vue-router'
+import { APP_ROUTES } from "../utils/constants";
 
 const api = useApi()
 const router = useRouter()
@@ -25,7 +26,7 @@ async function postNewUser() {
     try {
         const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value)
         if (data.id) {
-            router.push('/esgi-challenge/login')
+            router.push({name: APP_ROUTES.login})
         }
     } catch (error) {
         if (error.response.status === 422) {
@@ -49,44 +50,46 @@ async function register() {
 </script>
 
 <template>
-    <div class="register-form">
-        <h1>S'inscrire</h1>
-        <p class="error-message">{{ registerError.message }}</p>
-        <form @submit.prevent="register">
-            <div class="form-group">
-                <label for="firstName">Prénom:</label>
-                <input type="text" id="firstName" v-model="firstNameRef" required />
-            </div>
-            <div class="form-group">
-                <label for="lastName">Nom:</label>
-                <input type="text" id="lastName" v-model="lastNameRef" required />
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" v-model="emailRef" required />
-            </div>
-            <div class="form-group">
-                <label for="password">Mot de passe:</label>
-                <input type="password" id="password" v-model="passwordRef" required />
-            </div>
-            <div class="form-group">
-                <label for="passwordConfirmation">Confirmer le mot de passe:</label>
-                <input type="password" id="passwordConfirmation" v-model="passwordConfirmaRef" required />
-            </div>
-            <button type="submit">
-                <div v-if="loading.isLoading">
-                    <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
+    <v-container>
+        <div class="register-form">
+            <h1>S'inscrire</h1>
+            <p class="error-message">{{ registerError.message }}</p>
+            <form @submit.prevent="register">
+                <div class="form-group">
+                    <label for="firstName">Prénom:</label>
+                    <input type="text" id="firstName" v-model="firstNameRef" required />
                 </div>
-                <div v-else>
-                    S'inscrire
+                <div class="form-group">
+                    <label for="lastName">Nom:</label>
+                    <input type="text" id="lastName" v-model="lastNameRef" required />
                 </div>
-            </button>
-        </form>
-        <RouterLink class="login" to="/login">Se connecter</RouterLink>
-    </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" v-model="emailRef" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe:</label>
+                    <input type="password" id="password" v-model="passwordRef" required />
+                </div>
+                <div class="form-group">
+                    <label for="passwordConfirmation">Confirmer le mot de passe:</label>
+                    <input type="password" id="passwordConfirmation" v-model="passwordConfirmaRef" required />
+                </div>
+                <button type="submit">
+                    <div v-if="loading.isLoading">
+                        <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
+                    </div>
+                    <div v-else>
+                        Se connecter
+                    </div>
+                </button>
+            </form>
+            <RouterLink class="login" to="/esgi-challenge/login">Se connecter</RouterLink>
+        </div>
+    </v-container>
 </template>
 
-<style>
+<style scoped>
 .register-form {
     width: 500px;
     padding: 20px;

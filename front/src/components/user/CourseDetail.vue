@@ -17,7 +17,7 @@
             </v-col>
             <v-col class="mt-0">
                 <v-btn prepend-icon="mdi-close-box" @click="handleReportClick" class="button"
-                    style="color:white; background-color: #3f51b5;">Signler ce
+                    style="color:white; background-color: #251d5d;">Signler ce
                     cours</v-btn>
             </v-col>
             <v-dialog v-model="dialogVideo" fullscreen :scrim="false" transition="dialog-bottom-transition">
@@ -56,6 +56,15 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-snackbar v-model="snackBarShow" :timeout="timeout">
+            {{ snackBarText }}
+
+            <template v-slot:actions>
+                <v-btn color="blue" variant="text" @click="snackBarShow = false">
+                    Fermer
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-container>
 </template>
 
@@ -74,6 +83,10 @@ const loading = ref(false);
 const reportInput = ref('');
 const dialogVideo = ref(false);
 const dialogReport = ref(false)
+
+const snackBarText = ref('');
+const timeout = ref(3000);
+const snackBarShow = ref(false);
 
 const data = reactive({
     course: {},
@@ -104,10 +117,12 @@ const postReport = async () => {
         loading.value = true
         const data = {
             description: reportInput.value,
-            reporterId: userData.user.id,
+            reporterId: userData.id,
             contentId: route.params.id,
         }
         const response = await api.postReportContent(data)
+        snackBarText.value = "Le cours a été signalé"
+        snackBarShow.value = true
     } catch (error) {
         console.log(error)
     } finally {

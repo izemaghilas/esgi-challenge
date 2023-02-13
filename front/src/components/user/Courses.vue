@@ -9,6 +9,16 @@
     </v-container>
   </div>
   <div class="mx-3" v-else>
+    <v-card-title class="text-h5 font-weight-bold">Les categories</v-card-title>
+    <v-container fluid>
+      <v-row>
+        <v-col cols="12" sm="3" v-for="category in data.categories" :key="category.id">
+          <v-btn color="secondary" class="category" :to="`/esgi-challenge/list/${category.id}`">
+            {{ category.title }}
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
     <h2 class="mt-2 ml-5 grey--text">{{ props.heading }}</h2>
     <v-container fluid>
       <v-row>
@@ -17,7 +27,6 @@
         </v-col>
       </v-row>
     </v-container>
-
   </div>
 </template>
 
@@ -34,7 +43,7 @@ const loading = ref(false)
 
 const data = reactive({
   courses: [],
-  data: []
+  categories: [],
 })
 
 onMounted(async () => {
@@ -48,6 +57,18 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  try {
+    loading.value = true
+    const res = await api.getAllCategories();
+    data.categories = res;
+    console.log("courses", data);
+  } catch (error) {
+    console.log("error", error);
+  } finally {
+    loading.value = false
+  }
+
 })
 </script>
 
@@ -57,6 +78,20 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+.category {
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
+  background: rgba(255, 255, 255, 0.19);
+  border-radius: 5px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(2px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.22);
 }
 
 .no-course-container {

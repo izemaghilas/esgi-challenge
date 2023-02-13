@@ -127,6 +127,13 @@ export default function useApi() {
     });
   }
 
+  function getAllCategories() {
+    return apiClient.get(
+      constructRequestUrl("categories"),
+      userRef.value?.token
+    );
+  }
+
   function getAllCourses() {
     return apiClient.get(
       constructRequestUrl("contents?order[createdAt]=desc"),
@@ -193,6 +200,13 @@ export default function useApi() {
     return res;
   }
 
+  function removeComment(commentId) {
+    return apiClient.delete(
+      constructRequestUrl(`comments/${commentId}`),
+      userRef.value?.token
+    );
+  }
+
   return {
     login,
     getAllUsers,
@@ -203,7 +217,9 @@ export default function useApi() {
     getAllComments,
     register,
     getCommentsByCourse,
-    postComment,
     postReportContent,
+    getAllCategories,
+    postComment,
+    removeComment,
   };
 }
