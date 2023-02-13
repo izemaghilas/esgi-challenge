@@ -47,7 +47,12 @@ const data = reactive({
 async function postComment() {
     try {
         loading.value = true
-        const response = await api.postComment(commentInput.value, props.courseId, userData.user.id)
+        const payload = {
+            comment: commentInput.value,
+            commenterId: userData.user.id,
+            courseId: props.courseId
+        }
+        const response = await api.postComment(payload)
         console.log("res", response)
         data.comments.unshift(response)
     } catch (error) {
