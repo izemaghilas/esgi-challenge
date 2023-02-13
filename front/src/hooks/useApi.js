@@ -141,6 +141,13 @@ export default function useApi() {
     );
   }
 
+  function getCourseByCategoryId(id) {
+    return apiClient.get(
+      constructRequestUrl("contents?order[createdAt]=desc&categoryId=" + id),
+      userRef.value?.token
+    );
+  }
+
   function getCourseById(id) {
     return apiClient.get(
       constructRequestUrl("contents/" + id),
@@ -219,6 +226,7 @@ export default function useApi() {
     getCommentsByCourse,
     postReportContent,
     getAllCategories,
+    getCourseByCategoryId,
     postComment,
     removeComment,
   };
