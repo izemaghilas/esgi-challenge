@@ -4,26 +4,16 @@
             <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
             <ul class="nav-menu">
                 <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/home"
+                    <RouterLink class="custom-header-menu-text" :to="APP_ROUTES.home"
                         exact-active-class="active-link">ACCUEIL</RouterLink>
                 </li>
                 <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/courses"
-                        exact-active-class="active-link">LES COURS
-                    </RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/contact"
-                        exact-active-class="active-link">CONTACTER
-                    </RouterLink>
-                </li>
-                <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/login"
+                    <RouterLink class="custom-header-menu-text" :to="APP_ROUTES.login"
                         exact-active-class="active-link">SE CONNECTER
                     </RouterLink>
                 </li>
                 <li class="nav-item custom-header-li">
-                    <RouterLink class="custom-header-menu-text" to="/esgi-challenge/signup"
+                    <RouterLink class="custom-header-menu-text" :to="APP_ROUTES.signup"
                         exact-active-class="active-link">S'INSCRIRE
                     </RouterLink>
                 </li>
@@ -39,6 +29,7 @@
 
 <script>
 import { onMounted } from 'vue';
+import { APP_ROUTES } from '../utils/constants';
 
 export default {
     setup() {
@@ -51,6 +42,8 @@ export default {
                 navMenu.classList.toggle('active');
             });
         });
+
+        return { APP_ROUTES }
     },
 }
 </script>

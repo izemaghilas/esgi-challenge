@@ -2,6 +2,7 @@
 import { ref, reactive } from "vue"
 import useApi from '../hooks/useApi';
 import { useRouter } from 'vue-router'
+import { APP_ROUTES } from "../utils/constants";
 
 const api = useApi()
 const router = useRouter()
@@ -25,7 +26,7 @@ async function postNewUser() {
     try {
         const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value)
         if (data.id) {
-            router.push('/esgi-challenge/login')
+            router.push({name: APP_ROUTES.login})
         }
     } catch (error) {
         if (error.response.status === 422) {

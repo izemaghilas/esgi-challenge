@@ -10,3 +10,7 @@ export function getUserRole(user) {
     }
     return ROLES["user"];
 }
+
+export function getUserRedirectionPage(user) {
+    return getUserRole(user).homepage
+}

@@ -1,10 +1,10 @@
 <script setup>
-import NavBar from '../components/dashboard/admin/NavBar.vue'
+import SideBar from '../components/dashboard/admin/SideBar.vue'
 </script>
 
 <template>
     <v-container class="admin-container">
-        <NavBar />
+        <SideBar />
         <v-container class="admin-main-view">
             <router-view></router-view>
         </v-container>
