@@ -29,3 +29,10 @@ tests:
 	docker-compose --env-file "./api/.env.local" exec api bin/phpunit
 test-migrate:
 	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test d:m:m
+jwt-keys:
+	docker compose --env-file "./api/.env.local" exec api sh -c 'set -e;\
+	apk add openssl;\
+	php bin/console lexik:jwt:generate-keypair;\
+	setfacl -R -m u:www-data:rX -m u:"$(whoami)":rwX config/jwt;\
+	setfacl -dR -m u:www-data:rX -m u:"$(whoami)":rwX config/jwt;\
+ 	'

@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         operations: [
             new GetCollection(),
-            new Post(securityPostDenormalize: "is_granted('CONTENT_CREATE')"),
+            new Post(),
             new Get(),
             new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
             new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),

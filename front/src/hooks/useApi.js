@@ -153,6 +153,13 @@ export default function useApi() {
       constructRequestUrl("contents/" + id),
       userRef.value?.token
     );
+  } 
+
+  function getCoursesByCreatorId(creator_id) {
+    return apiClient.get(
+      constructRequestUrl("contents?page=1&creatorId%5B%5D="+ creator_id),
+      userRef.value?.token
+    );
   }
 
   function getAllCourses() {
@@ -207,6 +214,18 @@ export default function useApi() {
     return res;
   }
 
+  function addCourse(title,description,category){
+    const res = apiClient.post(constructRequestUrl("contents"), {
+      data: {
+        title: title,
+        description: description,
+        category: category,
+      },
+    });
+    console.log("res", res);
+    return res;
+  }
+
   function removeComment(commentId) {
     return apiClient.delete(
       constructRequestUrl(`comments/${commentId}`),
@@ -225,6 +244,8 @@ export default function useApi() {
     register,
     getCommentsByCourse,
     postReportContent,
+    addCourse,
+    getCoursesByCreatorId
     getAllCategories,
     getCourseByCategoryId,
     postComment,

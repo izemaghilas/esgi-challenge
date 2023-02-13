@@ -29,6 +29,13 @@ const router = createRouter({
       component: () => import("./views/Dashboard.vue"),
       children: [
         {
+          path: "contributor",
+          name: APP_ROUTES.dashboard.views.contributor,
+          component: () =>
+          import("./views/Contributor.vue"),
+        },
+        
+        {
           path: "admin",
           name: dashboardAdmin.name,
           redirect: `${baseUrl}/dashboard/admin/users`,
