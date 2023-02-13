@@ -17,6 +17,11 @@ DB_NAME=
 DATABASE_URL=
 ```
 
+ajouter le fichier **.env.local** à la racine du dossier **front**
+```
+APP_API_URL=
+```
+
 ## Execution
 
 il faut toujours spécifier le chemin vers le fichier contenant les variables d'environements.  

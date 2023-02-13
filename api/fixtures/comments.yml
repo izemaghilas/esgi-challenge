@@ -1,0 +1,15 @@
+parameters:
+  comments:
+    - De façon générale, le cours est très complet et facilement compréhensible grâce au formateur assez pédagogue.
+    - Vraiment une super formation qui m'a donné de solide bases pour mes projets future.
+    - Très bonne formation, le formateur explique bien tous les concepts et il y beaucoup de challenges qui permettent de se teste. Je recommande fortement cette formation !!!
+
+App\Entity\Comment:
+  comment_{1..10}:
+    content: '<randomElement($comments)>'
+    commenterId: '<randomElement([@user_7, @user_8, @user_9, @user_10])>'
+    course: '<randomElement([@content_0, @content_1, @content_2, @content_3])>'
+    createdAt: <(new \DateTimeImmutable())>
+
+  
+  
