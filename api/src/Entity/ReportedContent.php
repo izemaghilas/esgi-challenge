@@ -41,7 +41,7 @@ class ReportedContent
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'reportedContents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
     private ?User $reporterId = null;
 

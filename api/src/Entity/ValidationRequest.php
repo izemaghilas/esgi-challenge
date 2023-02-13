@@ -35,7 +35,7 @@ class ValidationRequest
     private ?bool $active = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
     private ?User $reviewerId = null;
 

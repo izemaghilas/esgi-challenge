@@ -24,3 +24,8 @@ console:
 #php Make fixtures
 fixtures:
 	docker-compose --env-file "./api/.env.local" exec api bin/console hautelook:fixtures:load
+
+tests:
+	docker-compose --env-file "./api/.env.local" exec api bin/phpunit
+test-migrate:
+	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test d:m:m

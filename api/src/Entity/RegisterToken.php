@@ -20,7 +20,7 @@ class RegisterToken
     private ?\DateTimeImmutable $expireAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'registerTokens')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $userId = null;
 
     public function getId(): ?int
