@@ -13,14 +13,13 @@ use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
-use \Symfony\Bundle\SecurityBundle\Security;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[
-    ApiResource(paginationItemsPerPage:03,
+    ApiResource(
         normalizationContext: ['groups' => ['comment:read']],
         operations: [
-            new GetCollection(security: "is_granted('ROLE_ADMIN')", paginationEnabled: false),
+            new GetCollection(),
             new Post(),
             new Delete(security: "is_granted('COMMENT_DELETE')"),
         ]

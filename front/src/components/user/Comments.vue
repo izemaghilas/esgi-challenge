@@ -21,6 +21,15 @@
             prepend-avatar="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"
             :title="getFullName(comment.commenterId)" :subtitle="comment.content">
         </v-list-item>
+        <v-snackbar v-model="snackBarShow" :timeout="timeout">
+            {{ snackBarText }}
+
+            <template v-slot:actions>
+                <v-btn color="blue" variant="text" @click="snackBarShow = false">
+                    Fermer
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-list>
 </template>
 
@@ -33,6 +42,9 @@ import useUser from '../../hooks/useUser';
 const api = useApi()
 const props = defineProps(['courseId'])
 const userData = useUser()
+const snackBarText = ref('');
+const timeout = ref(3000);
+const snackBarShow = ref(false);
 const commentInput = ref(null)
 const loading = ref(false);
 
@@ -55,6 +67,8 @@ async function postComment() {
         const response = await api.postComment(payload)
         console.log("res", response)
         data.comments.unshift(response)
+        snackBarText.value = "Commentaire envoyé !"
+        snackBarShow.value = true
     } catch (error) {
         console.log(error)
     } finally {
