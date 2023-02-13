@@ -13,7 +13,7 @@
     <v-container fluid>
       <v-row>
         <v-col cols="12" sm="3" v-for="category in data.categories" :key="category.id">
-          <v-btn color="secondary" class="category" :to="`/esgi-challenge/list/${category.id}`">
+          <v-btn color="secondary" class="category" :to="`/esgi-challenge/list/${category.id}/${category.title}`">
             {{ category.title }}
           </v-btn>
         </v-col>
