@@ -34,7 +34,6 @@ const data = reactive({
 onMounted(async () => {
     try {
         loading.value = true
-        console.log("te", props.courseId)
         const response = await api.getCommentsByCourse(props.courseId)
         console.log(response)
         data.comments = response
