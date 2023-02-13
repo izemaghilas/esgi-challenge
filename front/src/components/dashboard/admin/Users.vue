@@ -136,7 +136,7 @@ async function removeUser(user) {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 60px;
+    height: 100px;
     padding-top: 20px;
     padding-bottom: 20px;
 }
