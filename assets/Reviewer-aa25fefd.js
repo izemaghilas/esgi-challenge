@@ -1,0 +1,1 @@
+import{C as o}from"./Courses-82e6ba51.js";import{_ as r,b as s,o as t,g as n,h as c}from"./index-6a1133ce.js";import"./CourseCard-8de5b849.js";import"./useApi-3b8a76a6.js";import"./Loader-877b9b00.js";const a={name:"Reviewer",components:{Courses:o}};function p(m,i,_,u,f,l){const e=s("Courses");return t(),n("div",null,[c(e)])}const h=r(a,[["render",p]]);export{h as default};

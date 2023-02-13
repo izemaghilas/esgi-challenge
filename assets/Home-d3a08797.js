@@ -1,1 +1,0 @@
-import{C as e}from"./Courses-2379cbfe.js";import{o,g as r,h as t}from"./index-ec921a45.js";import"./CourseCard-1b52f48d.js";import"./useApi-e614a12c.js";import"./Loader-d7d0e367.js";const _={__name:"Home",setup(m){return(s,a)=>(o(),r("div",null,[t(e,{heading:"Les cours mis à jour récemment"})]))}};export{_ as default};
