@@ -14,6 +14,7 @@ const COLORS = {
 const APP_ROUTES = {
     signup: "signup",
     login: "login",
+    logout: "logout",
     home: "home",
     course: "course",
     dashboard: {
