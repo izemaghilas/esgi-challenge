@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
@@ -30,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(SearchFilter::class, properties: [
         'categoryId' => 'exact',
         'creatorId' => 'exact',
-    ])
+    ]),
+    ApiFilter(OrderFilter::class, properties: ['createdAt'], arguments: ['orderParameterName' => 'order'])
 ]
 class Content
 {
