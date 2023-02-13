@@ -13,13 +13,14 @@ use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use \Symfony\Bundle\SecurityBundle\Security;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[
     ApiResource(paginationItemsPerPage:03,
         normalizationContext: ['groups' => ['comment:read']],
         operations: [
-            new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+            new GetCollection(security: "is_granted('ROLE_ADMIN')", paginationEnabled: false),
             new Post(),
             new Delete(security: "is_granted('COMMENT_DELETE')"),
         ]
@@ -28,7 +29,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'commenterId' => 'exact',
         'course' => 'exact',
     ]),
-    ApiFilter(OrderFilter::class, properties: ['createAt'=> 'ASC'])
+    ApiFilter(OrderFilter::class, properties: ['createdAt'], arguments: ['orderParameterName' => 'order'])
     
 ]
 
@@ -59,6 +60,11 @@ class Comment
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

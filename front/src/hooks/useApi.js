@@ -138,9 +138,20 @@ export default function useApi() {
     return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
   }
 
+  function postComment(comment, courseId, commenterId) {
+    return apiClient.post(constructRequestUrl("comments"), {
+      data: {
+        commenterId: "/api/users/" + commenterId,
+        content: comment,
+        course: "/api/contents/" + courseId,
+      },
+      token: userRef.value?.token,
+    });
+  }
+
   function getCommentsByCourse(id) {
     return apiClient.get(
-      constructRequestUrl("comments?course=" + id),
+      constructRequestUrl("comments?course=" + id + "&order[createdAt]=desc"),
       userRef.value?.token
     );
   }
@@ -172,5 +183,6 @@ export default function useApi() {
     getAllComments,
     register,
     getCommentsByCourse,
+    postComment,
   };
 }
