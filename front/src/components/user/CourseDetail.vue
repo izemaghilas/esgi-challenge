@@ -10,16 +10,20 @@
             <v-col cols="12" sm="8">
                 <v-card-title class="title">{{ data.course.title }}</v-card-title>
                 <v-card-subtitle class="description">{{ data.course.description }}</v-card-subtitle>
+                <v-btn @click="handleVideoPlayClick" prepend-icon="mdi-school" class="button"
+                    style="color:white; background-color: #251d5d;">
+                    Commencer le cours
+                </v-btn>
             </v-col>
-            <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
-                <template v-slot:activator="{ props }">
-                    <v-btn class="button" dark v-bind="props">
-                        Voir le cours
-                    </v-btn>
-                </template>
+            <v-col class="mt-0">
+                <v-btn prepend-icon="mdi-close-box" @click="handleReportClick" class="button"
+                    style="color:white; background-color: #3f51b5;">Signler ce
+                    cours</v-btn>
+            </v-col>
+            <v-dialog v-model="dialogVideo" fullscreen :scrim="false" transition="dialog-bottom-transition">
                 <v-card>
                     <v-toolbar dark color="#251d5d">
-                        <v-btn icon dark color="#f4a118" @click="dialog = false">
+                        <v-btn icon dark color="#f4a118" @click="dialogVideo = false">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
                         <v-toolbar-title class="video-title">{{ data.course.title }}</v-toolbar-title>
@@ -37,6 +41,21 @@
                 <Comments :courseId="data.course.id" />
             </v-card-text>
         </v-card>
+        <v-dialog v-model="dialogReport" max-width="500px">
+            <v-card>
+                <v-card-title>
+                    <span class="headline">Signaler le cours : {{ data.course.title }} .</span>
+                </v-card-title>
+                <v-card-text>
+                    <v-textarea v-model="reportInput" label="Description" outlined></v-textarea>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="dialogReport = false">Annuler</v-btn>
+                    <v-btn color="blue darken-1" text @click="postReport">Signaler</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -46,17 +65,20 @@ import { reactive, onMounted, ref } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
 import Comments from './Comments.vue';
+import useUser from '../../hooks/useUser';
 
 const route = useRoute()
 const api = useApi()
+const userData = useUser()
 const loading = ref(false);
-console.log(route.params.id)
+const reportInput = ref('');
+const dialogVideo = ref(false);
+const dialogReport = ref(false)
 
 const data = reactive({
     course: {},
 })
 
-const dialog = ref(false)
 onMounted(async () => {
     try {
         loading.value = true
@@ -69,6 +91,30 @@ onMounted(async () => {
     }
 })
 
+const handleReportClick = () => {
+    dialogReport.value = true
+}
+
+const handleVideoPlayClick = () => {
+    dialogVideo.value = true
+}
+
+const postReport = async () => {
+    try {
+        loading.value = true
+        const data = {
+            description: reportInput.value,
+            reporterId: userData.user.id,
+            contentId: route.params.id,
+        }
+        const response = await api.postReportContent(data)
+    } catch (error) {
+        console.log(error)
+    } finally {
+        loading.value = false
+        dialogReport.value = false
+    }
+}
 
 </script>
 
@@ -76,7 +122,6 @@ onMounted(async () => {
 .button {
     background-color: #251d5d;
     color: #ffffff;
-    padding: 10px 70px;
     margin-top: 20px;
     margin-left: 10px;
 }
