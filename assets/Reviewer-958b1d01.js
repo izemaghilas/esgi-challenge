@@ -1,0 +1,1 @@
+import{C as o}from"./Courses-bad076ac.js";import{_ as s,b as r,o as t,g as n,h as c}from"./index-ead73505.js";import"./useApi-82b547eb.js";import"./Loader-529d5287.js";const a={name:"Reviewer",components:{Courses:o}};function p(m,_,i,u,f,l){const e=r("Courses");return t(),n("div",null,[c(e)])}const x=s(a,[["render",p]]);export{x as default};
