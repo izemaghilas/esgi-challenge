@@ -74,7 +74,14 @@ const router = createRouter({
       path: "/:pathMatch(.*)*",
       redirect: { name: "home", replace: true },
     },
-  ],
-});
+    {
+      path: `${baseUrl}/reviewer`,
+      name: APP_ROUTES.reviewer,
+      component: () => import("./views/Reviewer.vue"),
+    },
+  
+    
+
+     ]});
 
 export default router;
