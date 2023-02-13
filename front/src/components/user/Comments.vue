@@ -61,7 +61,7 @@ async function postComment() {
         loading.value = true
         const payload = {
             comment: commentInput.value,
-            commenterId: userData.user.id,
+            commenterId: userData.id,
             courseId: props.courseId
         }
         const response = await api.postComment(payload)
