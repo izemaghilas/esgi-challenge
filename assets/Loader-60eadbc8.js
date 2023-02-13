@@ -1,1 +1,0 @@
-import{_ as o,a as c,o as r,c as _}from"./index-c6edf590.js";const s={};function a(n,t){const e=c("v-progress-circular");return r(),_(e,{class:"loader",indeterminate:"",color:"#11161a",size:70,width:7})}const p=o(s,[["render",a],["__scopeId","data-v-86c19bdf"]]);export{p as L};
