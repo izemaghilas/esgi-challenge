@@ -1,39 +1,29 @@
 <script setup>
-import { useRoute } from "vue-router"
-import { watch, ref } from 'vue'
+import { ref } from 'vue'
 import { APP_ROUTES } from '../../../utils/constants'
 
 const { views: dashboardAdmin } = APP_ROUTES.dashboard.views.admin
-const route = useRoute()
 const links = ref({
     [dashboardAdmin.users]: {
         label: "Utilisateurs",
         to: dashboardAdmin.users,
-        active: route.name === dashboardAdmin.users
     },
     [dashboardAdmin.courses]: {
         label: "Cours",
         to: dashboardAdmin.courses,
-        active: route.name === dashboardAdmin.courses
     },
     [dashboardAdmin.comments]: {
         label: "Commentaires",
         to: dashboardAdmin.comments,
-        active: route.name === dashboardAdmin.comments
     }
-})
-
-watch(() => route.name, (newRouteName, oldRouteName) => {
-    links.value[oldRouteName].active = false
-    links.value[newRouteName].active = true
 })
 
 </script>
 
 <template>
     <nav>
-        <router-link v-for="link in links" :key="link" :class="`link ${link.active ? 'link-active' : ''}`"
-            :to="link.to">
+        <router-link v-for="link in links" :key="link" class="link"
+            :to="link.to" exact-active-class="link-active">
             <span>{{ link.label }}</span>
         </router-link>
     </nav>

@@ -51,9 +51,8 @@ onMounted(async () => {
     loading.value = true
     const res = await api.getAllCourses();
     data.courses = res;
-    console.log("courses", data);
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
   } finally {
     loading.value = false
   }

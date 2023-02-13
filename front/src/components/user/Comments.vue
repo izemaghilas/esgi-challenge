@@ -65,12 +65,11 @@ async function postComment() {
             courseId: props.courseId
         }
         const response = await api.postComment(payload)
-        console.log("res", response)
         data.comments.unshift(response)
         snackBarText.value = "Commentaire envoyé !"
         snackBarShow.value = true
     } catch (error) {
-        console.log(error)
+        console.error(error)
     } finally {
         loading.value = false
     }
@@ -80,10 +79,9 @@ onMounted(async () => {
     try {
         loading.value = true
         const response = await api.getCommentsByCourse(props.courseId)
-        console.log("res", response)
         data.comments = response
     } catch (error) {
-        //console.log(error)
+        console.error(error)
     } finally {
         loading.value = false
     }
