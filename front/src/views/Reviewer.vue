@@ -1,12 +1,8 @@
 <template>
     <div>
-        <Courses/>
-    
-        </div>     
-    
+        <Courses />
+    </div>
 </template>
-
-   
 
 <script>
 import Courses from '../components/user/Courses.vue'
@@ -16,7 +12,5 @@ export default {
     components: {
         Courses,
     }
-
-
 }
 </script>

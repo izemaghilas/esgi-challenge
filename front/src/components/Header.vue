@@ -1,11 +1,11 @@
 <template>
     <header>
         <nav class="navbar">
-            <RouterLink :to="APP_ROUTES.home">
+            <RouterLink :to="{name: APP_ROUTES.home, replace: true}">
                 <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
             </RouterLink>
             <ul class="nav-menu">
-                <li class="nav-item custom-header-li" v-for="link in links" :key="link.label">
+                <li class="nav-item custom-header-li" v-for="link in links" :key="link">
                     <RouterLink class="custom-header-menu-text" :to="{ name: link.to, replace: true }"
                         active-class="active-link">
                         {{ link.label }}

@@ -1,14 +1,18 @@
 <script setup>
 import SideBar from '../components/dashboard/admin/SideBar.vue'
+import RequireRole from '../components/RequireRole.vue';
+import { ROLES } from '../utils/constants';
 </script>
 
 <template>
-    <v-container class="admin-container">
-        <SideBar />
-        <v-container class="admin-main-view">
-            <router-view></router-view>
+    <RequireRole :role="ROLES.admin.value">
+        <v-container class="admin-container">
+            <SideBar />
+            <v-container class="admin-main-view">
+                <router-view></router-view>
+            </v-container>
         </v-container>
-    </v-container>
+    </RequireRole>
 </template>
 
 <style scoped>

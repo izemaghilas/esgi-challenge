@@ -4,7 +4,7 @@ App\Entity\Content:
     description: "Cours vue js pour débutants."
     active: true
     thumbnail: "https://i.ytimg.com/vi/qZXt1Aom3Cs/maxresdefault.jpg"
-    mediaLink: ""
+    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
@@ -22,7 +22,7 @@ App\Entity\Content:
     description: "Cours React pour débutants."
     active: true
     thumbnail: "https://www.filepicker.io/api/file/S5atf80QTb2tZOScHsiW"
-    mediaLink: ""
+    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
     creatorId: '@user_6'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
@@ -31,7 +31,7 @@ App\Entity\Content:
     description: "Cours React Native pour débutants."
     active: true
     thumbnail: "https://www.filepicker.io/api/file/4C6yPDywSUeWYLyg1h9G"
-    mediaLink: ""
+    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
     creatorId: '@user_6'
     categoryId: '@category_1'
     createdAt: <(new \DateTimeImmutable())>
@@ -40,7 +40,7 @@ App\Entity\Content:
     description: "Cours HTML5 pour débutants."
     active: false
     thumbnail: "https://cdn.hackr.io/uploads/posts/large/1582104017JvTCRiVe0D.png"
-    mediaLink: ""
+    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>

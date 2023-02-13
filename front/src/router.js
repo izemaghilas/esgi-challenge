@@ -34,7 +34,11 @@ const router = createRouter({
           component: () =>
           import("./views/Contributor.vue"),
         },
-        
+        {
+          path: `${baseUrl}/reviewer`,
+          name: APP_ROUTES.dashboard.views.reviewer,
+          component: () => import("./views/Reviewer.vue"),
+        },
         {
           path: "admin",
           name: dashboardAdmin.name,
@@ -81,14 +85,6 @@ const router = createRouter({
       path: "/:pathMatch(.*)*",
       redirect: { name: "home", replace: true },
     },
-    {
-      path: `${baseUrl}/reviewer`,
-      name: APP_ROUTES.reviewer,
-      component: () => import("./views/Reviewer.vue"),
-    },
-  
-    
-
-     ]});
+]});
 
 export default router;

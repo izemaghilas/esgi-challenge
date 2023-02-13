@@ -210,7 +210,6 @@ export default function useApi() {
         plainPassword: password,
       },
     });
-    console.log("res", res);
     return res;
   }
 
@@ -222,7 +221,6 @@ export default function useApi() {
         category: category,
       },
     });
-    console.log("res", res);
     return res;
   }
 
@@ -245,7 +243,7 @@ export default function useApi() {
     getCommentsByCourse,
     postReportContent,
     addCourse,
-    getCoursesByCreatorId
+    getCoursesByCreatorId,
     getAllCategories,
     getCourseByCategoryId,
     postComment,
