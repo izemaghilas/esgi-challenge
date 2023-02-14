@@ -56,7 +56,7 @@ async function login() {
                     </div>
                 </button>
             </form>
-            <RouterLink class="login" :to="APP_ROUTES.signup">S'inscrire</RouterLink>
+            <RouterLink class="login" :to="{name: APP_ROUTES.signup, replace: true}">S'inscrire</RouterLink>
         </div>
     </v-container>
 </template>

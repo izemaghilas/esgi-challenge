@@ -21,6 +21,8 @@ const APP_ROUTES = {
   dashboard: {
     name: "dashboard",
     views: {
+      contributor:"contributor",
+      reviewer: "reviewer",
       admin: {
         name: "admin",
         views: {
