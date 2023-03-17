@@ -8,17 +8,23 @@
       <span class="ml-5">pas de cours disponible pour l'instant</span>
     </v-container>
   </div>
-  <div class="mx-3" v-else>
-    <v-card-title class="text-h5 font-weight-bold">Les categories</v-card-title>
-    <v-container fluid>
-      <v-row>
-        <v-col cols="12" sm="3" v-for="category in data.categories" :key="category.id">
-          <v-btn color="secondary" class="category" :to="`/esgi-challenge/list/${category.id}/${category.title}`">
-            {{ category.title }}
+  <div v-else>
+    <div class="categoriesListContainer">
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn variant="outlined" color="primary" v-bind="props">
+            Voir les catégories
           </v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
+        </template>
+
+        <v-list>
+          <v-list-item v-for="category in data.categories" :key="i" :value="title" :prepend-icon="icon">
+            <v-btn class="category" :to="`/esgi-challenge/list/${category.id}/${category.title}`">
+              {{ category.title }}
+            </v-btn></v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
     <h2 class="mt-2 ml-5 grey--text">{{ props.heading }}</h2>
     <v-container fluid>
       <v-row>
@@ -78,18 +84,39 @@ onMounted(async () => {
   height: 100vh;
 }
 
-.category {
-  height: 45px;
+.categoriesTitle {
   display: flex;
+  height: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
   justify-content: center;
   align-items: center;
-  box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
-  background: rgba(255, 255, 255, 0.19);
-  border-radius: 5px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(2px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.22);
+}
+
+.category {
+  align-items: center;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: .25rem;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  min-height: 3rem;
+}
+
+.categoriesListContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .no-course-container {
