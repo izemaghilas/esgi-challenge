@@ -10,7 +10,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Put;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -20,17 +22,20 @@ use ApiPlatform\Metadata\Put;use Symfony\Component\Validator\Constraints as Asse
         new Post(securityPostDenormalize: "is_granted('CATEGORY_CREATE')"),
         new Put(security: "is_granted('CATEGORY_EDIT')"),
         new Delete(security: "is_granted('CATEGORY_DELETE')"),
-    ]
+    ],
+    normalizationContext: ['groups' => ['category:read']]
 )]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['category:read'])]
     private ?string $title = null;
 
     #[ORM\OneToMany(mappedBy: 'categoryId', targetEntity: Content::class)]

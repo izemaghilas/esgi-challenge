@@ -29,6 +29,8 @@ tests:
 	docker-compose --env-file "./api/.env.local" exec api bin/phpunit
 test-migrate:
 	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test d:m:m
+func-tests:
+	docker-compose --env-file "./api/.env.test.local" exec api bin/phpunit --testsuite functional
 jwt-keys:
 	docker compose --env-file "./api/.env.local" exec api sh -c 'set -e;\
 	apk add openssl;\

@@ -10,7 +10,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
@@ -21,12 +20,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new Post(securityPostDenormalize: "is_granted('USER_CREATE', object)", processor: UserPasswordHasher::class),
         new Get(security: "is_granted('USER_VIEW', object)"),
         new Patch(security: "is_granted('USER_EDIT', object)", processor: UserPasswordHasher::class),
         new Delete(security: "is_granted('USER_DELETE', object)"),
-        new Post('/register', processor: UserPasswordHasher::class)
+        new Post('/register', processor: UserPasswordHasher::class),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create', 'user:update']],

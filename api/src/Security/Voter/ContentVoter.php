@@ -2,7 +2,7 @@
 
 namespace App\Security\Voter;
 
-use App\Service\AuthorizationUtils;
+use App\Service\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,17 +12,18 @@ class ContentVoter extends Voter
     public const CREATE = 'CONTENT_CREATE';
     public const EDIT = 'CONTENT_EDIT';
     public const DELETE = 'CONTENT_DELETE';
+    public const REVIEW = 'CONTENT_REVIEW';
 
     private $authorizationUtils = null;
 
-    public function __construct(AuthorizationUtils $authorizationUtils)
+    public function __construct(AuthorizationChecker $authorizationUtils)
     {
         $this->authorizationUtils = $authorizationUtils;
     }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::CREATE, self::EDIT, self::DELETE])
+        return in_array($attribute, [self::CREATE, self::EDIT, self::DELETE, self::REVIEW])
             && $subject instanceof \App\Entity\Content;
     }
 
@@ -36,13 +37,24 @@ class ContentVoter extends Voter
 
         switch ($attribute) {
             case self::CREATE:
-                if ($this->authorizationUtils->isContributor()) { return true; }
+                if ($this->authorizationUtils->isContributor()) {
+                    return true;
+                }
                 break;
             case self::EDIT:
-                if ($this->authorizationUtils->isOwner($user, $subject)) { return true; }
+                if ($this->authorizationUtils->isOwner($user, $subject)) {
+                    return true;
+                }
                 break;
             case self::DELETE:
-                if ($this->authorizationUtils->isAdminOrOwner($user, $subject)) { return true; }
+                if ($this->authorizationUtils->isAdminOrOwner($user, $subject)) {
+                    return true;
+                }
+                break;
+            case self::REVIEW:
+                if ($this->authorizationUtils->isAdminOrReviewer()) {
+                    return true;
+                }
                 break;
         }
 
