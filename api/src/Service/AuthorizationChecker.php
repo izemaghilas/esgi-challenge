@@ -2,15 +2,12 @@
 
 namespace App\Service;
 
+use App\Enums\Role;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class AuthorizationUtils
+class AuthorizationChecker
 {
-    private const ADMIN = 'ROLE_ADMIN';
-    private const CONTRIBUTOR = 'ROLE_CONTRIBUTOR';
-    private const REVIEWER = 'ROLE_REVIEWER';
-
     private $security = null;
 
     public function __construct(Security $security)
@@ -18,43 +15,49 @@ class AuthorizationUtils
         $this->security = $security;
     }
 
-    public function isOwner(UserInterface $user, mixed $subject) {
+    public function isOwner(UserInterface $user, mixed $subject)
+    {
         if ($user == $subject) {
             return true;
         }
-        
+
         return false;
     }
 
-    public function isAdmin() {
-        if($this->security->isGranted(self::ADMIN)) {
+    public function isAdmin()
+    {
+        if ($this->security->isGranted(Role::ADMIN->value)) {
             return true;
         }
         return false;
     }
 
-    public function isContributor() {
-        if($this->security->isGranted(self::CONTRIBUTOR)) {
+    public function isContributor()
+    {
+        if ($this->security->isGranted(Role::CONTRIBUTOR->value)) {
             return true;
         }
         return false;
     }
 
-    public function isReviewer() {
-        if($this->security->isGranted(self::REVIEWER)) {
+    public function isReviewer()
+    {
+        if ($this->security->isGranted(Role::REVIEWER->value)) {
             return true;
         }
         return false;
     }
 
-    public function isAdminOrOwner(UserInterface $user, mixed $subject) {
+    public function isAdminOrOwner(UserInterface $user, mixed $subject)
+    {
         if ($this->isAdmin() || $this->isOwner($user, $subject)) {
             return true;
         }
         return false;
     }
-    
-    public function isAdminOrReviewer() {
+
+    public function isAdminOrReviewer()
+    {
         if ($this->isAdmin() || $this->isReviewer()) {
             return true;
         }

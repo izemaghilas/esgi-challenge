@@ -24,6 +24,27 @@ services:
     App\State\UserPasswordHasher:
         bind:
             $processor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\State\ContentReviewProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\State\BeReviewerApplicationValidationProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\Serializer\ApiNormalizer:
+        decorates: 'api_platform.jsonld.normalizer.item'
+    
+    App\Serializer\CourseContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\CourseContextBuilder.inner' ]
+        autoconfigure: false
+
+    App\Serializer\BeReviewerApplicationContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\BeReviewerApplicationContextBuilder.inner' ]
+        autoconfigure: false
 
     # login for swagger ui
     App\OpenApi\JwtDecorator:

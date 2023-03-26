@@ -1,58 +1,67 @@
 <?php
 
 namespace App\Tests\Api;
+
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
-use App\Tests\Enums\Roles;
+use App\Enums\Role;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
 
 abstract class AbstractTest extends ApiTestCase
 {
     private const AUTH_ENDPOINT = '/api/login';
-    
+
     private const CREDENTIALS = [
-        (Roles::ADMIN->value) => [
+        (Role::ADMIN->value) => [
             'email' => 'admin@dev.fr',
             'password' => 'admin'
         ],
-        (Roles::REVIEWER->value) => [
+        (Role::REVIEWER->value) => [
             'email' => 'reviewer1@dev.fr',
             'password' => 'reviewer'
         ],
-        (Roles::CONTRIBUTOR->value) => [
+        (Role::CONTRIBUTOR->value) => [
             'email' => 'contributor1@dev.fr',
             'password' => 'contributor'
         ],
-        (Roles::USER->value) => [
+        (Role::USER->value) => [
             'email' => 'user1@dev.fr',
             'password' => 'user'
         ],
     ];
-    
+
+    private Client $client;
+
     use RefreshDatabaseTrait;
 
     public function setUp(): void
     {
         self::bootKernel();
+        $this->client = self::createClient([], []);
+        $this->client->disableReboot();
     }
+
 
     protected function createClientForRole(?string $role): ?Client
     {
-        if(null === $role || null === self::CREDENTIALS[$role])
-        {
-            return static::createClient([], []);
+        if (null === $role || null === self::CREDENTIALS[$role]) {
+            $this->client->setDefaultOptions([]);
+        } else {
+            $credentials = self::CREDENTIALS[$role];
+            $token = $this->getToken(['email' => $credentials['email'], 'password' => $credentials['password']]);
+            $this->client->setDefaultOptions([
+                'headers' => ['authorization' => 'Bearer ' . $token]
+            ]);
         }
-        $credentials = self::CREDENTIALS[$role];
-        $token = $this->getToken(['email' => $credentials['email'], 'password' => $credentials['password']]);
-        return static::createClient([], [
-            'headers' => ['authorization' => 'Bearer ' . $token]
-        ]);
+
+        return $this->client;
     }
 
     protected function getToken(array $body): string
     {
-        $response = static::createClient([], [])->request('POST', self::AUTH_ENDPOINT, [
+        $this->client->setDefaultOptions([]);
+        $response = $this->client->request('POST', self::AUTH_ENDPOINT, [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
@@ -63,5 +72,15 @@ abstract class AbstractTest extends ApiTestCase
         ]);
         $data = $response->toArray();
         return $data['token'];
+    }
+
+    protected function getReviewerEmail()
+    {
+        return self::CREDENTIALS[Role::REVIEWER->value]['email'];
+    }
+
+    protected function getContributorEmail()
+    {
+        return self::CREDENTIALS[Role::CONTRIBUTOR->value]['email'];
     }
 }

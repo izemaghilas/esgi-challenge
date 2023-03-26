@@ -9,14 +9,17 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ValidationRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
         operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE')"),
-    ]
+            new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+            new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE', object)"),
+        ],
+        normalizationContext: ['groups' => ['validation-request:read']],
+        denormalizationContext: ['groups' => ['validation-request:create']]
     ),
     ApiFilter(SearchFilter::class, properties: [
         'reviewerId' => 'exact',
@@ -29,20 +32,29 @@ class ValidationRequest
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['validation-request:read'])]
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['validation-request:read'])]
     private ?bool $active = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
+    #[Groups(['validation-request:read', 'validation-request:create'])]
     private ?User $reviewerId = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
+    #[Groups(['validation-request:read', 'validation-request:create'])]
     private ?Content $contentId = null;
+
+    public function __construct()
+    {
+        $this->active = true;
+    }
 
     public function getId(): ?int
     {

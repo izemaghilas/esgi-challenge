@@ -23,6 +23,10 @@
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
         </testsuite>
+        <testsuite name="functional">
+            <file>tests/Api/PublishCourseTest.php</file>
+            <file>tests/Api/BecomeReviewerTest.php</file>
+        </testsuite>
     </testsuites>
 
     <coverage processUncoveredFiles="true">

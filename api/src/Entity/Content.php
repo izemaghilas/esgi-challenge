@@ -10,11 +10,14 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Put;
 use App\Repository\ContentRepository;
+use App\State\ContentReviewProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ContentRepository::class)]
@@ -22,11 +25,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         operations: [
             new GetCollection(),
-            new Post(),
+            new Post(security: "is_granted('ROLE_CONTRIBUTOR')", securityPostDenormalize: "is_granted('CONTENT_CREATE', object)"),
             new Get(),
             new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
             new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
-        ]
+            new Patch(security: "is_granted('CONTENT_REVIEW', object)", processor: ContentReviewProcessor::class)
+        ],
+        normalizationContext: ['groups' => ['content:read']],
+        denormalizationContext: ['groups' => ['content:create', 'content:admin:review']]
     ),
     ApiFilter(SearchFilter::class, properties: [
         'categoryId' => 'exact',
@@ -39,35 +45,44 @@ class Content
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['content:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Groups(['content:read', 'content:create'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['content:read', 'content:create'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['content:read', 'content:create'])]
     private ?string $mediaLink = null;
 
     #[ORM\Column]
+    #[Groups(['content:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['content:create', 'content:read'])]
     private ?string $thumbnail = null;
 
     #[ORM\Column]
+    #[Groups(['content:read', 'content:admin:review'])]
     private ?bool $active = null;
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
+    #[Groups(['content:read', 'content:create'])]
     private ?User $creatorId = null;
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
+    #[Groups(['content:read', 'content:create'])]
     private ?Category $categoryId = null;
 
     #[ORM\OneToMany(mappedBy: 'contentId', targetEntity: ReportedContent::class)]
@@ -78,6 +93,8 @@ class Content
 
     public function __construct()
     {
+        $this->active = false;
+        $this->createdAt = new \DateTimeImmutable();
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
