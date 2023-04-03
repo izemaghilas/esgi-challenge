@@ -17,15 +17,22 @@ use App\State\ContentReviewProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ContentRepository::class)]
+#[Vich\Uploadable]
 #[
     ApiResource(
         operations: [
             new GetCollection(),
-            new Post(security: "is_granted('ROLE_CONTRIBUTOR')", securityPostDenormalize: "is_granted('CONTENT_CREATE', object)"),
+            new Post(
+                security: "is_granted('ROLE_CONTRIBUTOR')", 
+                securityPostDenormalize: "is_granted('CONTENT_CREATE', object)",
+                inputFormats: ['multipart' => ['multipart/form-data']]
+            ),
             new Get(),
             new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
             new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
@@ -58,16 +65,29 @@ class Content
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['content:read', 'content:create'])]
     private ?string $mediaLink = null;
+    
+    #[Vich\UploadableField(mapping: 'medialinks', fileNameProperty: 'mediaLink')]
+    #[Groups(['content:create'])]
+    private ?File $mediaLinkFile = null;
+    
+    #[Groups(['content:read'])]
+    private ?string $mediaLinkUrl = null;
 
     #[ORM\Column]
     #[Groups(['content:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['content:create', 'content:read'])]
     private ?string $thumbnail = null;
+
+    #[Vich\UploadableField(mapping: 'thumbnails', fileNameProperty: 'thumbnail')]
+    #[Assert\File(mimeTypes: ['image/png', 'image/jpeg'], mimeTypesMessage: 'Please upload a valid image file')]
+    #[Groups(['content:create'])]
+    private ?File $thumbnailFile = null;
+
+    #[Groups(['content:read'])]
+    private ?string $thumbnailUrl = null;
 
     #[ORM\Column]
     #[Groups(['content:read', 'content:admin:review'])]
@@ -91,10 +111,14 @@ class Content
     #[ORM\OneToMany(mappedBy: 'course', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->active = false;
         $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
     }
@@ -140,6 +164,31 @@ class Content
         return $this;
     }
 
+    public function getMediaLinkFile(): ?File
+    {
+        return $this->mediaLinkFile;
+    }
+
+    public function setMediaLinkFile(?File $file): void
+    {
+        $this->mediaLinkFile = $file;
+        if (null !== $file) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getMediaLinkUrl(): ?string 
+    {
+        return $this->mediaLinkUrl;
+    }
+
+    public function setMediaLinkUrl(?string $url): void
+    {
+        $this->mediaLinkUrl = $url;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -162,6 +211,31 @@ class Content
         $this->thumbnail = $thumbnail;
 
         return $this;
+    }
+
+    public function getThumbNailFile(): ?File
+    {
+        return $this->thumbnailFile;
+    }
+
+    public function setThumbnailFile(?File $file = null): void
+    {
+        $this->thumbnailFile = $file;
+        if (null !== $file) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getThumbnailUrl(): ?string
+    {
+        return $this->thumbnailUrl;
+    }
+
+    public function setThumbnailUrl(?string $url): void
+    {
+        $this->thumbnailUrl = $url;
     }
 
     public function isActive(): ?bool
@@ -256,6 +330,18 @@ class Content
                 $comment->setCourse(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

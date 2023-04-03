@@ -8,6 +8,7 @@ App\Entity\Content:
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
+    updatedAt: <(new \DateTimeImmutable())>
   content_1:
     title: "Cours JavaScript"
     description: "Cours JavaScript pour débutants."
@@ -17,6 +18,7 @@ App\Entity\Content:
     creatorId: '@user_5'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
+    updatedAt: <(new \DateTimeImmutable())>
   content_2:
     title: "Cours React"
     description: "Cours React pour débutants."
@@ -26,6 +28,7 @@ App\Entity\Content:
     creatorId: '@user_6'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
+    updatedAt: <(new \DateTimeImmutable())>
   content_3:
     title: "Cours React Native"
     description: "Cours React Native pour débutants."
@@ -35,6 +38,7 @@ App\Entity\Content:
     creatorId: '@user_6'
     categoryId: '@category_1'
     createdAt: <(new \DateTimeImmutable())>
+    updatedAt: <(new \DateTimeImmutable())>
   content_4:
     title: "Cours HTML5"
     description: "Cours HTML5 pour débutants."
@@ -44,3 +48,4 @@ App\Entity\Content:
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
+    updatedAt: <(new \DateTimeImmutable())>

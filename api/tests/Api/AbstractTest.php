@@ -35,7 +35,7 @@ abstract class AbstractTest extends ApiTestCase
 
     use RefreshDatabaseTrait;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         self::bootKernel();
         $this->client = self::createClient([], []);
