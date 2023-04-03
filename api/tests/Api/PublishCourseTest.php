@@ -7,7 +7,9 @@ use App\Entity\Content;
 use App\Entity\User;
 use App\Entity\ValidationRequest;
 use App\Enums\Role;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PublishCourseTest extends AbstractTest
 {
@@ -18,6 +20,13 @@ class PublishCourseTest extends AbstractTest
 
     private $course;
 
+    private static FileSystem $fileSystem;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$fileSystem = new Filesystem();
+    }
+
     public function setUp(): void
     {
         parent::setUp();
@@ -25,10 +34,62 @@ class PublishCourseTest extends AbstractTest
         $this->course = [
             'title' => 'java',
             'description' => 'cours java pour débutant',
-            'mediaLink' => '',
-            'thumbnail' => '',
+            'thumbnail' => $this->getThumbnail(),
+            'mediaLink' => $this->getVideo(),
             'categoryId' => ''
         ];
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->removeAllThumbnails();
+        $this->removeAllVideos();
+    }
+
+    private function getThumbnail()
+    {
+        $path = dirname(__DIR__) . '/files/thumbnail.png';
+        $tempPath = dirname(__DIR__) . '/files/thumbnail-copy.png';
+        copy($path, $tempPath); // make a copy to not move the origin file
+        return new UploadedFile($tempPath, 'thumbnail.png', 'image/png', null, true);
+    }
+
+    private function getVideo()
+    {
+        $path = dirname(__DIR__) . '/files/thumbnail.png';
+        $tempPath = dirname(__DIR__) . '/files/video.mpeg';
+        copy($path, $tempPath); // make a copy to not move the origin file
+        return new UploadedFile($tempPath, 'video.mpeg', 'video/mpeg', null, true);
+    }
+
+    private function removeAllThumbnails()
+    {
+        $thumbnailsPath = dirname(__DIR__) . '/thumbnails';
+        $tempThumbnail = dirname(__DIR__) . '/files/thumbnail-copy.png';
+
+        if (true === static::$fileSystem->exists($thumbnailsPath)) {
+            static::$fileSystem->remove($thumbnailsPath);
+        }
+
+        if (true === static::$fileSystem->exists($tempThumbnail)) {
+            static::$fileSystem->remove($tempThumbnail);
+        }
+    }
+
+    private function removeAllVideos()
+    {
+        $videosPath = dirname(__DIR__) . '/videos';
+        $tempVideoPath = dirname(__DIR__) . '/files/video.mpeg';
+
+        if (true === static::$fileSystem->exists($videosPath)) {
+            static::$fileSystem->remove($videosPath);
+        }
+
+        if (true === static::$fileSystem->exists($tempVideoPath)) {
+            static::$fileSystem->remove($tempVideoPath);
+        }
     }
 
     private function publishCourse(?string $role = Role::CONTRIBUTOR->value)
@@ -37,17 +98,32 @@ class PublishCourseTest extends AbstractTest
         $this->course['categoryId'] = $this->findIriBy(Category::class, ['title' => self::CATEGORY_TITLE]);
         $response = $contributorClient->request('POST', self::COURSES_ENDPOINT, [
             'headers' => [
-                'Content-Type' => 'application/ld+json'
+                'Content-Type' => 'multipart/form-data'
             ],
-            'json' => $this->course
+            'extra' => [
+                'parameters' => [
+                    'title' => $this->course['title'],
+                    'description' => $this->course['description'],
+                    'categoryId' => $this->course['categoryId'],
+                ],
+                'files' => [
+                    'thumbnailFile' => $this->course['thumbnail'],
+                    'mediaLinkFile' => $this->course['mediaLink'],
+                ]
+            ],
         ]);
 
-        $createdCourseId = $response->toArray()['id'];
+        $publishedCourse = $response->toArray();
+        $createdCourseId = $publishedCourse['id'];
+        $thumbnail = $publishedCourse['thumbnailUrl'];
+        $mediaLink = $publishedCourse['mediaLinkUrl'];
         $iri = $this->findIriBy(Content::class, ['id' => $createdCourseId]);
 
         return [
             'id' => $createdCourseId,
-            'iri' => $iri
+            'iri' => $iri,
+            'thumbnail' => $thumbnail,
+            'mediaLink' => $mediaLink
         ];
     }
 
@@ -80,6 +156,8 @@ class PublishCourseTest extends AbstractTest
 
         $this->assertResponseIsSuccessful();
         $this->assertMatchesResourceItemJsonSchema(Content::class);
+        $this->assertNotNull($publishedCourse['thumbnail']);
+        $this->assertNotNull($publishedCourse['mediaLink']);
         $this->assertNotNull(
             static::getContainer()
                 ->get('doctrine')

@@ -35,6 +35,8 @@ services:
     
     App\Serializer\ApiNormalizer:
         decorates: 'api_platform.jsonld.normalizer.item'
+        tags:
+            - { name: 'serializer.normalizer', priority: 64 }
     
     App\Serializer\CourseContextBuilder:
         decorates: 'api_platform.serializer.context_builder'
@@ -45,7 +47,10 @@ services:
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\Serializer\BeReviewerApplicationContextBuilder.inner' ]
         autoconfigure: false
-
+    
+    App\Encoder\MultipartDecoder:
+        tags: [ 'serializer.encoder' ]
+    
     # login for swagger ui
     App\OpenApi\JwtDecorator:
         decorates: 'api_platform.openapi.factory'
