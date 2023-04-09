@@ -6,3 +6,8 @@ controllers:
 auth:
     path: /api/login
     methods: ['POST']
+
+send_confirmation_email:
+    path: /api/send-confirmation-email
+    methods: ['POST']
+    controller: App\Controller\ConfirmationEmailController

@@ -43,7 +43,7 @@ abstract class AbstractTest extends ApiTestCase
     }
 
 
-    protected function createClientForRole(?string $role): ?Client
+    protected function createClientForRole(?string $role = null): ?Client
     {
         if (null === $role || null === self::CREDENTIALS[$role]) {
             $this->client->setDefaultOptions([]);

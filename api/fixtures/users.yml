@@ -21,6 +21,7 @@ App\Entity\User:
     plainPassword: admin
     roles: ['ROLE_ADMIN']
     createdAt: <(new \DateTimeImmutable())>
+    active: true
   user_{1..3}:
     firstname: '<firstName()>'
     lastname: '<lastName()>'
@@ -28,6 +29,7 @@ App\Entity\User:
     plainPassword: reviewer
     roles: ['ROLE_REVIEWER']
     createdAt: <(new \DateTimeImmutable())>
+    active: true
   user_{4..6}:
     firstname: '<firstName()>'
     lastname: '<lastName()>'
@@ -35,6 +37,7 @@ App\Entity\User:
     plainPassword: contributor
     roles: ['ROLE_CONTRIBUTOR']
     createdAt: <(new \DateTimeImmutable())>
+    active: true
   user_{7..10}:
     firstname: '<firstName()>'
     lastname: '<lastName()>'
@@ -42,3 +45,4 @@ App\Entity\User:
     plainPassword: user
     roles: ['ROLE_USER']
     createdAt: <(new \DateTimeImmutable())>
+    active: true

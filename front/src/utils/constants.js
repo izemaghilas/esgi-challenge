@@ -33,6 +33,7 @@ const APP_ROUTES = {
       },
     },
   },
+  verifyRegistration: "verify-registration"
 };
 
 const ROLES = {
