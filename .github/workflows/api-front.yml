@@ -38,6 +38,7 @@ jobs:
       JWT_PASSPHRASE: ${{ secrets.TEST_JWT_PASSPHRASE }}
       CORS_ALLOW_ORIGIN: ${{ secrets.TEST_CORS_ALLOW_ORIGIN }}
       MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN }}
+      # TODO: add mailer dsn
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2

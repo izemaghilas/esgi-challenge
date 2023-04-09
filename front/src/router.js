@@ -82,6 +82,11 @@ const router = createRouter({
       component: () => import("./components/user/CourseList.vue"),
     },
     {
+      path: `${baseUrl}/verify-registration`,
+      name: APP_ROUTES.verifyRegistration,
+      component: () => import("./views/VerifyRegistration.vue")
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: { name: "home", replace: true },
     },

@@ -31,6 +31,10 @@ test-migrate:
 	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test d:m:m
 func-tests:
 	docker-compose --env-file "./api/.env.test.local" exec api bin/phpunit --testsuite functional
+test-drop-db:
+	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test doctrine:database:drop --force
+test-create-db:
+	docker-compose --env-file "./api/.env.local" exec api bin/console --env=test doctrine:database:create
 jwt-keys:
 	docker compose --env-file "./api/.env.local" exec api sh -c 'set -e;\
 	apk add openssl;\

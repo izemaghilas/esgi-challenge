@@ -86,7 +86,7 @@ const apiClient = {
 function constructRequestUrl(endpoint, params = null) {
   const keys = params != null ? Object.keys(params) : [];
   return `${endpoint}${
-    keys.length > 0 ? keys.map((k) => `${k}=${params[k]}`).join("&") : ""
+    keys.length > 0 ? "?" + keys.map((k) => `${k}=${params[k]}`).join("&") : ""
   }`;
 }
 
@@ -231,6 +231,10 @@ export default function useApi() {
     );
   }
 
+  function verifyRegistration(signedUrl) {
+    return apiClient.get(signedUrl)
+  }
+
   return {
     login,
     getAllUsers,
@@ -248,5 +252,6 @@ export default function useApi() {
     getCourseByCategoryId,
     postComment,
     removeComment,
+    verifyRegistration,
   };
 }

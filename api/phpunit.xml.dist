@@ -26,6 +26,7 @@
         <testsuite name="functional">
             <file>tests/Api/PublishCourseTest.php</file>
             <file>tests/Api/BecomeReviewerTest.php</file>
+            <file>tests/Api/RegistrationTest.php</file>
         </testsuite>
     </testsuites>
 
