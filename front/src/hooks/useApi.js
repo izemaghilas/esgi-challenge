@@ -235,6 +235,30 @@ export default function useApi() {
     return apiClient.get(signedUrl)
   }
 
+  function getBeReviewerApplications() {
+    return apiClient.get(constructRequestUrl("be_reviewer_applications"), userRef.value?.token)
+  }
+
+  function acceptBeReviwerApplication(applicationId) {
+    return apiClient.patch(constructRequestUrl(`be_reviewer_applications/${applicationId}`), {
+      data: {
+        status: 'ACCEPTED'
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
+  function refuseBeReviwerApplication(applicationId) {
+    return apiClient.patch(constructRequestUrl(`be_reviewer_applications/${applicationId}`), {
+      data: {
+        status: 'REFUSED'
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
   return {
     login,
     getAllUsers,
@@ -253,5 +277,8 @@ export default function useApi() {
     postComment,
     removeComment,
     verifyRegistration,
+    getBeReviewerApplications,
+    acceptBeReviwerApplication,
+    refuseBeReviwerApplication,
   };
 }

@@ -15,6 +15,10 @@ const links = ref({
     [dashboardAdmin.comments]: {
         label: "Commentaires",
         to: dashboardAdmin.comments,
+    },
+    [dashboardAdmin.beReviewer]: {
+        label: "Candidatures examinateur",
+        to: dashboardAdmin.beReviewer,
     }
 })
 
