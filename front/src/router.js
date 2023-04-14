@@ -62,6 +62,11 @@ const router = createRouter({
               component: () =>
                 import("./components/dashboard/admin/Comments.vue"),
             },
+            {
+              path: 'be-reviewer',
+              name: dashboardAdmin.views.beReviewer,
+              component: () => import("./components/dashboard/admin/BeReviewer.vue"),
+            },
           ],
         },
       ],

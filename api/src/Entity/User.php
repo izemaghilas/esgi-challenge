@@ -79,12 +79,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read', 'comment:read'])]
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read'])]
 
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read', 'comment:read'])]
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column]

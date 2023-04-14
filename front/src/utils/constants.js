@@ -29,6 +29,7 @@ const APP_ROUTES = {
           users: "users",
           courses: "courses",
           comments: "comments",
+          beReviewer: "be-reviewer",
         },
       },
     },

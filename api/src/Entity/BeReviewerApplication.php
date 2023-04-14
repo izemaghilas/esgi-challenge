@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Enums\BeReviewerApplicationStatus;
-use App\Enums\Role;
 use App\Repository\BeReviewerApplicationRepository;
 use App\State\BeReviewerApplicationValidationProcessor;
 use Doctrine\DBAL\Types\Types;
@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: BeReviewerApplicationRepository::class)]
 #[ApiResource(
     operations: [
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(
             security: "is_granted('ROLE_CONTRIBUTOR')", 
             securityPostDenormalize: "is_granted('BE_REVIEWER_APPLICATION_CREATE', object)"
@@ -39,6 +40,7 @@ class BeReviewerApplication
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['application:read'])]
+    // TODO: add inverse
     private ?User $contributor = null;
 
     #[ORM\Column]
