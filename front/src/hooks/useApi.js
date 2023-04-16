@@ -81,6 +81,14 @@ const apiClient = {
       headers: getRequestHeaders({ token: token }),
     });
   },
+  
+  getFile: async function(url, token = null) {
+    const response = await axiosInstance.get(url, {
+      headers: getRequestHeaders({ token: token }),
+      responseType: "blob"
+    });
+    return URL.createObjectURL(response.data);
+  },
 };
 
 function constructRequestUrl(endpoint, params = null) {
@@ -259,6 +267,20 @@ export default function useApi() {
     })
   }
 
+  function publishCourse(courseId) {
+    return apiClient.patch(constructRequestUrl(`contents/${courseId}`), {
+      data: {
+        active: true
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
+  function getCourseVideo(videoUrl) {
+    return apiClient.getFile(videoUrl, userRef.value?.token,)
+  }
+
   return {
     login,
     getAllUsers,
@@ -280,5 +302,7 @@ export default function useApi() {
     getBeReviewerApplications,
     acceptBeReviwerApplication,
     refuseBeReviwerApplication,
+    publishCourse,
+    getCourseVideo,
   };
 }

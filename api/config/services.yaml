@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.api_default_uri: '%env(API_DEFAULT_URI)%'
     app.api_client_url: '%env(API_CLIENT_URL)%'
     app.api_transactional_email_address: '%env(TRANSACTIONAL_EMAIL_ADDRESS)%'
 
@@ -55,6 +56,11 @@ services:
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\Serializer\BeReviewerApplicationContextBuilder.inner' ]
         autoconfigure: false
+    
+    App\Serializer\UploadedFileNormalizer:
+        arguments:
+            $apiDefaultUri: '%app.api_default_uri%'
+        tags: ['serializer.normalizer']
     
     App\Encoder\MultipartDecoder:
         tags: [ 'serializer.encoder' ]
