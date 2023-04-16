@@ -12,6 +12,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Put;
+use App\Controller\ThumbnailController;
+use App\Controller\VideoController;
 use App\Repository\ContentRepository;
 use App\State\ContentReviewProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,21 +28,36 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[Vich\Uploadable]
 #[
     ApiResource(
-        operations: [
-            new GetCollection(),
-            new Post(
-                security: "is_granted('ROLE_CONTRIBUTOR')", 
-                securityPostDenormalize: "is_granted('CONTENT_CREATE', object)",
-                inputFormats: ['multipart' => ['multipart/form-data']]
-            ),
-            new Get(),
-            new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
-            new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
-            new Patch(security: "is_granted('CONTENT_REVIEW', object)", processor: ContentReviewProcessor::class)
-        ],
-        normalizationContext: ['groups' => ['content:read']],
-        denormalizationContext: ['groups' => ['content:create', 'content:admin:review']]
-    ),
+    operations: [
+        new GetCollection(),
+        new Post(
+            security: "is_granted('ROLE_CONTRIBUTOR')",
+            securityPostDenormalize: "is_granted('CONTENT_CREATE', object)",
+            inputFormats: ['multipart' => ['multipart/form-data']]
+        ),
+        new Get(),
+        new Get(
+            name: 'content_thumbnails',
+            uriTemplate: 'thumbnails/{thumbnail}',
+            controller: ThumbnailController::class,
+            read: false
+        ),
+        new Get(
+            name: 'content_videos',
+            uriTemplate: '/contents/{id}/videos/{video}',
+            controller: VideoController::class,
+            read: false
+        ),
+        new Put(security: "is_granted('CONTENT_EDIT', object.creatorId)"),
+        new Delete(security: "is_granted('CONTENT_DELETE', object.creatorId)"),
+        new Patch(
+            security: "is_granted('CONTENT_REVIEW', object)",
+            processor: ContentReviewProcessor::class
+        )
+    ],
+    normalizationContext: ['groups' => ['content:read']],
+    denormalizationContext: ['groups' => ['content:create']]
+),
     ApiFilter(SearchFilter::class, properties: [
         'categoryId' => 'exact',
         'creatorId' => 'exact',
@@ -66,12 +83,12 @@ class Content
 
     #[ORM\Column(length: 255)]
     private ?string $mediaLink = null;
-    
+
     #[Vich\UploadableField(mapping: 'medialinks', fileNameProperty: 'mediaLink')]
     #[Groups(['content:create'])]
     private ?File $mediaLinkFile = null;
-    
-    #[Groups(['content:read'])]
+
+    #[Groups(['content:video:read'])]
     private ?string $mediaLinkUrl = null;
 
     #[ORM\Column]
@@ -87,10 +104,10 @@ class Content
     private ?File $thumbnailFile = null;
 
     #[Groups(['content:read'])]
-    private ?string $thumbnailUrl = null;
+    private $thumbnailUrl = null;
 
     #[ORM\Column]
-    #[Groups(['content:read', 'content:admin:review'])]
+    #[Groups(['content:read', 'content:review'])]
     private ?bool $active = null;
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
@@ -179,7 +196,7 @@ class Content
         }
     }
 
-    public function getMediaLinkUrl(): ?string 
+    public function getMediaLinkUrl(): ?string
     {
         return $this->mediaLinkUrl;
     }
@@ -228,12 +245,12 @@ class Content
         }
     }
 
-    public function getThumbnailUrl(): ?string
+    public function getThumbnailUrl()
     {
         return $this->thumbnailUrl;
     }
 
-    public function setThumbnailUrl(?string $url): void
+    public function setThumbnailUrl($url): void
     {
         $this->thumbnailUrl = $url;
     }

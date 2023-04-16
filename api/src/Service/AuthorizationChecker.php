@@ -15,9 +15,9 @@ class AuthorizationChecker
         $this->security = $security;
     }
 
-    public function isOwner(UserInterface $user, mixed $subject)
+    public function isOwner(UserInterface $user, mixed $owner)
     {
-        if ($user == $subject) {
+        if ($user === $owner) {
             return true;
         }
 
@@ -48,9 +48,9 @@ class AuthorizationChecker
         return false;
     }
 
-    public function isAdminOrOwner(UserInterface $user, mixed $subject)
+    public function isAdminOrOwner(UserInterface $user, mixed $owner)
     {
-        if ($this->isAdmin() || $this->isOwner($user, $subject)) {
+        if ($this->isAdmin() || $this->isOwner($user, $owner)) {
             return true;
         }
         return false;

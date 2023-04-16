@@ -60,7 +60,7 @@ const show = ref(false)
                 <div class="card-application-textarea">{{ application.skills }}</div>
             </div>
         </div>
-        <div class="card-application-tools" v-show="application.status === 'PENDING' && show">
+        <div class="card-application-tools" v-if="application.status === 'PENDING' && show">
             <v-btn color="info" @click="onAccept(application)">accepter</v-btn>
             <v-btn color="error" @click="onRefuse(application)">refuser</v-btn>
         </div>

@@ -3,8 +3,8 @@ App\Entity\Content:
     title: "Cours Vuejs"
     description: "Cours vue js pour débutants."
     active: true
-    thumbnail: "https://i.ytimg.com/vi/qZXt1Aom3Cs/maxresdefault.jpg"
-    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
+    thumbnail: vuejs.jpg
+    mediaLink: video.mp4 
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
@@ -13,8 +13,8 @@ App\Entity\Content:
     title: "Cours JavaScript"
     description: "Cours JavaScript pour débutants."
     active: true
-    thumbnail: "https://www.freecodecamp.org/news/content/images/2021/06/javascriptfull.png"
-    mediaLink: ""
+    thumbnail: javascript.png
+    mediaLink: video.mp4 # "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
     creatorId: '@user_5'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
@@ -23,8 +23,8 @@ App\Entity\Content:
     title: "Cours React"
     description: "Cours React pour débutants."
     active: true
-    thumbnail: "https://www.filepicker.io/api/file/S5atf80QTb2tZOScHsiW"
-    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
+    thumbnail: react.jpg
+    mediaLink: video.mp4 
     creatorId: '@user_6'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>
@@ -33,8 +33,8 @@ App\Entity\Content:
     title: "Cours React Native"
     description: "Cours React Native pour débutants."
     active: true
-    thumbnail: "https://www.filepicker.io/api/file/4C6yPDywSUeWYLyg1h9G"
-    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
+    thumbnail: react-native.jpg
+    mediaLink: video.mp4
     creatorId: '@user_6'
     categoryId: '@category_1'
     createdAt: <(new \DateTimeImmutable())>
@@ -43,8 +43,8 @@ App\Entity\Content:
     title: "Cours HTML5"
     description: "Cours HTML5 pour débutants."
     active: false
-    thumbnail: "https://cdn.hackr.io/uploads/posts/large/1582104017JvTCRiVe0D.png"
-    mediaLink: "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
+    thumbnail: html.png
+    mediaLink: video.mp4
     creatorId: '@user_4'
     categoryId: '@category_0'
     createdAt: <(new \DateTimeImmutable())>

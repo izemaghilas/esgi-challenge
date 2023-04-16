@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     thumbnail() {
-      return this.course.thumbnail
+      return this.course.thumbnailUrl
     },
     createdAt() {
       const createdAt = new Date(this.course.createdAt).toLocaleDateString('fr-Fr', {

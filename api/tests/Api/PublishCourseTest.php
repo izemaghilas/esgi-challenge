@@ -92,7 +92,7 @@ class PublishCourseTest extends AbstractTest
         }
     }
 
-    private function publishCourse(?string $role = Role::CONTRIBUTOR->value)
+    private function publishCourse(?string $role = Role::CONTRIBUTOR->value): array
     {
         $contributorClient = self::createClientForRole($role);
         $this->course['categoryId'] = $this->findIriBy(Category::class, ['title' => self::CATEGORY_TITLE]);
@@ -254,5 +254,55 @@ class PublishCourseTest extends AbstractTest
         $this->expectExceptionCode(403);
 
         $this->publishCourse(Role::REVIEWER->value);
+    }
+
+    public function testAdminCanViewCourseVideoIfNotPublished()
+    {
+        $publishedCourse = $this->publishCourse();
+        $adminClient = $this->createClientForRole(Role::ADMIN->value);
+        $response = $adminClient->request('GET', $publishedCourse['iri']);
+        $data = $response->toArray();
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotNull($data['mediaLinkUrl']);
+    }
+
+    public function testReviewerCanViewCourseVideoIfNotPublished()
+    {
+        $publishedCourse = $this->publishCourse();
+        $reviewerClient = $this->createClientForRole(Role::REVIEWER->value);
+        $response = $reviewerClient->request('GET', $publishedCourse['iri']);
+        $data = $response->toArray();
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotNull($data['mediaLinkUrl']);
+    }
+
+    public function testAdminCanNotViewCourseVideoIfPublished()
+    {
+        $publishedCourse = $this->publishCourse();
+        $adminClient = $this->createClientForRole(Role::ADMIN->value);
+        $adminClient->request('PATCH', $publishedCourse['iri'], [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json'
+            ],
+            'json' => [
+                'active' => true
+            ]
+        ]);
+        $response = $adminClient->request('GET', $publishedCourse['iri']);
+        $data = $response->toArray();
+
+        $this->assertResponseIsSuccessful();
+        $this->assertArrayNotHasKey('mediaLinkUrl', $data);
+    }
+
+    public function testCourseVideoIsDownloaded()
+    {
+        $publishedCourse = $this->publishCourse();
+        $adminClient = $this->createClientForRole(Role::ADMIN->value);
+        $adminClient->request('GET', $publishedCourse['mediaLink']);
+
+        $this->assertResponseIsSuccessful();
     }
 }

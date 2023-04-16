@@ -23,10 +23,10 @@ final class CourseContextBuilder implements SerializerContextBuilderInterface
         if (
             $resourceClass === Content::class &&
             isset($context['groups']) &&
-            $this->authorizationChecker->isGranted(Role::ADMIN->value) &&
+            ($this->authorizationChecker->isGranted(Role::ADMIN->value) || $this->authorizationChecker->isGranted(Role::REVIEWER->value)) &&
             false === $normalization // false -> denormalization | true -> normalization
         ) {
-            $context['groups'][] = 'content:admin:review';
+            $context['groups'][] = 'content:review';
         }
 
         return $context;
