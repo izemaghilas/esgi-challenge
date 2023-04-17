@@ -23,7 +23,10 @@ class ContentReviewProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $result = $this->persistProcessor->process($data, $operation, $uriVariables, $context);
-        if ($this->authorizationChecker->isGranted(Role::REVIEWER->value)) {
+        if (
+            $this->authorizationChecker->isGranted(Role::ADMIN->value) ||
+            $this->authorizationChecker->isGranted(Role::REVIEWER->value)
+        ) {
             $this->closeValidationRequest($result);
         }
 

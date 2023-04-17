@@ -91,6 +91,8 @@ services:
     
     App\Processor\SendConfirmationEmailProcessor: ~
     
+    App\State\ReviewersProvider: ~
+
     # App\Controller\SendEmailController:
     #     arguments: ['@app.mail_service']
     

@@ -74,7 +74,7 @@ class Content
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]

@@ -278,7 +278,30 @@ export default function useApi() {
   }
 
   function getCourseVideo(videoUrl) {
-    return apiClient.getFile(videoUrl, userRef.value?.token,)
+    return apiClient.getFile(videoUrl, userRef.value?.token)
+  }
+
+  function getReviewers() {
+    return apiClient.get('users', userRef.value?.token)
+  }
+
+  function sendValidationRequest(reviewerId, courseId) {
+    return apiClient.post('validation_requests', {
+      data: {
+        reviewerId: `/api/users/${reviewerId}`,
+        contentId: `/api/contents/${courseId}`,
+      },
+      contentType: 'application/ld+json',
+      token: userRef.value?.token,
+    })
+  }
+
+  function getValidationRequestsByCourseId(courseId) {
+    return apiClient.get(constructRequestUrl('validation_requests', {contentId: courseId}), userRef.value?.token)
+  }
+
+  function getActiveValidationRequests() {
+    return apiClient.get(constructRequestUrl('validation_requests', {active: true}), userRef.value?.token)
   }
 
   return {
@@ -304,5 +327,9 @@ export default function useApi() {
     refuseBeReviwerApplication,
     publishCourse,
     getCourseVideo,
+    getReviewers,
+    sendValidationRequest,
+    getValidationRequestsByCourseId,
+    getActiveValidationRequests,
   };
 }
