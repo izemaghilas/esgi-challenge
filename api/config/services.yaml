@@ -22,7 +22,6 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Model/'
 
 
     App\State\UserProcessor:
