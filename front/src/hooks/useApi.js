@@ -1,5 +1,7 @@
 import { inject, ref, watch } from "vue";
+import { useRouter } from 'vue-router';
 import axios from "axios";
+import { APP_ROUTES } from '../utils/constants';
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000/api/",
@@ -99,8 +101,23 @@ function constructRequestUrl(endpoint, params = null) {
 }
 
 export default function useApi() {
-  const { state } = inject("store");
+  
+  const { state, actions } = inject("store");
   const userRef = ref({ ...state.user });
+  const router = useRouter()
+  
+  // handle token expired
+  axiosInstance.interceptors.response.use(
+    response => response,
+    (error)=>{
+      if(error.response.status === 401) {
+        actions.logout()
+        router.push({name: APP_ROUTES.login, replace: true})
+      } else {
+        return Promise.reject(error)
+      }
+    }
+  )
 
   watch(
     () => state.user,
