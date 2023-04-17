@@ -87,11 +87,11 @@ jobs:
 
   push-api:
     runs-on: ubuntu-latest
-<<<<<<< HEAD
-    # needs: test-api
-=======
+
     needs: test-api
->>>>>>> CH-43 [CI/CD] fix test api job
+
+    # needs: test-api
+
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: axelerant/platformsh-deploy-action@v1
