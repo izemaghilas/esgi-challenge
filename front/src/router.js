@@ -42,19 +42,19 @@ const router = createRouter({
         {
           path: "admin",
           name: dashboardAdmin.name,
-          redirect: `${baseUrl}/dashboard/admin/users`,
+          redirect: `${baseUrl}/dashboard/admin/courses`,
           component: () => import("./views/Admin.vue"),
           children: [
-            {
-              path: "users",
-              name: dashboardAdmin.views.users,
-              component: () => import("./components/dashboard/admin/Users.vue"),
-            },
             {
               path: "courses",
               name: dashboardAdmin.views.courses,
               component: () =>
                 import("./components/dashboard/admin/Courses.vue"),
+            },
+            {
+              path: "validation-requests",
+              name: dashboardAdmin.views.validationRequests,
+              component: () => import('./components/dashboard/admin/ValidationRequests.vue')
             },
             {
               path: "comments",

@@ -24,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiFilter(SearchFilter::class, properties: [
         'reviewerId' => 'exact',
         'contentId' => 'exact',
+        'active' => 'exact',
     ])
 ]
 #[ORM\Entity(repositoryClass: ValidationRequestRepository::class)]
@@ -36,7 +37,7 @@ class ValidationRequest
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['validation-request:read'])]
+    #[Groups(['validation-request:read', 'content:read'])]
     private ?bool $active = null;
 
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
@@ -51,9 +52,18 @@ class ValidationRequest
     #[Groups(['validation-request:read', 'validation-request:create'])]
     private ?Content $contentId = null;
 
+    #[ORM\Column]
+    #[Groups(['validation-request:read'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->active = true;
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -69,6 +79,7 @@ class ValidationRequest
     public function setActive(bool $active): self
     {
         $this->active = $active;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -93,6 +104,30 @@ class ValidationRequest
     public function setContentId(Content $contentId): self
     {
         $this->contentId = $contentId;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

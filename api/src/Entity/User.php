@@ -14,6 +14,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\State\ReviewersProvider;
 use App\State\UserPasswordHasher;
 use App\State\UserProcessor;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,6 +24,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            provider: ReviewersProvider::class
+        ),
         new Get(security: "is_granted('USER_VIEW', object)"),
         new Patch(
             security: "is_granted('USER_EDIT', object)",
@@ -60,7 +66,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
@@ -79,16 +84,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read'])]
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read', 'validation-request:read'])]
 
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read'])]
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read', 'validation-request:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column]
-    #[Groups(['user:create', 'user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: ForgotPasswordToken::class)]

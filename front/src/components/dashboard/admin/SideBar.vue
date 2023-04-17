@@ -4,30 +4,29 @@ import { APP_ROUTES } from '../../../utils/constants'
 
 const { views: dashboardAdmin } = APP_ROUTES.dashboard.views.admin
 const links = ref({
-    [dashboardAdmin.users]: {
-        label: "Utilisateurs",
-        to: dashboardAdmin.users,
-    },
     [dashboardAdmin.courses]: {
         label: "Cours",
         to: dashboardAdmin.courses,
+    },
+    [dashboardAdmin.validationRequests]: {
+        label: "Demandes de validation d'un examinateur",
+        to: dashboardAdmin.validationRequests,
+    },
+    [dashboardAdmin.beReviewer]: {
+        label: "Candidatures examinateur",
+        to: dashboardAdmin.beReviewer,
     },
     [dashboardAdmin.comments]: {
         label: "Commentaires",
         to: dashboardAdmin.comments,
     },
-    [dashboardAdmin.beReviewer]: {
-        label: "Candidatures examinateur",
-        to: dashboardAdmin.beReviewer,
-    }
 })
 
 </script>
 
 <template>
     <nav>
-        <router-link v-for="link in links" :key="link" class="link"
-            :to="link.to" exact-active-class="link-active">
+        <router-link v-for="link in links" :key="link" class="link" :to="link.to" exact-active-class="link-active">
             <span>{{ link.label }}</span>
         </router-link>
     </nav>

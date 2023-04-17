@@ -1,13 +1,37 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { toast } from 'vue3-toastify'
 import useApi from '../../../hooks/useApi';
+import NoElements from './NoElements.vue';
 
 const api = useApi()
 const props = defineProps({
     course: Object,
+    reviewers: Array,
     onPublish: Function
 })
-const { course, onPublish } = props
+const { course, reviewers, onPublish } = props
+const show = ref(false)
+const video = ref(null)
+const validationRequest = ref(null)
+const dialog = ref(false)
+onMounted(async () => {
+    try {
+        video.value = await api.getCourseVideo(course.mediaLinkUrl)
+    } catch (error) {
+        console.error("error fetching course video")
+    }
+
+    if (!course.active) {
+        try {
+            const validationRequests = await api.getValidationRequestsByCourseId(course.id)
+            validationRequest.value = validationRequests.length === 0 ? null : validationRequests[0]
+        } catch (error) {
+            console.error("error fetching course validation request")
+        }
+
+    }
+})
 const status = computed(() => {
     if (course.active) {
         return {
@@ -15,20 +39,29 @@ const status = computed(() => {
             color: "success",
         }
     }
+    if (validationRequest.value != null && validationRequest.value.active) {
+        return {
+            text: "En attente de la validation d'un examinateur",
+            color: "info"
+        }
+    }
     return {
         text: "En attente",
         color: "info"
     }
 })
-const show = ref(false)
-const video = ref(null)
-onMounted(async () => {
+
+async function requestReviewerHelp(reviewer) {
     try {
-        video.value = await api.getCourseVideo(course.mediaLinkUrl)
+        validationRequest.value = await api.sendValidationRequest(reviewer.id, course.id)
+        toast("votre demande a été bien envoyée", { type: 'success' })
     } catch (error) {
-        console.error("error fetching course video ", error)
+        toast("erreur lors de l'envoi de la demande, veuillez réessayer ultérieurement!", { type: 'error' })
+        console.error("error while sending reviewer help")
+    } finally {
+        dialog.value = false
     }
-})
+}
 
 </script>
 
@@ -70,12 +103,28 @@ onMounted(async () => {
                     <div class="d-flex flex-row w-25">
                         <v-btn color="info" @click="onPublish(course)">publier</v-btn>
                     </div>
-                    <div class="d-flex flex-row justify-end w-75">
-                        <v-btn color="info">aide d'un examinateur</v-btn>
+                    <div class="d-flex flex-row justify-end w-75" v-if="validationRequest == null">
+                        <v-btn color="info" @click="dialog = true">aide d'un examinateur</v-btn>
                     </div>
                 </div>
             </div>
         </div>
+        <v-dialog class="align-center mx-auto" v-model="dialog">
+            <v-sheet class="d-flex flex-column align-center mx-auto w-50 px-5">
+                <NoElements :message="'pas d\'examinateurs'" v-if="reviewers.length === 0" />
+                <v-card class="d-flex flex-row align-center px-3 py-3 my-5 w-100" v-else v-for="reviewer in reviewers"
+                    :key="reviewer.id">
+                    <div class="d-flex flex-row align-center w-25">
+                        <img src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"
+                            width="40" height="40" />
+                        <span class="ml-3">{{ `${reviewer.lastname} ${reviewer.firstname}` }}</span>
+                    </div>
+                    <div class="d-flex flex-row justify-end w-75">
+                        <v-btn color="info" @click="requestReviewerHelp(reviewer)">envoyer</v-btn>
+                    </div>
+                </v-card>
+            </v-sheet>
+        </v-dialog>
     </v-card>
 </template>
 
