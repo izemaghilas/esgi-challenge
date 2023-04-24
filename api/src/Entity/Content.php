@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Put;
 use App\Controller\ThumbnailController;
@@ -29,7 +30,14 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[
     ApiResource(
     operations: [
+        // TODO: users can view only active courses
         new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/users/{id}/contents',
+            uriVariables: [
+                'id' => new Link(fromClass: User::class, fromProperty: 'contents')
+            ]
+        ),
         new Post(
             security: "is_granted('ROLE_CONTRIBUTOR')",
             securityPostDenormalize: "is_granted('CONTENT_CREATE', object)",
@@ -85,6 +93,8 @@ class Content
     private ?string $mediaLink = null;
 
     #[Vich\UploadableField(mapping: 'medialinks', fileNameProperty: 'mediaLink')]
+    // TODO: check video size
+    #[Assert\File(mimeTypes: ['video/*'], mimeTypesMessage: 'Please upload a valid video file')]
     #[Groups(['content:create'])]
     private ?File $mediaLinkFile = null;
 
