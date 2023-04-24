@@ -1,152 +1,167 @@
-
-
-
-<template>
-  <RequireRole :role="ROLES.contributor.value">
-    <div>
-      <v-app id="inspire">
-        <v-main>
-          <v-navigation-drawer>
-            <v-sheet color="grey-lighten-4" class="pa-4">
-              <div></div>
-            </v-sheet>
-
-            <v-divider></v-divider>
-            <v-list>
-              <v-list-item>
-                <template v-slot:prepend>
-                </template>
-                <v-dialog v-model="dialog" persistent width="1024">
-                  <template v-slot:activator="{ props }">
-                    <v-btn color="primary" v-bind="props">
-                      Ajouter un cours
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title>
-                      <span class="text-h5">Ajouter un cours</span>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="12">
-                            <v-text-field label="Titre du cours" id="titre" required v-model="titleRef"></v-text-field>
-                          </v-col>
-
-
-                          <v-col cols="12">
-                            <v-text-field label="Categorie du cours" type="text" id="categorie" required
-                              v-model="categoryRef"></v-text-field>
-                          </v-col>
-
-
-
-                          <v-col cols="12">
-                            <v-textarea label="Label" id="description" required v-model="descriptionRef"></v-textarea>
-
-                          </v-col>
-
-
-                          <v-col col="12">
-                            <v-file-input v-model="selectedFile" @change="uploadFile" ref="fileInput"
-                              :rules="rules" /></v-col>
-
-
-
-                        </v-row>
-                      </v-container>
-                      <small>*indique les champs obligatoires </small>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                        Fermer
-                      </v-btn>
-                      <v-btn color="blue-darken-1" variant="text" @click="addCourse">
-                        Ajouter
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-list-item>
-            </v-list>
-          </v-navigation-drawer>
-
-          <!-- Liste des cours  -->
-          <v-container class="py-8 px-6" fluid>
-            <v-row>
-              <v-col cols="12">
-                <v-card>
-                  <v-list lines="two">
-                    <v-list-subheader>Mes Cours</v-list-subheader>
-                    <template v-for="course in courses" :key="course">
-                      <v-row class="justify-center">
-                        <span>{{ course.title }}</span>
-                      </v-row>
-                      <v-list-item>
-                        <v-list-item-title>{{ n }}</v-list-item-title>
-                      </v-list-item>
-                      <v-divider v-if="n !== 6" :key="`divider-${n}`" inset></v-divider>
-                    </template>
-                  </v-list>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-main>
-      </v-app>
-      <v-main>
-      </v-main>
-    </div>
-  </RequireRole>
-</template>
-<script>
-import useApi from '../hooks/useApi';
-import { ref } from 'vue';
+<script setup>
+import { ref, onMounted, inject } from 'vue';
+import { toast } from 'vue3-toastify'
 import RequireRole from '../components/RequireRole.vue';
 import { ROLES } from '../utils/constants';
-import useUser from '../hooks/useUser'
+import useApi from '../hooks/useApi';
+import Loader from '../components/Loader.vue';
+import Course from '../components/dashboard/contributor/Course.vue';
+import NoElements from '../components/dashboard/admin/NoElements.vue';
 
-export default {
-  data: () => ({
-    dialog: false,
-    titleRef: ref(),
-    descriptionRef: ref(),
-    categoryRef: ref(),
-    api: useApi(),
-    cards: ['Mes Cours', 'Mes Cours Validés'],
-    courses: ref([]),
-    user: useUser(),
-    ROLES: ROLES,
-  }),
-  methods: {
-    async postNewCourse() {
-      const data = this.api.addCourse({
-        title: this.titleRef.value,
-        description: this.descriptionRef.value,
-        category: this.categoryRef.value,
-      });
-    },
-    async addCourse(id) {
-      await this.postNewCourse({
-        title: this.titleRef.value,
-        description: this.descriptionRef.value,
-        category: this.categoryRef.value,
-        upload: this.upload
-      });
-    },
+const { state } = inject("store");
+const api = useApi()
+const loading = ref(false)
 
-    async fetchComments() {
-      try {
-        this.courses = await this.api.getCoursesByCreatorId(this.user.id)
-      } catch (error) {
-        console.error("error fetching comments");
-      }
+const dialog = ref(false)
+const tab = ref("pending")
+
+const categories = ref([])
+const publishedCourses = ref([])
+const pendingCourses = ref([])
+
+const titleRef = ref()
+const descriptionRef = ref()
+const categoryRef = ref()
+const thumbnailRef = ref()
+const thumbnailUrl = ref()
+const videoRef = ref()
+const videoUrl = ref()
+
+onMounted(async () => {
+    try {
+        loading.value = true
+        const apiCategories = await api.getAllCategories()
+        const courses = await api.getCoursesByCreatorId(state.user.id)
+        publishedCourses.value = [...courses.filter(e => e.active)]
+        pendingCourses.value = [...courses.filter(e => !e.active)]
+        categories.value = [...apiCategories]
+        categoryRef.value = apiCategories.length > 0 ? apiCategories[0] : null
+    } catch (error) {
+        console.error("error on fetching course categories")
+    } finally {
+        loading.value = false
     }
-  },
+})
 
-  mounted() {
-    this.fetchComments()
-  },
+function getFileUrl(file) {
+    return URL.createObjectURL(file)
+}
+
+function previewImage(image) {
+    const url = getFileUrl(image[0])
+    if (url) {
+        thumbnailUrl.value = url
+    }
+}
+
+function previewVideo(video) {
+    const url = getFileUrl(video[0])
+    if (url) {
+        videoUrl.value = url
+    }
+}
+
+async function postCourse() {
+    try {
+        const course = await api.addCourse(titleRef.value, descriptionRef.value, categoryRef.value.id, thumbnailRef.value[0], videoRef.value[0])
+        pendingCourses.value = [...pendingCourses.value, course]
+        dialog.value = false
+        toast("le cours a bien été soumis à validation", { type: 'success' })
+    } catch (error) {
+        console.error("error while posting course", error)
+        toast("erreur lors de la création de cours", { type: 'error' })
+    }
 }
 </script>
+
+<template>
+    <RequireRole :role="ROLES.contributor.value">
+        <v-navigation-drawer permanent>
+            <v-sheet color="grey-lighten-4" class="pa-4">
+            </v-sheet>
+            <v-divider></v-divider>
+            <v-list>
+                <v-list-item>
+                    <v-dialog v-model="dialog" persistent>
+                        <template v-slot:activator="{ props }">
+                            <v-btn color="primary" v-bind="props">
+                                Publier un cours
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-text-field label="Titre" id="titre" required
+                                                v-model="titleRef"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-textarea label="Description" id="description" required
+                                                v-model="descriptionRef"></v-textarea>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-select v-model="categoryRef" :items="categories" item-title="title"
+                                                item-value="id" label="Catégorie">
+                                            </v-select>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-file-input v-model="thumbnailRef" label="image" accept="image/*"
+                                                @update:modelValue="previewImage">
+                                            </v-file-input>
+                                            <!-- <img class="w-50" :src="thumbnailUrl" v-if="thumbnailRef != null" /> -->
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-file-input v-model="videoRef" label="video" accept="video/*"
+                                                @update:modelValue="previewVideo">
+                                            </v-file-input>
+                                            <!-- <video class="w-100 h-100 mt-6" controls :src="videoUrl" v-if="videoUrl != null"></video> -->
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="postCourse()">
+                                    Publier
+                                </v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                                    Fermer
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-list-item>
+            </v-list>
+        </v-navigation-drawer>
+        <v-container class="d-flex flex-column">
+            <Loader v-if="loading" />
+            <template v-else>
+                <v-container>
+                    <v-tabs v-model="tab" grow>
+                        <v-tab value="pending">
+                            <span>En attente de validation</span>
+                            <v-badge color="info" :content="pendingCourses.length" inline
+                                v-show="pendingCourses.length"></v-badge>
+                        </v-tab>
+                        <v-tab value="published">
+                            <span>Publié</span>
+                            <v-badge color="success" :content="publishedCourses.length" inline
+                                v-show="publishedCourses.length"></v-badge>
+                        </v-tab>
+                    </v-tabs>
+                    <v-window v-model="tab" class="d-flex flex-column mt-8 px-3 py-5">
+                        <v-window-item value="pending">
+                            <NoElements :message="'Pas de cours'" v-if="pendingCourses.length === 0" />
+                            <Course v-else v-for="course in pendingCourses" :key="course.id" :course="course" />
+                        </v-window-item>
+                        <v-window-item value="published">
+                            <NoElements :message="'Pas de cours'" v-if="publishedCourses.length === 0" />
+                            <Course v-else v-for="course in publishedCourses" :key="course.id" :course="course" />
+                        </v-window-item>
+                    </v-window>
+                </v-container>
+            </template>
+        </v-container>
+    </RequireRole>
+</template>

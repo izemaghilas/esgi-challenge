@@ -182,7 +182,7 @@ export default function useApi() {
 
   function getCoursesByCreatorId(creator_id) {
     return apiClient.get(
-      constructRequestUrl("contents?page=1&creatorId%5B%5D="+ creator_id),
+      `users/${creator_id}/contents`,
       userRef.value?.token
     );
   }
@@ -238,15 +238,15 @@ export default function useApi() {
     return res;
   }
 
-  function addCourse(title,description,category){
-    const res = apiClient.post(constructRequestUrl("contents"), {
-      data: {
-        title: title,
-        description: description,
-        category: category,
-      },
-    });
-    return res;
+  function addCourse(title, description, categoryId, thumbnail, video) {
+    const form = new FormData()
+    form.append('title', title)
+    form.append('description', description)
+    form.append('categoryId', `/api/categories/${categoryId}`)
+    form.append('thumbnailFile', thumbnail)
+    form.append('mediaLinkFile', video)
+
+    return apiClient.post("contents", {data: form, contentType: 'multipart/form-data', token: userRef.value?.token});
   }
 
   function removeComment(commentId) {

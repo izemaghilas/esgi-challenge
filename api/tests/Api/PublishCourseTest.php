@@ -52,16 +52,16 @@ class PublishCourseTest extends AbstractTest
     {
         $path = dirname(__DIR__) . '/files/thumbnail.png';
         $tempPath = dirname(__DIR__) . '/files/thumbnail-copy.png';
-        copy($path, $tempPath); // make a copy to not move the origin file
+        copy($path, $tempPath); // make a copy to not move the original file
         return new UploadedFile($tempPath, 'thumbnail.png', 'image/png', null, true);
     }
 
     private function getVideo()
     {
-        $path = dirname(__DIR__) . '/files/thumbnail.png';
-        $tempPath = dirname(__DIR__) . '/files/video.mpeg';
-        copy($path, $tempPath); // make a copy to not move the origin file
-        return new UploadedFile($tempPath, 'video.mpeg', 'video/mpeg', null, true);
+        $path = dirname(__DIR__) . '/files/video.mp4';
+        $tempPath = dirname(__DIR__) . '/files/video-copy.mp4';
+        copy($path, $tempPath); // make a copy to not move the original file
+        return new UploadedFile($tempPath, 'video.mp4', 'video/mp4', null, true);
     }
 
     private function removeAllThumbnails()
@@ -81,7 +81,7 @@ class PublishCourseTest extends AbstractTest
     private function removeAllVideos()
     {
         $videosPath = dirname(__DIR__) . '/videos';
-        $tempVideoPath = dirname(__DIR__) . '/files/video.mpeg';
+        $tempVideoPath = dirname(__DIR__) . '/files/video-copy.mp4';
 
         if (true === static::$fileSystem->exists($videosPath)) {
             static::$fileSystem->remove($videosPath);
