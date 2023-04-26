@@ -14,7 +14,6 @@ jobs:
   
   test-api:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
     services:
       postgres:
         image: postgres
@@ -38,7 +37,10 @@ jobs:
       JWT_PASSPHRASE: ${{ secrets.TEST_JWT_PASSPHRASE }}
       CORS_ALLOW_ORIGIN: ${{ secrets.TEST_CORS_ALLOW_ORIGIN }}
       MESSENGER_TRANSPORT_DSN: ${{ secrets.TEST_MESSENGER_TRANSPORT_DSN }}
-      # TODO: add mailer dsn
+      MAILER_DSN: ${{ secrets.TEST_MAILER_DSN }}
+      API_DEFAULT_URI: ${{ secrets.TEST_API_DEFAULT_URI }}
+      API_CLIENT_URL: ${{ secrets.TEST_API_CLIENT_URL }}
+      TRANSACTIONAL_EMAIL_ADDRESS: ${{ secrets.TEST_TRANSACTIONAL_EMAIL_ADDRESS }}
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
@@ -66,6 +68,7 @@ jobs:
         run: |
           cd ./api
           php bin/phpunit
+
   deploy-front:
     runs-on: ubuntu-latest
     needs: test-front
@@ -93,12 +96,10 @@ jobs:
         with:
           project-id: ${{ secrets.PLATFORM_PROJECT_ID }}
           cli-token: ${{ secrets.PLATFORM_CLI_TOKEN }}
-          ssh-private-key: ${{ secrets.PLATFORM_SSH_KEY }}
           php-version: 8.1
           force-push: true
+          environment-name: main
 
-          
-  
   publish-docker-image:
     runs-on: ubuntu-latest
     needs: [test-front, test-api]

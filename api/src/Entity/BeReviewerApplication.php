@@ -47,7 +47,6 @@ class BeReviewerApplication
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[Groups(['application:read'])]
-    // #[ORM\Column(unique: true)]
     private ?User $contributor = null;
 
     #[ORM\Column]
