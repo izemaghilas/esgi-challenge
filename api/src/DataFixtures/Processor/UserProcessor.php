@@ -5,11 +5,10 @@ namespace App\DataFixtures\Processor;
 use App\Entity\User;
 use Fidry\AliceDataFixtures\ProcessorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 class UserProcessor implements ProcessorInterface
 {
-    public function __construct(readonly UserPasswordHasherInterface $passwordHasher)
+    public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
 
     }

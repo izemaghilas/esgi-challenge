@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.api_default_uri: '%env(API_DEFAULT_URI)%'
+    app.api_client_url: '%env(API_CLIENT_URL)%'
+    app.api_transactional_email_address: '%env(TRANSACTIONAL_EMAIL_ADDRESS)%'
 
 services:
     # default configuration for services in *this* file
@@ -20,11 +23,47 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+
+    App\State\UserProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
     # password hasher for the User entity
     App\State\UserPasswordHasher:
         bind:
             $processor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\State\ContentReviewProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\State\BeReviewerApplicationValidationProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\Serializer\ApiNormalizer:
+        decorates: 'api_platform.jsonld.normalizer.item'
+        tags:
+            - { name: 'serializer.normalizer', priority: 64 }
+    
+    App\Serializer\CourseContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\CourseContextBuilder.inner' ]
+        autoconfigure: false
 
+    App\Serializer\BeReviewerApplicationContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\BeReviewerApplicationContextBuilder.inner' ]
+        autoconfigure: false
+    
+    App\Serializer\UploadedFileNormalizer:
+        arguments:
+            $apiDefaultUri: '%app.api_default_uri%'
+        tags: ['serializer.normalizer']
+    
+    App\Encoder\MultipartDecoder:
+        tags: [ 'serializer.encoder' ]
+    
     # login for swagger ui
     App\OpenApi\JwtDecorator:
         decorates: 'api_platform.openapi.factory'
@@ -41,5 +80,20 @@ services:
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccess }
 
+    App\Service\VerifyEmailService:
+        arguments:
+            $apiClientUrl: '%app.api_client_url%'
+    
+    App\Service\MailService:
+        arguments:
+            $from: '%app.api_transactional_email_address%'
+    
+    App\Processor\SendConfirmationEmailProcessor: ~
+    
+    App\State\ReviewersProvider: ~
+
+    # App\Controller\SendEmailController:
+    #     arguments: ['@app.mail_service']
+    
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -2,7 +2,7 @@
 
 namespace App\Security\Voter;
 
-use App\Service\AuthorizationUtils;
+use App\Service\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,7 +13,7 @@ class CommentVoter extends Voter
 
     private $authorizationUtils = null;
     
-    public function __construct(AuthorizationUtils $authorizationUtils)
+    public function __construct(AuthorizationChecker $authorizationUtils)
     {
         $this->authorizationUtils = $authorizationUtils;
     }

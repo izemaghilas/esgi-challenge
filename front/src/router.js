@@ -42,14 +42,9 @@ const router = createRouter({
         {
           path: "admin",
           name: dashboardAdmin.name,
-          redirect: `${baseUrl}/dashboard/admin/users`,
+          redirect: `${baseUrl}/dashboard/admin/courses`,
           component: () => import("./views/Admin.vue"),
           children: [
-            {
-              path: "users",
-              name: dashboardAdmin.views.users,
-              component: () => import("./components/dashboard/admin/Users.vue"),
-            },
             {
               path: "courses",
               name: dashboardAdmin.views.courses,
@@ -57,10 +52,20 @@ const router = createRouter({
                 import("./components/dashboard/admin/Courses.vue"),
             },
             {
+              path: "validation-requests",
+              name: dashboardAdmin.views.validationRequests,
+              component: () => import('./components/dashboard/admin/ValidationRequests.vue')
+            },
+            {
               path: "comments",
               name: dashboardAdmin.views.comments,
               component: () =>
                 import("./components/dashboard/admin/Comments.vue"),
+            },
+            {
+              path: 'be-reviewer',
+              name: dashboardAdmin.views.beReviewer,
+              component: () => import("./components/dashboard/admin/BeReviewer.vue"),
             },
           ],
         },
@@ -80,6 +85,11 @@ const router = createRouter({
       path: `${baseUrl}/list/:id/:name`,
       name: APP_ROUTES.list,
       component: () => import("./components/user/CourseList.vue"),
+    },
+    {
+      path: `${baseUrl}/verify-registration`,
+      name: APP_ROUTES.verifyRegistration,
+      component: () => import("./views/VerifyRegistration.vue")
     },
     {
       path: "/:pathMatch(.*)*",

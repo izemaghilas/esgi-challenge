@@ -26,13 +26,15 @@ const APP_ROUTES = {
       admin: {
         name: "admin",
         views: {
-          users: "users",
           courses: "courses",
+          validationRequests: "validation-requests",
+          beReviewer: "be-reviewer",
           comments: "comments",
         },
       },
     },
   },
+  verifyRegistration: "verify-registration"
 };
 
 const ROLES = {

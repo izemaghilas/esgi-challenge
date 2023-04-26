@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\VerifyRegistrationController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,23 +11,40 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\State\ReviewersProvider;
 use App\State\UserPasswordHasher;
+use App\State\UserProcessor;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new Post(securityPostDenormalize: "is_granted('USER_CREATE', object)", processor: UserPasswordHasher::class),
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            provider: ReviewersProvider::class
+        ),
         new Get(security: "is_granted('USER_VIEW', object)"),
-        new Patch(security: "is_granted('USER_EDIT', object)", processor: UserPasswordHasher::class),
+        new Patch(
+            security: "is_granted('USER_EDIT', object)",
+            processor: UserPasswordHasher::class
+        ),
         new Delete(security: "is_granted('USER_DELETE', object)"),
-        new Post('/register', processor: UserPasswordHasher::class)
+        new Post(
+            '/register',
+            processor: UserProcessor::class
+        ),
+        new Get(
+            name: 'registration_confirmation_route',
+            uriTemplate: '/verify-registration',
+            controller: VerifyRegistrationController::class,
+            read: false,
+            normalizationContext: ['groups' => []],
+        ),
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:create', 'user:update']],
@@ -48,7 +66,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
@@ -67,16 +84,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read','comment:read'])]
-    
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read', 'validation-request:read'])]
+
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:create', 'user:read','comment:read'])]
+    #[Groups(['user:create', 'user:read', 'comment:read', 'application:read', 'content:read', 'validation-request:read'])]
     private ?string $lastname = null;
 
     #[ORM\Column]
-    #[Groups(['user:create', 'user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'userId', targetEntity: ForgotPasswordToken::class)]
@@ -104,8 +120,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private Collection $comments;
 
+    #[ORM\Column]
+    private ?bool $active = null;
+
     public function __construct()
     {
+        $this->active = false;
         $this->createdAt = new \DateTimeImmutable();
         $this->forgotPasswordTokens = new ArrayCollection();
         $this->registerTokens = new ArrayCollection();
@@ -186,7 +206,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
+
     /**
      * @see UserInterface
      */
@@ -402,6 +422,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $comment->setCommenterId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
 
         return $this;
     }

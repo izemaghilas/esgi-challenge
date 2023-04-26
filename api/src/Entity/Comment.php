@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         operations: [
             new GetCollection(),
             new Post(),
-            new Delete(security: "is_granted('ROLE_ADMIN')"),
+            new Delete(security: "is_granted('COMMENT_DELETE', object)"),
         ]
     ), 
     ApiFilter(SearchFilter::class, properties: [

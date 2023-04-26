@@ -1,5 +1,7 @@
 import { inject, ref, watch } from "vue";
+import { useRouter } from 'vue-router';
 import axios from "axios";
+import { APP_ROUTES } from '../utils/constants';
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000/api/",
@@ -81,18 +83,41 @@ const apiClient = {
       headers: getRequestHeaders({ token: token }),
     });
   },
+  
+  getFile: async function(url, token = null) {
+    const response = await axiosInstance.get(url, {
+      headers: getRequestHeaders({ token: token }),
+      responseType: "blob"
+    });
+    return URL.createObjectURL(response.data);
+  },
 };
 
 function constructRequestUrl(endpoint, params = null) {
   const keys = params != null ? Object.keys(params) : [];
   return `${endpoint}${
-    keys.length > 0 ? keys.map((k) => `${k}=${params[k]}`).join("&") : ""
+    keys.length > 0 ? "?" + keys.map((k) => `${k}=${params[k]}`).join("&") : ""
   }`;
 }
 
 export default function useApi() {
-  const { state } = inject("store");
+  
+  const { state, actions } = inject("store");
   const userRef = ref({ ...state.user });
+  const router = useRouter()
+  
+  // handle token expired
+  axiosInstance.interceptors.response.use(
+    response => response,
+    (error)=>{
+      if(error.response.status === 401) {
+        actions.logout()
+        router.push({name: APP_ROUTES.login, replace: true})
+      } else {
+        return Promise.reject(error)
+      }
+    }
+  )
 
   watch(
     () => state.user,
@@ -231,6 +256,71 @@ export default function useApi() {
     );
   }
 
+  function verifyRegistration(signedUrl) {
+    return apiClient.get(signedUrl)
+  }
+
+  function getBeReviewerApplications() {
+    return apiClient.get(constructRequestUrl("be_reviewer_applications"), userRef.value?.token)
+  }
+
+  function acceptBeReviwerApplication(applicationId) {
+    return apiClient.patch(constructRequestUrl(`be_reviewer_applications/${applicationId}`), {
+      data: {
+        status: 'ACCEPTED'
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
+  function refuseBeReviwerApplication(applicationId) {
+    return apiClient.patch(constructRequestUrl(`be_reviewer_applications/${applicationId}`), {
+      data: {
+        status: 'REFUSED'
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
+  function publishCourse(courseId) {
+    return apiClient.patch(constructRequestUrl(`contents/${courseId}`), {
+      data: {
+        active: true
+      },
+      token: userRef.value?.token,
+      contentType: "application/merge-patch+json",
+    })
+  }
+
+  function getCourseVideo(videoUrl) {
+    return apiClient.getFile(videoUrl, userRef.value?.token)
+  }
+
+  function getReviewers() {
+    return apiClient.get('users', userRef.value?.token)
+  }
+
+  function sendValidationRequest(reviewerId, courseId) {
+    return apiClient.post('validation_requests', {
+      data: {
+        reviewerId: `/api/users/${reviewerId}`,
+        contentId: `/api/contents/${courseId}`,
+      },
+      contentType: 'application/ld+json',
+      token: userRef.value?.token,
+    })
+  }
+
+  function getValidationRequestsByCourseId(courseId) {
+    return apiClient.get(constructRequestUrl('validation_requests', {contentId: courseId}), userRef.value?.token)
+  }
+
+  function getActiveValidationRequests() {
+    return apiClient.get(constructRequestUrl('validation_requests', {active: true}), userRef.value?.token)
+  }
+
   return {
     login,
     getAllUsers,
@@ -248,5 +338,15 @@ export default function useApi() {
     getCourseByCategoryId,
     postComment,
     removeComment,
+    verifyRegistration,
+    getBeReviewerApplications,
+    acceptBeReviwerApplication,
+    refuseBeReviwerApplication,
+    publishCourse,
+    getCourseVideo,
+    getReviewers,
+    sendValidationRequest,
+    getValidationRequestsByCourseId,
+    getActiveValidationRequests,
   };
 }
