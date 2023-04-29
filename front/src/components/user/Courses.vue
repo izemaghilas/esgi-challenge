@@ -112,11 +112,13 @@ onMounted(async () => {
 
 .categoriesListContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   margin-right: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 30px 0 30px 0;
 }
 
 .no-course-container {
