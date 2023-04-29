@@ -25,11 +25,18 @@ const links = ref({
 </script>
 
 <template>
-    <nav>
-        <router-link v-for="link in links" :key="link" class="link" :to="link.to" exact-active-class="link-active">
-            <span>{{ link.label }}</span>
-        </router-link>
-    </nav>
+    <v-navigation-drawer permanent>
+        <v-sheet color="grey-lighten-4" class="pa-4">
+        </v-sheet>
+        <v-divider></v-divider>
+        <v-list>
+            <v-list-item v-for="link in links" :key="link">
+                <router-link class="link" :to="link.to" exact-active-class="link-active">
+                    <span>{{ link.label }}</span>
+                </router-link>
+            </v-list-item>
+        </v-list>
+    </v-navigation-drawer>
 </template>
 
 <style scoped>
