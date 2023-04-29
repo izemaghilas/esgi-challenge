@@ -53,7 +53,7 @@ async function refuseApplication(application) {
     <v-container class="container">
         <Loader v-if="loading" />
         <template v-else>
-            <v-container class="tabs-container">
+            <v-container>
                 <v-tabs v-model="tab" grow>
                     <v-tab value="pendingApplications">
                         <span>En attentes</span>
@@ -68,7 +68,7 @@ async function refuseApplication(application) {
                             v-show="refusedApplications.length"></v-badge>
                     </v-tab>
                 </v-tabs>
-                <v-window v-model="tab" class="d-flex flex-column pa-5">
+                <v-window v-model="tab" class="d-flex flex-column mt-8 px-3 py-5">
                     <v-window-item value="pendingApplications">
                         <NoElements :message="'pas de candidatures'" v-if="pendingApplications.length === 0" />
                         <BeReviewerApplication v-else v-for="application in pendingApplications" :key="application.id"
@@ -95,14 +95,6 @@ async function refuseApplication(application) {
     height: 100%;
     row-gap: 30px;
     padding: 0;
-}
-
-
-.tabs-container {
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px;
-    width: 100%;
 }
 
 .number-of-applications {
