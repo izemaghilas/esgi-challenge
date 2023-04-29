@@ -321,6 +321,21 @@ export default function useApi() {
     return apiClient.get(constructRequestUrl('validation_requests', {active: true}), userRef.value?.token)
   }
 
+  function sendBeReviewerApplication(motivation, skills) {
+    return apiClient.post('be_reviewer_applications', {
+      data: {
+        motivation: motivation, 
+        skills: skills,
+      },
+      contentType: 'application/ld+json',
+      token: userRef.value?.token
+    })
+  }
+
+  function getBeReviewerApplication(contributorId) {
+    return apiClient.get(`users/${contributorId}/be-reviewer-application`, userRef.value?.token)
+  }
+
   return {
     login,
     getAllUsers,
@@ -348,5 +363,7 @@ export default function useApi() {
     sendValidationRequest,
     getValidationRequestsByCourseId,
     getActiveValidationRequests,
+    sendBeReviewerApplication,
+    getBeReviewerApplication,
   };
 }
