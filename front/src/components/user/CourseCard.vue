@@ -27,7 +27,15 @@ export default {
   },
   computed: {
     thumbnail() {
-      return this.course.thumbnailUrl
+      const thumbnailUrl = this.course.thumbnailUrl;
+
+      if (thumbnailUrl.startsWith('/thumbnails/https://')) {
+        return thumbnailUrl.substring('/thumbnails/'.length);
+      } else if (thumbnailUrl.startsWith('/thumbnails/http://')) {
+        return thumbnailUrl.substring('/thumbnails/'.length);
+      } else {
+        return thumbnailUrl ?? '';
+      }
     },
     createdAt() {
       const createdAt = new Date(this.course.createdAt).toLocaleDateString('fr-Fr', {
@@ -45,5 +53,9 @@ export default {
   height: 100%;
   overflow: hidden;
   transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.06);
 }
 </style>

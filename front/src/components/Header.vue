@@ -1,7 +1,7 @@
 <template>
     <header>
         <nav class="navbar">
-            <RouterLink :to="{name: APP_ROUTES.home, replace: true}">
+            <RouterLink :to="{ name: APP_ROUTES.home, replace: true }">
                 <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
             </RouterLink>
             <ul class="nav-menu">
@@ -74,7 +74,7 @@ const links = computed(() => {
 
 <style scoped>
 .active-link {
-    border-bottom: 2px solid #f4a118;
+    border-bottom: 2px solid #ffffff;
     padding-bottom: 5px;
 }
 
@@ -99,12 +99,26 @@ header {
     align-items: center;
     padding: 0 24px;
     color: #f4a118;
-    background-color: #251d5d;
+    background-color: #000000;
     z-index: 1000;
+    display: flex;
+    position: relative;
+}
+
+.navbar:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin: 10px auto;
+    width: 95%;
+    height: 0.3px;
+    background: rgb(255, 255, 255);
 }
 
 .custom-header-menu-text {
-    color: #f4a118;
+    color: #ffffff;
     text-decoration: none;
 }
 
@@ -143,7 +157,7 @@ header {
     margin: 5px auto;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
-    background-color: #f4a118;
+    background-color: #ffffff;
 }
 
 @media(max-width:767px) {
