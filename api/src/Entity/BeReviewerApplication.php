@@ -18,19 +18,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: BeReviewerApplicationRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+            itemUriTemplate: '/be_reviewer_applications/{id}'
+        ),
+        new Get(security: "is_granted('BE_REVIEWER_APPLICATION_VIEW', object)"),
         new Get(
+            security: "is_granted('BE_REVIEWER_APPLICATION_VIEW', object)",
             uriTemplate: '/users/{id}/be-reviewer-application',
             uriVariables: [
-                'id' => new Link(fromClass: User::class, toProperty: 'contributor')
+                'id' => new Link(
+                    fromClass: User::class,
+                    toProperty: 'contributor'
+                )
             ]
         ),
         new Post(
-            security: "is_granted('ROLE_CONTRIBUTOR')", 
-            securityPostDenormalize: "is_granted('BE_REVIEWER_APPLICATION_CREATE', object)"
+            security: "is_granted('ROLE_CONTRIBUTOR')",
+            securityPostDenormalize: "is_granted('BE_REVIEWER_APPLICATION_CREATE', object)",
+            itemUriTemplate: '/be_reviewer_applications/{id}'
         ),
         new Patch(
-            security:"is_granted('BE_REVIEWER_APPLICATION_VALIDATE', object)",
+            security: "is_granted('BE_REVIEWER_APPLICATION_VALIDATE', object)",
             processor: BeReviewerApplicationValidationProcessor::class
         )
     ],
@@ -46,7 +55,7 @@ class BeReviewerApplication
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['application:read'])]
+    #[Groups(['application:read', 'application:create'])]
     private ?User $contributor = null;
 
     #[ORM\Column]

@@ -11,7 +11,7 @@ class BeReviewerApplicationVoter extends Voter
 {
     public const CREATE = 'BE_REVIEWER_APPLICATION_CREATE';
     public const VALIDATE = 'BE_REVIEWER_APPLICATION_VALIDATE';
-    // public const VIEW = 'BE_REVIEWER_APPLICATION_VIEW';
+    public const VIEW = 'BE_REVIEWER_APPLICATION_VIEW';
 
     public function __construct(private readonly AuthorizationChecker $authorizationUtils)
     {
@@ -21,7 +21,7 @@ class BeReviewerApplicationVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::CREATE, self::VALIDATE])
+        return in_array($attribute, [self::CREATE, self::VALIDATE, self::VIEW])
             && $subject instanceof \App\Entity\BeReviewerApplication;
     }
 
@@ -42,6 +42,11 @@ class BeReviewerApplicationVoter extends Voter
                 break;
             case self::VALIDATE:
                 if ($this->authorizationUtils->isAdmin()) {
+                    return true;
+                }
+                break;
+            case self::VIEW:
+                if ($this->authorizationUtils->isAdminOrOwner($user, $subject->getContributor())) {
                     return true;
                 }
                 break;

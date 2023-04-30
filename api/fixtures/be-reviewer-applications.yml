@@ -11,9 +11,3 @@ App\Entity\BeReviewerApplication:
     status: 'PENDING'
     motivation: 'examiner les cours'
     skills: 'critique'
-  be_reviewer_application_2:
-    contributor: '@user_6'
-    createdAt: <(new \DateTimeImmutable())>
-    status: 'PENDING'
-    motivation: 'nouveau défits'
-    skills: 'problem solving'
