@@ -249,7 +249,7 @@ async function applyToBeReviewer() {
                         </template>
                         <v-card>
                             <v-card-text>
-                                <span>A faire au même temps que l'implementation de dashboard examinateur</span>
+                                <span>A faire au même temps que l'implementation de dashboard examinateur.</span>
                             </v-card-text>
                         </v-card>
                     </v-dialog>

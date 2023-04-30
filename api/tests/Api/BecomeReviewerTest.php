@@ -26,7 +26,7 @@ class BecomeReviewerTest extends AbstractTest
     }
 
 
-    private function sendApplication(?string $role = Role::CONTRIBUTOR->value)
+    private function sendApplication(?string $role = Role::CONTRIBUTOR->value): array
     {
         $contributorClient = self::createClientForRole($role);
         $response = $contributorClient->request('POST', self::BE_REVIEWER_APPLICATION_ENDPOINT, [
@@ -35,7 +35,6 @@ class BecomeReviewerTest extends AbstractTest
             ],
             'json' => $this->beReviewerApplication
         ]);
-
         $id = $response->toArray()['id'];
         $iri = $this->findIriBy(BeReviewerApplication::class, ['id' => $id]);
 
@@ -172,5 +171,15 @@ class BecomeReviewerTest extends AbstractTest
         $this->assertResponseIsSuccessful();
         $this->assertEquals($this->beReviewerApplication['skills'], $persistedApplication->getSkills());
         $this->assertEquals($this->beReviewerApplication['motivation'], $persistedApplication->getMotivation());
+    }
+
+    public function testReviewerCanNotViewBeReviewerApplication()
+    {
+        $sentApplication = $this->sendApplication();
+        $reviewerClient = self::createClientForRole(Role::REVIEWER->value);
+
+        $reviewerClient->request('GET', $sentApplication['iri']);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 }
