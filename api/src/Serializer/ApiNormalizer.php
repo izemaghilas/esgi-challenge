@@ -5,6 +5,8 @@ namespace App\Serializer;
 use ApiPlatform\Api\IriConverterInterface;
 use App\Entity\BeReviewerApplication;
 use App\Entity\Content;
+use App\Entity\User;
+use App\Enums\Role;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
@@ -54,7 +56,15 @@ final class ApiNormalizer implements DenormalizerInterface
             if ($user !== null) {
                 $data['contributor'] = $this->iriConverter->getIriFromResource($user);
             }
+        } else if ($type === User::class) {
+            if (isset($data['contributor']) && true === $data['contributor']) {
+                $user = $this->decorator->denormalize($data, $type, $format);
+                $user->setRoles([Role::CONTRIBUTOR->value]);
+
+                return $user;
+            }
         }
+
         return $this->decorator->denormalize($data, $type, $format);
     }
 

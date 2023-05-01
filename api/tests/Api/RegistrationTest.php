@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Entity\User;
+use App\Enums\Role;
 use App\Service\VerifyEmailService;
 use Faker\Factory;
 use Faker\Generator as FakerGenerator;
@@ -37,12 +38,17 @@ class RegistrationTest extends AbstractTest
         ];
     }
 
-    private function registerUser()
+    private function registerUser(bool $isContributor = false)
     {
         $client = $this->createClientForRole();
+
+        if (true === $isContributor) {
+            $this->user['contributor'] = true;
+        }
+
         $response = $client->request('POST', self::REGISTRATION_ENDPOINT, [
             'headers' => [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/ld+json'
             ],
             'json' => $this->user
         ]);
@@ -74,6 +80,26 @@ class RegistrationTest extends AbstractTest
         $this->assertEmailCount(1);
         $email = $this->getMailerMessage(0);
         $this->assertEmailHeaderSame($email, 'To', $user['email']);
+    }
+
+    public function testUserRegisterAsContributor()
+    {
+        $user = $this->registerUser(isContributor: true);
+        $userInDB = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(User::class)
+            ->findOneBy(['id' => $user['id']]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertNotNull($userInDB);
+        $this->assertFalse($userInDB->isActive());
+        $this->assertContains(Role::CONTRIBUTOR->value, $userInDB->getRoles());
+
+        $this->assertEmailCount(1);
+        $email = $this->getMailerMessage(0);
+        $this->assertEmailHeaderSame($email, 'To', $user['email']);
+
     }
 
     public function testRegistrationConfirmation()

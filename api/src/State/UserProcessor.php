@@ -11,7 +11,6 @@ use App\Service\VerifyEmailService;
 class UserProcessor implements ProcessorInterface
 {
     public function __construct(
-        private readonly ProcessorInterface $persistProcessor,
         private readonly UserPasswordHasher $userPasswordHasher,
         private readonly MailService $mailService,
         private readonly VerifyEmailService $verifyEmailService

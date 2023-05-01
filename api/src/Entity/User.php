@@ -123,6 +123,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $active = null;
 
+    #[Groups(['user:create'])]
+    private ?bool $contributor = null;
+
     public function __construct()
     {
         $this->active = false;
@@ -132,6 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->contents = new ArrayCollection();
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->contributor = false;
     }
 
     public function getId(): ?int
@@ -434,6 +438,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function isContributor(): ?bool
+    {
+        return $this->contributor;
+    }
+
+    public function setContributor(bool $contributor): self
+    {
+        $this->contributor = $contributor;
 
         return $this;
     }

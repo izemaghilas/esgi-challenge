@@ -228,14 +228,16 @@ export default function useApi() {
     return apiClient.get(constructRequestUrl("comments"), userRef.value?.token);
   }
 
-  function register(email, password, firstname, lastname) {
+  function register(email, password, firstname, lastname, isContributor) {
     const res = apiClient.post(constructRequestUrl("register"), {
       data: {
         firstname: firstname,
         lastname: lastname,
         email: email,
         plainPassword: password,
+        contributor: isContributor,
       },
+      contentType: "application/ld+json",
     });
     return res;
   }

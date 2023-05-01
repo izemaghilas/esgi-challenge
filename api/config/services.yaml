@@ -25,9 +25,7 @@ services:
             - '../src/Model/'
 
 
-    App\State\UserProcessor:
-        bind:
-            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    App\State\UserProcessor: ~
     
     # password hasher for the User entity
     App\State\UserPasswordHasher:
