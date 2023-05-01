@@ -338,6 +338,10 @@ export default function useApi() {
     return apiClient.get(`users/${contributorId}/be-reviewer-application`, userRef.value?.token)
   }
 
+  function getAllActiveCourses() {
+    return apiClient.get(constructRequestUrl("contents", {active: true, "order[createdAt]": "desc"}))
+  }
+
   return {
     login,
     getAllUsers,
@@ -367,5 +371,6 @@ export default function useApi() {
     getActiveValidationRequests,
     sendBeReviewerApplication,
     getBeReviewerApplication,
+    getAllActiveCourses,
   };
 }

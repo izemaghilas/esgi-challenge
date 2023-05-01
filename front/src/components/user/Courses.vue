@@ -55,7 +55,7 @@ const data = reactive({
 onMounted(async () => {
   try {
     loading.value = true
-    const res = await api.getAllCourses();
+    const res = await api.getAllActiveCourses()
     data.courses = res;
   } catch (error) {
     console.error("error", error);
