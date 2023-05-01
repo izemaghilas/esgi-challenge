@@ -11,6 +11,7 @@
     "test": "echo 'functional tests'"
   },
   "dependencies": {
+    "@vue-stripe/vue-stripe": "^4.5.0",
     "axios": "^1.2.6",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
