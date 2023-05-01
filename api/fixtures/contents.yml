@@ -2,6 +2,7 @@ App\Entity\Content:
   content_0:
     title: "Cours Vuejs"
     description: "Cours vue js pour débutants."
+    price: 1
     active: true
     thumbnail: vuejs.jpg
     mediaLink: video.mp4 
@@ -12,6 +13,7 @@ App\Entity\Content:
   content_1:
     title: "Cours JavaScript"
     description: "Cours JavaScript pour débutants."
+    price: 10
     active: true
     thumbnail: javascript.png
     mediaLink: video.mp4 # "https://player.vimeo.com/progressive_redirect/playback/422223355/rendition/720p/file.mp4?loc=external&oauth2_token_id=308801954&signature=4ff6f2551efec5039e2b1615aa348c62e79d29922e8f4441d11c2cc0e7aed90d"
@@ -22,6 +24,7 @@ App\Entity\Content:
   content_2:
     title: "Cours React"
     description: "Cours React pour débutants."
+    price: 20
     active: true
     thumbnail: react.jpg
     mediaLink: video.mp4 
@@ -32,6 +35,7 @@ App\Entity\Content:
   content_3:
     title: "Cours React Native"
     description: "Cours React Native pour débutants."
+    price: 30
     active: true
     thumbnail: react-native.jpg
     mediaLink: video.mp4
@@ -42,6 +46,7 @@ App\Entity\Content:
   content_4:
     title: "Cours HTML5"
     description: "Cours HTML5 pour débutants."
+    price: 10
     active: false
     thumbnail: html.png
     mediaLink: video.mp4

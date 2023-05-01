@@ -2,7 +2,7 @@
   <v-hover v-slot="{ hover }">
     <v-card class="card" :elevation="hover ? 16 : 2" :class="{ 'on-hover': hover }">
       <router-link :to="`/esgi-challenge/course/${course.id}`">
-        <v-img :src="thumbnail" alt="" class=""></v-img>
+        <v-img :src="thumbnail" alt="" class="thumbnail"></v-img>
       </router-link>
       <v-card-title>{{ course.title }}</v-card-title>
       <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
@@ -13,8 +13,10 @@
           </div>
         </v-row>
       </v-card-text>
+      <div class="price-container">
+        <v-btn class="price" variant="tonal" color="primary">Acheter - {{ course.price }}$</v-btn>
+      </div>
     </v-card>
-
   </v-hover>
 </template>
 
@@ -57,5 +59,20 @@ export default {
 
 .card:hover {
   transform: scale(1.06);
+}
+
+.thumbnail {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.price-container {
+  display: flex;
+  height: 100%;
+}
+
+.price {
+  width: 100%;
 }
 </style>
