@@ -13,17 +13,46 @@
           </div>
         </v-row>
       </v-card-text>
+      <div class="price-container">
+        <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems"
+          :success-url="successURL" :cancel-url="cancelURL" @loading="v => loading = v" />
+        <v-btn @click="submit" class="price" variant="tonal" color="primary">Acheter - {{ course.price }}$</v-btn>
+      </div>
     </v-card>
 
   </v-hover>
 </template>
 
 <script>
+import { StripeCheckout } from '@vue-stripe/vue-stripe';
+
 export default {
+  components: {
+    StripeCheckout,
+  },
   props: {
     course: {
       required: true,
     }
+  },
+  methods: {
+    submit() {
+      this.$refs.checkoutRef.redirectToCheckout();
+    },
+  },
+  data() {
+    this.publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+    return {
+      loading: false,
+      lineItems: [
+        {
+          price: process.env.PRICE,
+          quantity: 1,
+        },
+      ],
+      successURL: FRONT_URL + 'course/' + this.course.id,
+      cancelURL: FRONT_URL + 'cancelled',
+    };
   },
   computed: {
     thumbnail() {
