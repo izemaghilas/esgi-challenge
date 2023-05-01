@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from "vue"
+import { ref, reactive, watch } from "vue"
 import useApi from '../hooks/useApi';
 import { useRouter } from 'vue-router'
 import { APP_ROUTES } from "../utils/constants";
@@ -19,14 +19,14 @@ const firstNameRef = ref()
 const lastNameRef = ref()
 const emailRef = ref()
 const passwordRef = ref()
-const passwordConfirmaRef = ref()
-
+const passwordConfirmRef = ref()
+const isContributorRef = ref(false)
 
 async function postNewUser() {
     try {
-        const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value)
+        const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value, isContributorRef.value)
         if (data.id) {
-            router.push({name: APP_ROUTES.login})
+            router.push({ name: APP_ROUTES.login })
         }
     } catch (error) {
         if (error.response.status === 422) {
@@ -39,7 +39,7 @@ async function postNewUser() {
 }
 async function register() {
     loading.isLoading = true
-    if (passwordRef.value !== passwordConfirmaRef.value) {
+    if (passwordRef.value !== passwordConfirmRef.value) {
         registerError.message = "Les mots de passe ne correspondent pas."
         loading.isLoading = false
         return
@@ -73,14 +73,17 @@ async function register() {
                 </div>
                 <div class="form-group">
                     <label for="passwordConfirmation">Confirmer le mot de passe:</label>
-                    <input type="password" id="passwordConfirmation" v-model="passwordConfirmaRef" required />
+                    <input type="password" id="passwordConfirmation" v-model="passwordConfirmRef" required />
+                </div>
+                <div class="form-group">
+                    <v-checkbox v-model="isContributorRef" label="s'inscrire en tant que contributeur"></v-checkbox>
                 </div>
                 <button type="submit">
                     <div v-if="loading.isLoading">
                         <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
                     </div>
                     <div v-else>
-                        Se connecter
+                        S'inscrire
                     </div>
                 </button>
             </form>
