@@ -13,6 +13,10 @@ stop:
 start:
 	docker-compose --env-file "./api/.env.local" start
 
+#php Make migration
+migration:
+	docker-compose --env-file "./api/.env.local" exec api bin/console make:migration
+	
 #php Make migrate
 migrate:
 	docker-compose --env-file "./api/.env.local" exec api bin/console doctrine:migrations:migrate
