@@ -77,7 +77,7 @@ class Content
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['content:read'])]
+    #[Groups(['content:read', 'validation-request:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -86,7 +86,7 @@ class Content
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
@@ -113,7 +113,7 @@ class Content
     #[Groups(['content:create'])]
     private ?File $thumbnailFile = null;
 
-    #[Groups(['content:read'])]
+    #[Groups(['content:read', 'validation-request:read'])]
     private $thumbnailUrl = null;
 
     #[ORM\Column]
@@ -123,13 +123,13 @@ class Content
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank]
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     private ?User $creatorId = null;
 
     #[ORM\ManyToOne(inversedBy: 'contents')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank]
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     private ?Category $categoryId = null;
 
     #[ORM\OneToMany(mappedBy: 'contentId', targetEntity: ReportedContent::class)]
