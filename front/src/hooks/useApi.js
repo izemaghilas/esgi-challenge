@@ -344,6 +344,10 @@ export default function useApi() {
     return apiClient.get(constructRequestUrl("contents", {active: true, "order[createdAt]": "desc"}))
   }
 
+  function getValidationRequetsByReviewerId(reviewerId) {
+    return apiClient.get(`/users/${reviewerId}/validation-requests`, userRef.value?.token)
+  }
+
   return {
     login,
     getAllUsers,
@@ -374,5 +378,6 @@ export default function useApi() {
     sendBeReviewerApplication,
     getBeReviewerApplication,
     getAllActiveCourses,
+    getValidationRequetsByReviewerId,
   };
 }

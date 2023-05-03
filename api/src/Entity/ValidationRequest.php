@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ValidationRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,6 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         operations: [
             new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+            new GetCollection(
+                security: "is_granted('ROLE_REVIEWER')", 
+                uriTemplate: '/users/{id}/validation-requests',
+                uriVariables: [
+                    'id' => new Link(fromClass: User::class, toProperty: 'reviewerId')
+                ],
+            ),
             new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE', object)"),
         ],
         normalizationContext: ['groups' => ['validation-request:read']],

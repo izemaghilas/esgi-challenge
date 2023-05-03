@@ -35,7 +35,7 @@ class Category
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['category:read', 'content:read'])]
+    #[Groups(['category:read', 'content:read', 'validation-request:read'])]
     private ?string $title = null;
 
     #[ORM\OneToMany(mappedBy: 'categoryId', targetEntity: Content::class)]
