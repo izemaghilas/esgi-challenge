@@ -7,6 +7,8 @@ parameters:
     app.api_default_uri: '%env(API_DEFAULT_URI)%'
     app.api_client_url: '%env(API_CLIENT_URL)%'
     app.api_transactional_email_address: '%env(TRANSACTIONAL_EMAIL_ADDRESS)%'
+    app.api_stripe_publichable_key: '%env(STRIPE_PUBLISHABLE_KEY)%'
+    app.api_end_point_secret: '%env(END_POINT_SECRET)%'
 
 services:
     # default configuration for services in *this* file
@@ -86,6 +88,11 @@ services:
     App\Service\MailService:
         arguments:
             $from: '%app.api_transactional_email_address%'
+
+    App\Controller\StripeController:
+        arguments:
+            $stripe_publichable_key: '%app.api_stripe_publichable_key%'
+            $end_point_secret: '%app.api_end_point_secret%'
     
     App\Processor\SendConfirmationEmailProcessor: ~
     
