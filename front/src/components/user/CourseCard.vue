@@ -14,9 +14,9 @@
         </v-row>
       </v-card-text>
       <div class="price-container">
-        <stripe-checkout ref="checkoutRef" mode="payment" :pk="publishableKey" :line-items="lineItems"
-          :success-url="successURL" :cancel-url="cancelURL" @loading="v => loading = v" />
-        <v-btn @click="submit" class="price" variant="tonal" color="primary">Acheter - {{ course.price }}$</v-btn>
+        <stripe-checkout ref="checkoutRef" :session-id="sessionId" :pk="publishableKey" @loading="v => loading = v" />
+        <v-btn @click="createSession" class="price" variant="tonal" color="primary">Acheter - {{ course.price
+        }}$</v-btn>
       </div>
     </v-card>
   </v-hover>
@@ -24,6 +24,8 @@
 
 <script>
 import { StripeCheckout } from '@vue-stripe/vue-stripe';
+import useApi from '../../hooks/useApi';
+import useUser from '../../hooks/useUser';
 
 export default {
   components: {
@@ -38,19 +40,38 @@ export default {
     submit() {
       this.$refs.checkoutRef.redirectToCheckout();
     },
+    async createStripeSession() {
+      let response
+
+      try {
+        response = await this.api.getStripeSessionId(
+          this.userData.id,
+          this.course.id,
+          import.meta.env.APP_VITE_FRONT_URL + 'payment/success',
+          import.meta.env.APP_VITE_FRONT_URL + 'payment/cancel'
+        )
+
+      } catch (error) {
+        console.log("error", error)
+      }
+
+      console.log("response", response?.id)
+      return response?.id
+
+    },
+    async createSession() {
+      const sessionId = await this.createStripeSession();
+      this.sessionId = sessionId;
+      this.$refs.checkoutRef.redirectToCheckout();
+    },
   },
   data() {
-    this.publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+    this.api = useApi()
+    this.userData = useUser()
+    this.publishableKey = import.meta.env.APP_STRIPE_PUBLISHABLE_KEY
     return {
       loading: false,
-      lineItems: [
-        {
-          price: process.env.PRICE,
-          quantity: 1,
-        },
-      ],
-      successURL: FRONT_URL + 'course/' + this.course.id,
-      cancelURL: FRONT_URL + 'cancelled',
+      sessionId: null,
     };
   },
   computed: {
