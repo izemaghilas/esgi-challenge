@@ -93,6 +93,7 @@ services:
         arguments:
             $stripe_publichable_key: '%app.api_stripe_publichable_key%'
             $end_point_secret: '%app.api_end_point_secret%'
+            $front_url: '%app.api_client_url%'
     
     App\Processor\SendConfirmationEmailProcessor: ~
     

@@ -145,6 +145,9 @@ class Content
     #[ORM\Column(nullable: true)]
     private ?float $price = null;
 
+    #[ORM\OneToMany(mappedBy: 'course', targetEntity: Purchase::class, orphanRemoval: true)]
+    private Collection $purchases;
+
     public function __construct()
     {
         $this->active = false;
@@ -152,6 +155,7 @@ class Content
         $this->updatedAt = new \DateTimeImmutable();
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->purchases = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -385,6 +389,36 @@ class Content
     public function setPrice(?float $price): self
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Purchase>
+     */
+    public function getPurchases(): Collection
+    {
+        return $this->purchases;
+    }
+
+    public function addPurchase(Purchase $purchase): self
+    {
+        if (!$this->purchases->contains($purchase)) {
+            $this->purchases->add($purchase);
+            $purchase->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchase(Purchase $purchase): self
+    {
+        if ($this->purchases->removeElement($purchase)) {
+            // set the owning side to null (unless already changed)
+            if ($purchase->getCourse() === $this) {
+                $purchase->setCourse(null);
+            }
+        }
 
         return $this;
     }

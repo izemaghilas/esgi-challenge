@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Content;
+use App\Entity\Purchase;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,7 @@ class StripeController extends AbstractController
     public function __construct(
         private readonly string $stripe_publichable_key,
         private readonly string $end_point_secret,
+        private readonly string $front_url,
         private readonly EntityManagerInterface $entityManager,
     ) {
   
@@ -31,11 +33,11 @@ class StripeController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
         
-        $success_url = $data['successUrl'] ?? 'http://localhost:3000/success';
-        $cancel_url = $data['cancelUrl'] ?? 'http://localhost:3000/cancel';
-
         $user_id = $data['userId'] ?? '';
         $content_id = $data['contentId'] ?? '';
+
+        $success_url = $this->front_url . '/course' . '/' . $content_id;
+        $cancel_url = $this->front_url . '/payment/cancel';
 
         //get the content from the database
         $content = $this->entityManager->getRepository(Content::class)->findOneBy(['id' => $content_id]);
@@ -117,8 +119,14 @@ class StripeController extends AbstractController
                 throw new NotFoundHttpException();
             }
 
+            $puchases = new Purchase();
+            $puchases->setBuyer($user);
+            $puchases->setCourse($content);
+
+            $this->entityManager->persist($puchases);
+            $this->entityManager->flush();
+
             return $this->json(['message' => "success"]);
-            $user->addPurchase($content);
 
             default:
                 break;

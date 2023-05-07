@@ -103,6 +103,7 @@ const dialogReport = ref(false)
 
 const snackBarText = ref('');
 const timeout = ref(3000);
+
 const snackBarShow = ref(false);
 
 const thumbnail = ref('')
