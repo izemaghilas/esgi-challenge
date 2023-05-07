@@ -126,6 +126,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:create'])]
     private ?bool $contributor = null;
 
+    #[ORM\OneToMany(mappedBy: 'buyer', targetEntity: Purchase::class, orphanRemoval: true)]
+    private Collection $purchases;
+
     public function __construct()
     {
         $this->active = false;
@@ -136,6 +139,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->contributor = false;
+        $this->purchases = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -450,6 +454,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setContributor(bool $contributor): self
     {
         $this->contributor = $contributor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Purchase>
+     */
+    public function getPurchases(): Collection
+    {
+        return $this->purchases;
+    }
+
+    public function addPurchase(Purchase $purchase): self
+    {
+        if (!$this->purchases->contains($purchase)) {
+            $this->purchases->add($purchase);
+            $purchase->setBuyer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchase(Purchase $purchase): self
+    {
+        if ($this->purchases->removeElement($purchase)) {
+            // set the owning side to null (unless already changed)
+            if ($purchase->getBuyer() === $this) {
+                $purchase->setBuyer(null);
+            }
+        }
 
         return $this;
     }

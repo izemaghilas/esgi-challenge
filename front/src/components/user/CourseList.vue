@@ -55,7 +55,6 @@ onMounted(async () => {
         loading.value = true
         const res = await api.getCourseByCategoryId(route.params.id);
         data.courses = res;
-        console.log("data", data);
     } catch (error) {
         console.log("error", error);
     } finally {
