@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Service\VerifyEmailService;
 use Faker\Factory;
 use Faker\Generator as FakerGenerator;
+use Symfony\Component\Uid\Uuid;
 
 class RegistrationTest extends AbstractTest
 {
@@ -146,8 +147,9 @@ class RegistrationTest extends AbstractTest
     public function testFailToConfirmRegistrationOnUserNotExist()
     {
         $user = $this->registerUser();
+        $uuid = Uuid::v7();
         $signedUrl = $this->verifyEmailHelper->getSignedUrl(
-            '0',
+            $uuid->toRfc4122(),
             $user['email']
         );
         $this->createClientForRole()->request('GET', $signedUrl);

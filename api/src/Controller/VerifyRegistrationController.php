@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Uid\Uuid;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 #[AsController]
@@ -27,7 +28,7 @@ class VerifyRegistrationController extends AbstractController
     public function __invoke(Request $request)
     {
         $userId = $request->get('id');
-        if (null === $userId || false === is_numeric($userId)) {
+        if (null === $userId || false === Uuid::isValid($userId)) {
             throw new BadRequestHttpException();
         }
 
