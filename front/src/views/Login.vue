@@ -22,8 +22,12 @@ async function login() {
     try {
         loading.isLoading = true
         const data = await api.login(emailRef.value, passwordRef.value)
-        storeActions.login({ token: data.token, ...data.user })
-        router.push({ name: getUserRedirectionPage(data.user), replace: true })
+        if (data.user.isActive === false) {
+            loginError.message = "Veuillez confirmer votre compte"
+        } else {
+            storeActions.login({ token: data.token, ...data.user })
+            router.push({ name: getUserRedirectionPage(data.user), replace: true })
+        }
     } catch (error) {
         loginError.message = "Email ou mot de passe incorrect"
         console.error("error on login user");
@@ -56,7 +60,7 @@ async function login() {
                     </div>
                 </button>
             </form>
-            <RouterLink class="login" :to="{name: APP_ROUTES.signup, replace: true}">S'inscrire</RouterLink>
+            <RouterLink class="login" :to="{ name: APP_ROUTES.signup, replace: true }">S'inscrire</RouterLink>
         </div>
     </v-container>
 </template>
