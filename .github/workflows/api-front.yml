@@ -41,6 +41,8 @@ jobs:
       API_DEFAULT_URI: ${{ secrets.TEST_API_DEFAULT_URI }}
       API_CLIENT_URL: ${{ secrets.TEST_API_CLIENT_URL }}
       TRANSACTIONAL_EMAIL_ADDRESS: ${{ secrets.TEST_TRANSACTIONAL_EMAIL_ADDRESS }}
+      STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
+      END_POINT_SECRET: ${{ secrets.TEST_END_POINT_SECRET }}
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
