@@ -64,11 +64,6 @@ services:
     
     App\Encoder\MultipartDecoder:
         tags: [ 'serializer.encoder' ]
-    
-    # login for swagger ui
-    App\OpenApi\JwtDecorator:
-        decorates: 'api_platform.openapi.factory'
-        arguments: ['@.inner']
 
     # hash user fixtures password
     App\DataFixtures\Processor\UserProcessor:
