@@ -18,7 +18,9 @@ use ApiPlatform\Metadata\GetCollection;
 use App\State\ReviewersProvider;
 use App\State\UserPasswordHasher;
 use App\State\UserProcessor;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: '`user`')]
@@ -53,10 +55,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[ORM\Column]
+    #[ORM\Column(type: UuidType::NAME)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups(['user:read'])]
-    private ?int $id = null;
+    private ?Uuid $id = null;
 
     #[Groups(['user:create', 'user:read', 'user:update'])]
     #[Assert\Email(
@@ -95,19 +98,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: ForgotPasswordToken::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    private Collection $forgotPasswordTokens;
-
-    #[ORM\OneToMany(mappedBy: 'userId', targetEntity: RegisterToken::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    private Collection $registerTokens;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['user:read'])]
-    private ?Subscription $subscriptionId = null;
-
     #[ORM\OneToMany(mappedBy: 'creatorId', targetEntity: Content::class)]
     #[ORM\JoinColumn(nullable: true)]
     private Collection $contents;
@@ -133,8 +123,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->active = false;
         $this->createdAt = new \DateTimeImmutable();
-        $this->forgotPasswordTokens = new ArrayCollection();
-        $this->registerTokens = new ArrayCollection();
         $this->contents = new ArrayCollection();
         $this->reportedContents = new ArrayCollection();
         $this->comments = new ArrayCollection();
@@ -142,7 +130,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->purchases = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
@@ -268,78 +256,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ForgotPasswordToken>
-     */
-    public function getForgotPasswordTokens(): Collection
-    {
-        return $this->forgotPasswordTokens;
-    }
-
-    public function addForgotPasswordToken(ForgotPasswordToken $forgotPasswordToken): self
-    {
-        if (!$this->forgotPasswordTokens->contains($forgotPasswordToken)) {
-            $this->forgotPasswordTokens->add($forgotPasswordToken);
-            $forgotPasswordToken->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeForgotPasswordToken(ForgotPasswordToken $forgotPasswordToken): self
-    {
-        if ($this->forgotPasswordTokens->removeElement($forgotPasswordToken)) {
-            // set the owning side to null (unless already changed)
-            if ($forgotPasswordToken->getUserId() === $this) {
-                $forgotPasswordToken->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, RegisterToken>
-     */
-    public function getRegisterTokens(): Collection
-    {
-        return $this->registerTokens;
-    }
-
-    public function addRegisterToken(RegisterToken $registerToken): self
-    {
-        if (!$this->registerTokens->contains($registerToken)) {
-            $this->registerTokens->add($registerToken);
-            $registerToken->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRegisterToken(RegisterToken $registerToken): self
-    {
-        if ($this->registerTokens->removeElement($registerToken)) {
-            // set the owning side to null (unless already changed)
-            if ($registerToken->getUserId() === $this) {
-                $registerToken->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getSubscriptionId(): ?Subscription
-    {
-        return $this->subscriptionId;
-    }
-
-    public function setSubscriptionId(Subscription $subscriptionId): self
-    {
-        $this->subscriptionId = $subscriptionId;
 
         return $this;
     }
