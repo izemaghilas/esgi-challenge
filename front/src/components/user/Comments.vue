@@ -35,13 +35,13 @@
 
 <script setup>
 import Loader from '../Loader.vue';
-import { reactive, onMounted, computed, ref } from "vue"
+import { reactive, onMounted, computed, ref, inject } from "vue"
 import useApi from '../../hooks/useApi';
-import useUser from '../../hooks/useUser';
 
 const api = useApi()
 const props = defineProps(['courseId'])
-const userData = useUser()
+const { state } = inject('store')
+const userData = state.user
 const snackBarText = ref('');
 const timeout = ref(3000);
 const snackBarShow = ref(false);

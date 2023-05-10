@@ -86,16 +86,16 @@
 
 <script setup>
 import useApi from '../../hooks/useApi';
-import { reactive, onMounted, ref } from "vue"
+import { reactive, onMounted, ref, inject } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
 import Comments from './Comments.vue';
-import useUser from '../../hooks/useUser';
 import RequireAuth from '../RequireAuth.vue';
 
 const route = useRoute()
 const api = useApi()
-const userData = useUser()
+const { state } = inject('store')
+const userData = state.user
 const loading = ref(false);
 const reportInput = ref('');
 const dialogVideo = ref(false);
