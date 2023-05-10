@@ -389,6 +389,10 @@ export default function useApi() {
     );
   }
 
+  function sendVerificationEmail(email) {
+    return apiClient.post("send-confirmation-email", {data: { email }})
+  }
+
   return {
     login,
     getAllUsers,
@@ -421,5 +425,6 @@ export default function useApi() {
     getAllActiveCourses,
     getValidationRequetsByReviewerId,
     getStripeSessionId,
+    sendVerificationEmail,
   };
 }
