@@ -25,4 +25,4 @@ COPY --from=composer:2.5.1 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /api
 
-CMD composer update; symfony server:start
+CMD composer install; symfony server:start

@@ -25,7 +25,7 @@
 <script>
 import { StripeCheckout } from '@vue-stripe/vue-stripe';
 import useApi from '../../hooks/useApi';
-import useUser from '../../hooks/useUser';
+import { inject } from 'vue';
 
 export default {
   components: {
@@ -67,7 +67,8 @@ export default {
   },
   data() {
     this.api = useApi()
-    this.userData = useUser()
+    const { state } = inject('store')
+    this.userData = state.user
     this.publishableKey = import.meta.env.APP_STRIPE_PUBLISHABLE_KEY
     return {
       loading: false,

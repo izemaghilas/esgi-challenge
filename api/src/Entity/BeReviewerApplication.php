@@ -21,8 +21,7 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(
     operations: [
         new GetCollection(
-            security: "is_granted('ROLE_ADMIN')",
-            itemUriTemplate: '/be_reviewer_applications/{id}'
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Get(security: "is_granted('BE_REVIEWER_APPLICATION_VIEW', object)"),
         new Get(
