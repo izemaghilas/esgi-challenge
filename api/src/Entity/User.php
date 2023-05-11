@@ -15,6 +15,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\ResetPasswordController;
 use App\State\ReviewersProvider;
 use App\State\UserPasswordHasher;
 use App\State\UserProcessor;
@@ -34,6 +35,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Patch(
             security: "is_granted('USER_EDIT', object)",
             processor: UserPasswordHasher::class
+        ),
+        new Patch(
+            name: 'reset_password_route',
+            uriTemplate: '/reset-password',
+            controller: ResetPasswordController::class,
+            normalizationContext: ['groups' => []],
         ),
         new Delete(security: "is_granted('USER_DELETE', object)"),
         new Post(

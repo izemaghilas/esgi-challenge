@@ -83,4 +83,9 @@ abstract class AbstractTest extends ApiTestCase
     {
         return self::CREDENTIALS[Role::CONTRIBUTOR->value]['email'];
     }
+
+    protected function getUserEmail()
+    {
+        return self::CREDENTIALS[Role::USER->value]['email'];
+    }
 }
