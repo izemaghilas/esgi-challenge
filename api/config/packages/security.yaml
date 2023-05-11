@@ -47,6 +47,7 @@ security:
         - { path: ^/api/contents, roles: PUBLIC_ACCESS }
         - { path: ^/api/thumbnails, roles: PUBLIC_ACCESS }
         - { path: ^/api/categories, roles: PUBLIC_ACCESS }
+        - { path: ^/api/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
 when@test:
     security:

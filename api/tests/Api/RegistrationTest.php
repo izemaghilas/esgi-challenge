@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Service\VerifyEmailService;
 use Faker\Factory;
 use Faker\Generator as FakerGenerator;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 
 class RegistrationTest extends AbstractTest
@@ -14,6 +15,7 @@ class RegistrationTest extends AbstractTest
 
     const REGISTRATION_ENDPOINT = 'api/register';
     const SEND_CONFIRMATION_EMAIL_ENDPOINT = 'api/send-confirmation-email';
+    const RESET_PASSWORD_ENDPOINT = 'api/reset-password';
 
     private $user;
     private VerifyEmailService $verifyEmailHelper;
@@ -39,7 +41,7 @@ class RegistrationTest extends AbstractTest
         ];
     }
 
-    private function registerUser(bool $isContributor = false)
+    private function registerUser(bool $isContributor = false): array
     {
         $client = $this->createClientForRole();
 
@@ -186,5 +188,31 @@ class RegistrationTest extends AbstractTest
         $this->assertEmailCount(1);
         $email = $this->getMailerMessage(0);
         $this->assertEmailHeaderSame($email, 'To', $user['email']);
+    }
+
+    public function testResetPassword()
+    {
+        $newPassword = static::$faker->password();
+        $userBeforePasswordReset = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(User::class)
+            ->findOneBy(['email' => $this->getUserEmail()]);
+        $signedUrl = $this->verifyEmailHelper->getSignedUrlPasswordReset($userBeforePasswordReset->getId(), $userBeforePasswordReset->getEmail());
+        
+        $this->createClientForRole()->request('PATCH', $signedUrl, [
+            'headers' => [
+                'Content-Type' => 'application/merge-patch+json'
+            ],
+            'json' => [
+                'plainPassword' => $newPassword,
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $userAfterPasswordReset = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(User::class)
+            ->findOneBy(['email' => $this->getUserEmail()]);
+        $this->assertTrue(static::getContainer()->get(UserPasswordHasherInterface::class)->isPasswordValid($userAfterPasswordReset, $newPassword));
     }
 }

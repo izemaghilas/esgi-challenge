@@ -8,6 +8,8 @@ class VerifyEmailService
 {
     protected const REGISTRATION_CONFIRMATION_ROUTE_NAME = 'registration_confirmation_route';
     protected const VERIFY_REGISTRATION_ENDPOINT = '/verify-registration';
+    protected const RESET_PASSWORD_ROUTE_NAME = 'reset_password_route';
+    protected const RESET_PASSWORD_ENDPOINT = '/reset-password';
 
     public function __construct(
         private readonly string $apiClientUrl,
@@ -27,10 +29,27 @@ class VerifyEmailService
         return $this->apiClientUrl . self::VERIFY_REGISTRATION_ENDPOINT . '?url=' . urlencode($signedUrl);
     }
 
+    public function getSignedUrlForClientPasswordReset(string $userId, string $userEmail)
+    {
+        $signedUrl = $this->getSignedUrlPasswordReset($userId, $userEmail);
+        return $this->apiClientUrl . self::RESET_PASSWORD_ENDPOINT . '?url=' . urlencode($signedUrl);
+    }
+
     public function getSignedUrl(string $userId, string $userEmail)
     {
         return ($this->verifyEmailHelper->generateSignature(
             self::REGISTRATION_CONFIRMATION_ROUTE_NAME,
+            $userId,
+            $userEmail,
+            ['id' => $userId]
+        )
+        )->getSignedUrl();
+    }
+
+    public function getSignedUrlPasswordReset(string $userId, string $userEmail)
+    {
+        return ($this->verifyEmailHelper->generateSignature(
+            self::RESET_PASSWORD_ROUTE_NAME,
             $userId,
             $userEmail,
             ['id' => $userId]
