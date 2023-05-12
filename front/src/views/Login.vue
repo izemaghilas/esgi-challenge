@@ -60,7 +60,10 @@ async function login() {
                     </div>
                 </button>
             </form>
-            <RouterLink class="login" :to="{ name: APP_ROUTES.signup, replace: true }">S'inscrire</RouterLink>
+            <div class="d-flex flex-row justify-space-between w-100 px-2">
+                <RouterLink class="login" :to="{ name: APP_ROUTES.signup, replace: true }">S'inscrire</RouterLink>
+                <RouterLink class="login" :to="{ name: APP_ROUTES.forgetPassword, replace: true }">Mot de passe oublié</RouterLink>
+            </div>
         </div>
     </v-container>
 </template>

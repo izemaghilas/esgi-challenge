@@ -393,6 +393,20 @@ export default function useApi() {
     return apiClient.post("send-confirmation-email", {data: { email }})
   }
 
+  function sendResetPasswordMail(email) {
+    return apiClient.post("send-reset-password-mail", {data: { email }})
+  }
+
+  function resetPassword(password, url) {
+    return apiClient.patch(url, {
+      data: {
+        plainPassword: password
+      },
+      contentType: "application/merge-patch+json",
+      token: userRef.value?.token
+    })
+  }
+
   return {
     login,
     getAllUsers,
@@ -426,5 +440,7 @@ export default function useApi() {
     getValidationRequetsByReviewerId,
     getStripeSessionId,
     sendVerificationEmail,
+    sendResetPasswordMail,
+    resetPassword,
   };
 }

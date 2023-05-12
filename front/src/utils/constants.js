@@ -34,7 +34,9 @@ const APP_ROUTES = {
       },
     },
   },
-  verifyRegistration: "verify-registration"
+  verifyRegistration: "verify-registration",
+  forgetPassword: "forget-password",
+  resetPassword: "reset-password",
 };
 
 const ROLES = {

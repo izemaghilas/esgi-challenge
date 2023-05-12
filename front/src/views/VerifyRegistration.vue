@@ -11,11 +11,12 @@ const router = useRouter()
 const route = useRoute()
 const api = useApi()
 const loading = ref(false)
-const failedRef = ref(false)
-const emailRef = ref("")
+const errorMessage = ref("")
+const failed = ref(false)
+const email = ref("")
 
 onMounted(async () => {
-    if (!failedRef.value) {
+    if (!failed.value) {
         try {
             await api.verifyRegistration(route.query['url'])
             toast("votre compte a bien été confimer", { type: 'success' })
@@ -34,53 +35,66 @@ onMounted(async () => {
             else {
                 toast("erreur lors de la confirmation de l'adresse mail !", { type: 'error', position: 'top-right' })
             }
-            failedRef.value = true
+
+        } finally {
+            failed.value = true
         }
     }
 })
 
 async function sendVerificationEmail() {
-    if (emailRef.value.trim() !== "") {
-        try {
-            loading.value = true
-            await api.sendVerificationEmail(emailRef.value.trim())
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                if (error.response.status === 400) {
-                    toast("veuillez saisir une adresse mail valide !", { type: 'error', position: 'top-right' })
-                } else if (error.response.status === 404) {
-                    toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', position: 'top-right' })
-                    router.replace({ name: APP_ROUTES.signup, replace: true })
-                } else {
-                    toast("erreur lors de l'envoi de lien !", { type: 'error', position: 'top-right' })
-                }
+    if (email.value.trim() === "") {
+        errorMessage.value = "veuillez saisir votre adresse mail !"
+        return
+    }
+
+    try {
+        loading.value = true
+        await api.sendVerificationEmail(email.value.trim())
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            if (error.response.status === 400) {
+                toast("veuillez saisir une adresse mail valide !", { type: 'error', position: 'top-right' })
+            } else if (error.response.status === 404) {
+                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', position: 'top-right' })
+                router.replace({ name: APP_ROUTES.signup, replace: true })
             } else {
                 toast("erreur lors de l'envoi de lien !", { type: 'error', position: 'top-right' })
             }
-        } finally {
-            loading.value = false
+        } else {
+            toast("erreur lors de l'envoi de lien !", { type: 'error', position: 'top-right' })
         }
+    } finally {
+        loading.value = false
     }
 }
 </script>
 
 <template>
-    <div class="loading" v-if="!failedRef">
-        <Loader />
-    </div>
-    <v-sheet class="mx-auto" v-else>
-        <div class="form-container">
-            <span>Veuillez saisir votre adresse mail pour envoyer le nouveau lien</span>
-            <v-form validate-on="submit" @submit.prevent="sendVerificationEmail" class="form">
-                <v-text-field v-model="emailRef" label="adresse mail" autofocus
-                    :rules="[value => !!value.trim() || 'veuillez saisir votre adresse mail']"></v-text-field>
-                <v-btn color="info" v-if="loading === true">
-                    <v-progress-circular class="loader" indeterminate color="white"></v-progress-circular>
-                </v-btn>
-                <v-btn type="submit" color="info" v-else>envoyer</v-btn>
+    <v-container class="d-flex flex-column w-50 pa-15">
+        <div class="loading" v-if="!failed">
+            <Loader />
+        </div>
+        <div class="form-container" v-else>
+            <h3>Confirmation de l'adresse mail</h3>
+            <p class="error-message">{{ errorMessage }}</p>
+            <v-form class="d-flex flex-column w-100 mt-4" @submit.prevent="sendVerificationEmail">
+                <div class="form-group">
+                    <label for="email">Veuillez saisir votre adresse mail pour envoyer le nouveau lien</label>
+                    <input type="email" id="email" v-model="email" required />
+                </div>
+                <button type="submit">
+                    <div v-if="loading">
+                        <v-progress-circular class="loader" indeterminate color="red"></v-progress-circular>
+                    </div>
+                    <div v-else>
+                        Envoyer
+                    </div>
+                </button>
             </v-form>
         </div>
-    </v-sheet>
+
+    </v-container>
 </template>
 
 <style scoped>
@@ -92,16 +106,54 @@ async function sendVerificationEmail() {
 }
 
 .form-container {
-    display: flex;
-    flex-direction: column;
-    row-gap: 25px;
     width: 100%;
-    padding: 50px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, .2);
+    background: rgba(255, 255, 255, 0.19);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4.5px);
+    -webkit-backdrop-filter: blur(4.5px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
-.form {
+.form-group {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    margin-bottom: 20px;
+    row-gap: 10px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    height: 45px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    display: block;
+    padding: 10px 20px;
+    background-color: rgb(65, 65, 160);
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="email"] {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    margin-bottom: 10px
 }
 </style>
