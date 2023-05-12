@@ -11,3 +11,8 @@ send_confirmation_email:
     path: /api/send-confirmation-email
     methods: ['POST']
     controller: App\Controller\ConfirmationEmailController
+    
+send_password_reset_mail:
+    path: /api/send-reset-password-mail
+    methods: ['POST']
+    controller: App\Controller\SendPasswordResetEmailController

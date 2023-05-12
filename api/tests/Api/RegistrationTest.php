@@ -16,6 +16,7 @@ class RegistrationTest extends AbstractTest
     const REGISTRATION_ENDPOINT = 'api/register';
     const SEND_CONFIRMATION_EMAIL_ENDPOINT = 'api/send-confirmation-email';
     const RESET_PASSWORD_ENDPOINT = 'api/reset-password';
+    const SEND_RESET_PASSWORD_MAIL_ENDPOINT = 'api/send-reset-password-mail';
 
     private $user;
     private VerifyEmailService $verifyEmailHelper;
@@ -190,6 +191,24 @@ class RegistrationTest extends AbstractTest
         $this->assertEmailHeaderSame($email, 'To', $user['email']);
     }
 
+    public function testSendResetPasswordMail()
+    {
+        $userEmail = $this->getUserEmail();
+        $this->createClientForRole()->request('POST', self::SEND_RESET_PASSWORD_MAIL_ENDPOINT, [
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'email' => $userEmail
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertEmailCount(1);
+        $email = $this->getMailerMessage(0);
+        $this->assertEmailHeaderSame($email, 'To', $userEmail);
+    }
+
     public function testResetPassword()
     {
         $newPassword = static::$faker->password();
@@ -198,7 +217,7 @@ class RegistrationTest extends AbstractTest
             ->getRepository(User::class)
             ->findOneBy(['email' => $this->getUserEmail()]);
         $signedUrl = $this->verifyEmailHelper->getSignedUrlPasswordReset($userBeforePasswordReset->getId(), $userBeforePasswordReset->getEmail());
-        
+
         $this->createClientForRole()->request('PATCH', $signedUrl, [
             'headers' => [
                 'Content-Type' => 'application/merge-patch+json'

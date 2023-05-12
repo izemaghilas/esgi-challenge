@@ -27,4 +27,19 @@ class MailService
 
         $this->mailer->send($email);
     }
+    
+    public function sendResetPasswordMail(string $signedUrl, string $to, string $firstname)
+    {
+        $email = (new TemplatedEmail())
+            ->from($this->from)
+            ->to($to)
+            ->subject('Demande de réinitialisation de mot de passe')
+            ->htmlTemplate('reset-password-mail.html.twig')
+            ->context([
+                'firstname' => $firstname,
+                'resetPasswordUrl' => $signedUrl
+            ]);
+
+        $this->mailer->send($email);
+    }
 }
