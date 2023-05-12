@@ -92,6 +92,16 @@ const router = createRouter({
       component: () => import("./views/VerifyRegistration.vue")
     },
     {
+      path: `${baseUrl}/forget-password`,
+      name: APP_ROUTES.forgetPassword,
+      component: () => import("./views/ForgetPassword.vue")
+    },
+    {
+      path: `${baseUrl}/reset-password`,
+      name: APP_ROUTES.resetPassword,
+      component: () => import("./views/ResetPassword.vue")
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: { name: "home", replace: true },
     },
