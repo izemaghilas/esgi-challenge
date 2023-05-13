@@ -13,10 +13,9 @@
           </div>
         </v-row>
       </v-card-text>
-      <div class="price-container">
-        <stripe-checkout ref="checkoutRef" :session-id="sessionId" :pk="publishableKey" @loading="v => loading = v" />
-        <v-btn @click="createSession" class="price" variant="tonal" color="primary">Acheter - {{ course.price
-        }}$</v-btn>
+      <div class="title-container">
+        <v-btn :to="`/esgi-challenge/course/${course.id}`" class="title" variant="tonal" color="primary">Voir le
+          cours</v-btn>
       </div>
     </v-card>
   </v-hover>
@@ -115,12 +114,12 @@ export default {
   object-fit: cover;
 }
 
-.price-container {
+.title-container {
   display: flex;
   height: 100%;
 }
 
-.price {
+.title {
   width: 100%;
 }
 </style>

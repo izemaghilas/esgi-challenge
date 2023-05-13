@@ -407,6 +407,16 @@ export default function useApi() {
       token: userRef.value?.token
     })
   }
+  
+  function getPurchase(userId, contentId) {
+    return apiClient.get(
+      constructRequestUrl("purchases", {
+        buyer: userId,
+        course: contentId,
+      }),
+      userRef.value?.token
+    );
+  }
 
   return {
     login,
@@ -443,5 +453,6 @@ export default function useApi() {
     sendVerificationEmail,
     sendResetPasswordMail,
     resetPassword,
+    getPurchase,
   };
 }

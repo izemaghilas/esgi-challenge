@@ -27,11 +27,15 @@
                 </v-row>
                 <v-row>
                     <v-col cols="12" sm="8">
-                        <v-card-title class="title">{{ data.course.title }}</v-card-title>
-                        <v-card-subtitle class="description">{{ data.course.description }}</v-card-subtitle>
-                        <v-btn @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
+                        <v-card-title class="title">{{ course.title }}</v-card-title>
+                        <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
+                        <v-btn v-if="isCoursePurchased" @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
                             style="color:white; background-color: #251d5d;">
                             Commencer le cours
+                        </v-btn>
+                        <v-btn v-else @click="createSession" prepend-icon="mdi-play" class="button"
+                            style="color:white; background-color: #251d5d;">
+                            Acheter le cours
                         </v-btn>
                     </v-col>
                     <v-dialog v-model="dialogVideo" fullscreen :scrim="false" transition="dialog-bottom-transition">
@@ -40,7 +44,7 @@
                                 <v-btn icon dark color="#f4a118" @click="dialogVideo = false">
                                     <v-icon>mdi-close</v-icon>
                                 </v-btn>
-                                <v-toolbar-title class="video-title">{{ data.course.title }}</v-toolbar-title>
+                                <v-toolbar-title class="video-title">{{ course.title }}</v-toolbar-title>
                                 <v-spacer></v-spacer>
                             </v-toolbar>
                             <div class="video-container">
@@ -52,13 +56,13 @@
                 <v-card class="comments">
                     <v-card-title class="title">Commentaires</v-card-title>
                     <v-card-text>
-                        <Comments :courseId="data.course.id" />
+                        <Comments :courseId="course.id" />
                     </v-card-text>
                 </v-card>
                 <v-dialog v-model="dialogReport" max-width="500px">
                     <v-card>
                         <v-card-title>
-                            <span class="headline">Signaler le cours : {{ data.course.title }} .</span>
+                            <span class="headline">Signaler le cours : {{ course.title }} .</span>
                         </v-card-title>
                         <v-card-text>
                             <v-textarea v-model="reportInput" label="Description" outlined></v-textarea>
@@ -84,98 +88,132 @@
     </div>
 </template>
 
-<script setup>
+<script>
 import useApi from '../../hooks/useApi';
-import { reactive, onMounted, ref, inject } from "vue"
+import { onMounted, inject } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
 import Comments from './Comments.vue';
 import RequireAuth from '../RequireAuth.vue';
+import { loadStripe } from '@stripe/stripe-js'
 
-const route = useRoute()
-const api = useApi()
-const { state } = inject('store')
-const userData = state.user
-const loading = ref(false);
-const reportInput = ref('');
-const dialogVideo = ref(false);
-const dialogReport = ref(false)
-
-const snackBarText = ref('');
-const timeout = ref(3000);
-
-const snackBarShow = ref(false);
-
-const thumbnail = ref('')
-const videoLink = ref('')
-
-const setVideoThumbnail = (data) => {
-    const thumbnailUrl = data.course.thumbnailUrl;
-
-    if (thumbnailUrl.startsWith('/thumbnails/https://')) {
-        thumbnail.value = thumbnailUrl.substring('/thumbnails/'.length);
-    } else if (thumbnailUrl.startsWith('/thumbnails/http://')) {
-        thumbnail.value = thumbnailUrl.substring('/thumbnails/'.length);
-    } else {
-        thumbnail.value = thumbnailUrl ?? '';
-    }
-}
-
-const setVideoLink = (data) => {
-    const video = data.course.mediaLinkUrl;
-
-    if (video.startsWith('/videos/https://')) {
-        videoLink.value = video.substring('/videos/'.length);
-    } else {
-        videoLink.value = video ?? '';
-    }
-}
-
-const data = reactive({
-    course: {},
-})
-
-onMounted(async () => {
-    try {
-        loading.value = true
-        const response = await api.getCourseById(route.params.id)
-        data.course = response
-        setVideoThumbnail(data)
-        setVideoLink(data)
-    } catch (error) {
-        console.error(error)
-    } finally {
-        loading.value = false
-    }
-})
-
-const handleReportClick = () => {
-    dialogReport.value = true
-}
-
-const handleVideoPlayClick = () => {
-    dialogVideo.value = true
-}
-
-const postReport = async () => {
-    try {
-        loading.value = true
-        const data = {
-            description: reportInput.value,
-            reporterId: userData.id,
-            contentId: route.params.id,
+export default {
+    components: {
+        Comments,
+        Loader,
+        RequireAuth
+    },
+    data() {
+        this.route = useRoute()
+        this.api = useApi()
+        this.state = inject("store").state;
+        this.userData = this.state.user
+        this.publishableKey = import.meta.env.APP_STRIPE_PUBLISHABLE_KEY
+        return {
+            course: {},
+            loading: false,
+            reportInput: '',
+            dialogVideo: false,
+            dialogReport: false,
+            isCoursePurchased: false,
+            snackBarText: '',
+            timeout: 3000,
+            snackBarShow: false,
+            thumbnail: '',
+            videoLink: '',
+            sessionId: 'session'
         }
-        const response = await api.postReportContent(data)
-        snackBarText.value = "Le cours a été signalé"
-        snackBarShow.value = true
-    } catch (error) {
-        console.error(error)
-    } finally {
-        loading.value = false
-        dialogReport.value = false
+    },
+    async beforeMount() {
+        try {
+            this.loading = true
+            const responseGetCourse = await this.api.getCourseById(this.route.params.id)
+            this.course = responseGetCourse
+            this.setVideoThumbnail()
+            this.setVideoLink()
+
+            const responseIsCoursePurchased = await this.api.getPurchase(this.userData?.id, this.route.params.id)
+            if (responseIsCoursePurchased && responseIsCoursePurchased?.length > 0) {
+                this.isCoursePurchased = true
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            this.loading = false
+        }
+    },
+    methods: {
+        setVideoThumbnail() {
+            const thumbnailUrl = this.course.thumbnailUrl;
+
+            if (thumbnailUrl.startsWith('/thumbnails/https://')) {
+                this.thumbnail = thumbnailUrl.substring('/thumbnails/'.length);
+            } else if (thumbnailUrl.startsWith('/thumbnails/http://')) {
+                this.thumbnail = thumbnailUrl.substring('/thumbnails/'.length);
+            } else {
+                this.thumbnail = thumbnailUrl ?? '';
+            }
+        },
+        setVideoLink() {
+            const video = this.course.mediaLinkUrl;
+
+            if (video && video.startsWith('/videos/https://')) {
+                this.videoLink = video.substring('/videos/'.length);
+            } else {
+                this.videoLink = video ?? '';
+            }
+        },
+        handleReportClick() {
+            this.dialogReport = true
+        },
+
+        handleVideoPlayClick() {
+            this.dialogVideo = true
+        },
+        async createStripeSession() {
+            let response
+
+            try {
+                response = await this.api.getStripeSessionId(
+                    this.userData.id,
+                    this.course.id,
+                    import.meta.env.APP_VITE_FRONT_URL + 'payment/success',
+                    import.meta.env.APP_VITE_FRONT_URL + 'payment/cancel'
+                )
+
+            } catch (error) {
+                console.log("error", error)
+            }
+
+            return response?.id
+
+        },
+        async createSession() {
+            const sessionId = await this.createStripeSession();
+
+            const stripe = await loadStripe(import.meta.env.APP_STRIPE_PUBLISHABLE_KEY)
+            stripe.redirectToCheckout({ sessionId: sessionId })
+        },
+        async postReport() {
+            try {
+                loading.value = true
+                const data = {
+                    description: this.reportInput,
+                    reporterId: this.userData.id,
+                    contentId: this.route.params.id,
+                }
+                const response = await this.api.postReportContent(data)
+                this.snackBarText = "Le cours a été signalé"
+                this.snackBarShow = true
+            } catch (error) {
+                console.error(error)
+            } finally {
+                this.loading = false
+                this.dialogReport = false
+            }
+        }
     }
 }
-
 </script>
 
 <style scoped>
