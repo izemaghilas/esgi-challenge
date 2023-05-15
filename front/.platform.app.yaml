@@ -1,0 +1,31 @@
+name: app
+type: 'nodejs:18'
+
+disk: 2048
+build:
+  flavor: none
+
+dependencies:
+  nodejs:
+    sharp: "*"
+
+web:
+  locations:
+    "/":
+      root: "build_platform"
+      index:
+        - "index.html"
+      expires: 300s
+      scripts: true
+      allow: false
+      rules:
+        \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
+          allow: true
+        ^/robots\.txt$:
+          allow: true
+
+hooks:
+  build: |
+    set -x -e
+    yarn install --frozen-lockfile
+    yarn build
