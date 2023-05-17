@@ -3,12 +3,12 @@ type: 'php:8.2'
 
 dependencies:
   php:
-      composer/composer: '^2'
+    composer/composer: '^2'
 
 runtime:
   extensions:
-      - pdo_pgsql
-      - sodium
+    - pdo_pgsql
+    - sodium
 
 variables:
   php:
@@ -36,7 +36,6 @@ web:
 hooks:
     build: |
       set -x -e
-      echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq
       cd api
       curl -fs https://get.symfony.com/cloud/configurator | bash
       symfony-build

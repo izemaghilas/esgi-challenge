@@ -14,6 +14,7 @@ jobs:
   
   test-api:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
     services:
       postgres:
         image: postgres
@@ -71,24 +72,25 @@ jobs:
           cd ./api
           php bin/phpunit
 
-  deploy-front:
+  push-front:
     runs-on: ubuntu-latest
     needs: test-front
     if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v3
-      - name: Build app
+      - name: Copy front deploy workflow
         run: |
-          cd ./front
-          yarn install --frozen-lockfile
-          yarn build
-      - name: Deploy app
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: ./front/dist
-  
+          mkdir ./front/.github && mkdir ./front/.github/workflows
+          cp ./.github/workflows/deploy-front.yml ./front/.github/workflows/deploy-front.yml
+      - name: Push to front branch
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: front
+          FOLDER: front
+          MESSAGE: "deploy front"
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
   deploy-api:
     runs-on: ubuntu-latest
     needs: test-api
