@@ -12,12 +12,12 @@ dependencies:
 web:
   locations:
     "/":
-      root: "build_platform"
+      root: "dist"
       index:
         - "index.html"
       expires: 300s
-      scripts: true
-      allow: false
+      scripts: false
+      allow: true
       rules:
         \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
           allow: true
