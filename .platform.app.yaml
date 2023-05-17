@@ -10,19 +10,21 @@ dependencies:
     yarn: "*"
 
 web:
+  # doc: https://docs.platform.sh/create-apps/web/static.html
   locations:
     "/":
       root: "dist"
       index:
         - "index.html"
-      expires: 300s
       scripts: false
       allow: true
+      expires: 300s
       rules:
         \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
           allow: true
-        ^/robots\.txt$:
-          allow: true
+        
+  commands:
+    start: sleep infinity
 
 hooks:
   build: |
