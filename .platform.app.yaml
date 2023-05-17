@@ -7,7 +7,7 @@ build:
 
 dependencies:
   nodejs:
-    sharp: "*"
+    yarn: "*"
 
 web:
   locations:
@@ -27,5 +27,5 @@ web:
 hooks:
   build: |
     set -x -e
-    yarn install --frozen-lockfile
+    yarn install --prod --frozen-lockfile
     yarn build
