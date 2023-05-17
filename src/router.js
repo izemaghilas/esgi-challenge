@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { APP_ROUTES } from "./utils/constants";
 
-const baseUrl = import.meta.env.BASE_URL ?? "";
+const baseUrl = import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL;
 
 const { admin: dashboardAdmin } = APP_ROUTES.dashboard.views;
 
