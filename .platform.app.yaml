@@ -1,4 +1,4 @@
-name: masterclass-front
+name: app
 type: 'nodejs:18'
 
 disk: 2048
