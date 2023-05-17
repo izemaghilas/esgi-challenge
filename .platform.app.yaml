@@ -27,5 +27,5 @@ web:
 hooks:
   build: |
     set -x -e
-    yarn install --prod --frozen-lockfile
+    yarn install --frozen-lockfile
     yarn build
