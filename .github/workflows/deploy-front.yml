@@ -12,13 +12,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: adam7/platformsh-cli-action@v1.2
         with:
-          token: ${{ secrets.PLATFORM_CLI_TOKEN }}
+          token: ${{ secrets.PLATFORM_FRONT_CLI_TOKEN }}
       - name: Deploy
-        run: ${{ github.action_path }}/.deploy/deploy.sh
+        run: | # ${{ github.action_path }}/.deploy/deploy.sh
+          cat ${GITHUB_ACTION_PATH}
         shell: bash
         env:
-          PLATFORM_PROJECT_ID: ${{ secrets.PLATFORM_PROJECT_ID }}
-          PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORM_CLI_TOKEN }}
+          PLATFORM_PROJECT_ID: ${{ secrets.PLATFORM_FRONT_PROJECT_ID }}
+          PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORM_FRONT_CLI_TOKEN }}
           FORCE_PUSH: true
           ENVIRONMENT_NAME: main
 
