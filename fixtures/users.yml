@@ -1,0 +1,44 @@
+parameters:
+  email_reviewers: 
+    - reviewer1@dev.fr
+    - reviewer2@dev.fr
+    - reviewer3@dev.fr
+  email_contributors:
+    - contributor1@dev.fr
+    - contributor2@dev.fr
+    - contributor3@dev.fr
+  email_users:
+    - user1@dev.fr 
+    - user2@dev.fr 
+    - user3@dev.fr 
+    - user4@dev.fr
+
+App\Entity\User:
+  user_0:
+    firstname: 'admin'
+    lastname: 'admin'
+    email: 'admin@dev.fr'
+    plainPassword: admin
+    roles: ['ROLE_ADMIN']
+    active: true
+  user_{1..3}:
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
+    email (unique): '<randomElement($email_reviewers)>'
+    plainPassword: reviewer
+    roles: ['ROLE_REVIEWER']
+    active: true
+  user_{4..6}:
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
+    email (unique): '<randomElement($email_contributors)>'
+    plainPassword: contributor
+    roles: ['ROLE_CONTRIBUTOR']
+    active: true
+  user_{7..10}:
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
+    email (unique): '<randomElement($email_users)>'
+    plainPassword: user
+    roles: ['ROLE_USER']
+    active: true

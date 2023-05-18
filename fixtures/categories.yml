@@ -1,0 +1,11 @@
+App\Entity\Category:
+  category_0:
+    title: 'développement web'
+  category_1:
+    title: 'développement mobile'
+  category_2:
+    title: 'gestion'
+  category_3:
+    title: 'ventes'
+  category_4:
+    title: 'marketing'
