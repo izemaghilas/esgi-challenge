@@ -36,11 +36,9 @@ web:
 hooks:
     build: |
       set -x -e
-      cd api
       curl -fs https://get.symfony.com/cloud/configurator | bash
       symfony-build
       php bin/console lexik:jwt:generate-keypair
     deploy: |
       set -x -e
-      cd api
       symfony-deploy
