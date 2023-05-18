@@ -12,7 +12,7 @@ runtime:
 
 variables:
   php:
-    opcache.preload: api/config/preload.php
+    opcache.preload: config/preload.php
 
 build:
   flavor: none
@@ -21,7 +21,7 @@ relationships:
   database: "db:postgresql"
 
 mounts:
-  'api/var': { source: local, source_path: var }
+  'var': { source: local, source_path: var }
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
@@ -29,18 +29,16 @@ disk: 2048
 web:
   locations: 
     '/': 
-      root: "api/public"
+      root: "public"
       passthru: "/index.php"
       allow: true
 
 hooks:
     build: |
       set -x -e
-      cd api
       curl -fs https://get.symfony.com/cloud/configurator | bash
       symfony-build
       php bin/console lexik:jwt:generate-keypair
     deploy: |
       set -x -e
-      cd api
       symfony-deploy
