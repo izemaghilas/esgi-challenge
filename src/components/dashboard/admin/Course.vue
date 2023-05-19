@@ -71,6 +71,7 @@ async function requestReviewerHelp(reviewer) {
             <div class="d-flex flex-column justify-center w-25">
                 <span class="title">{{ course.title }}</span>
                 <span class="category">{{ course.categoryId.title }}</span>
+                <span class="price">{{ course.price == null || course.price === 0 ? '0 €' : `${course.price} €` }}</span>
             </div>
             <div class="d-flex flex-row justify-end align-center w-75">
                 <v-badge class="mr-6" :color="status.color" :content="status.text" inline></v-badge>
@@ -154,6 +155,13 @@ async function requestReviewerHelp(reviewer) {
     font-size: 14px;
     font-weight: 100;
     color: #000;
+}
+
+.price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    margin-top: 10px;
 }
 
 .card-course-body {

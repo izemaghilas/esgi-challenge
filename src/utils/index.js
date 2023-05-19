@@ -3,6 +3,11 @@ import { ROLES } from "./constants";
 export function getUserRole(user) {
     if (user.roles.includes("ROLE_ADMIN")) {
         return ROLES["admin"];
+    } else if (
+        user.roles.includes("ROLE_CONTRIBUTOR") &&
+        user.roles.includes("ROLE_REVIEWER")
+    ) {
+        return ROLES["contributor"];
     } else if (user.roles.includes("ROLE_REVIEWER")) {
         return ROLES["reviewer"];
     } else if (user.roles.includes("ROLE_CONTRIBUTOR")) {
@@ -12,5 +17,5 @@ export function getUserRole(user) {
 }
 
 export function getUserRedirectionPage(user) {
-    return getUserRole(user).homepage
+    return getUserRole(user).homepage;
 }

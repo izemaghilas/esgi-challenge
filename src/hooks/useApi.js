@@ -113,7 +113,7 @@ export default function useApi() {
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         actions.logout();
         router.push({ name: APP_ROUTES.login, replace: true });
       } else {
@@ -240,10 +240,11 @@ export default function useApi() {
     return res;
   }
 
-  function addCourse(title, description, categoryId, thumbnail, video) {
+  function addCourse(title, description, price, categoryId, thumbnail, video) {
     const form = new FormData();
     form.append("title", title);
     form.append("description", description);
+    form.append("price", price);
     form.append("categoryId", `/api/categories/${categoryId}`);
     form.append("thumbnailFile", thumbnail);
     form.append("mediaLinkFile", video);

@@ -39,6 +39,8 @@ const status = computed(() => {
             <div class="d-flex flex-column justify-center w-25">
                 <span class="title">{{ request.contentId.title }}</span>
                 <span class="category">{{ request.contentId.categoryId.title }}</span>
+                <span class="price">{{ request.contentId.price == null || request.contentId.price ===
+                    0 ? '0 €' : `${request.contentId.price} €` }}</span>
             </div>
             <div class="d-flex flex-row justify-end align-center w-75">
                 <v-badge class="mr-6" :color="status.color" :content="status.text" inline></v-badge>
@@ -102,6 +104,14 @@ const status = computed(() => {
     font-weight: 100;
     color: #000;
 }
+
+.price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    margin-top: 10px;
+}
+
 
 .card-course-body {
     display: flex;
