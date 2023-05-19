@@ -145,7 +145,7 @@ class Content
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
     private ?float $price = null;
