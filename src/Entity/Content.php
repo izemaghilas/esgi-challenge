@@ -32,12 +32,13 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[
     ApiResource(
     operations: [
-        // TODO: users can view only active courses
+            // TODO: users can view only active courses
         new GetCollection(),
         new GetCollection(
             uriTemplate: '/users/{id}/contents',
             uriVariables: [
-                'id' => new Link(fromClass: User::class, fromProperty: 'contents')
+                'id' => new Link(fromClass: User::class,
+                    fromProperty: 'contents')
             ]
         ),
         new Post(
@@ -144,8 +145,9 @@ class Content
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[Groups(['content:read', 'content:create'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?float $price = null;
 
     #[ORM\OneToMany(mappedBy: 'course', targetEntity: Purchase::class, orphanRemoval: true)]
