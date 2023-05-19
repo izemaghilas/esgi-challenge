@@ -7,6 +7,7 @@ import useApi from '../hooks/useApi';
 import Loader from '../components/Loader.vue';
 import Course from '../components/dashboard/contributor/Course.vue';
 import NoElements from '../components/dashboard/admin/NoElements.vue';
+import ValidationRequest from '../components/dashboard/reviewer/ValidationRequest.vue';
 
 const { state } = inject("store");
 const api = useApi()
@@ -21,28 +22,45 @@ const categories = ref([])
 const publishedCourses = ref([])
 const pendingCourses = ref([])
 const beReviewerApplication = ref(null)
+const reviewerValidationRequests = ref([])
 
 const titleRef = ref()
 const descriptionRef = ref()
 const categoryRef = ref()
+const priceRef = ref()
+const freeCourseRef = ref(false)
 const thumbnailRef = ref()
 const thumbnailUrl = ref()
 const videoRef = ref()
 const videoUrl = ref()
+const postCourseForm = ref(false)
+const postCourseLoading = ref(false)
 
 const motivationRef = ref()
 const skillsRef = ref()
+const applyToBeReviewerLoading = ref(false)
 
 onMounted(async () => {
     try {
         loading.value = true
         const apiCategories = await api.getAllCategories()
         const courses = await api.getCoursesByCreatorId(state.user.id)
-        beReviewerApplication.value = await api.getBeReviewerApplication(state.user.id)
+
         publishedCourses.value = [...courses.filter(e => e.active)]
         pendingCourses.value = [...courses.filter(e => !e.active)]
         categories.value = [...apiCategories]
-        categoryRef.value = apiCategories.length > 0 ? apiCategories[0].id : null
+
+    } catch (error) {
+        console.error("error on initilizing dashboard")
+    }
+
+    try {
+        beReviewerApplication.value = await api.getBeReviewerApplication(state.user.id)
+        if (beReviewerApplication.value != null && beReviewerApplication.value.status === "ACCEPTED") {
+            const validationRequests = await api.getValidationRequetsByReviewerId(state.user.id)
+            reviewerValidationRequests.value = [...validationRequests.filter(e => e.active === true)]
+        }
+
     } catch (error) {
         console.error("error on initilizing dashboard")
     } finally {
@@ -83,6 +101,10 @@ const beReviewerStatus = computed(() => {
 })
 
 function getFileUrl(file) {
+    if (file == null) {
+        return null
+    }
+
     return URL.createObjectURL(file)
 }
 
@@ -101,23 +123,28 @@ function previewVideo(video) {
 }
 
 async function postCourse() {
-    try {
-        const course = await api.addCourse(titleRef.value, descriptionRef.value, categoryRef.value.id, thumbnailRef.value[0], videoRef.value[0])
-        pendingCourses.value = [...pendingCourses.value, course]
-        dialogPostCourse.value = false
+    if (postCourseForm.value) {
+        try {
+            postCourseLoading.value = true
+            const course = await api.addCourse(titleRef.value, descriptionRef.value, freeCourseRef.value ? 0 : priceRef.value, categoryRef.value.id, thumbnailRef.value[0], videoRef.value[0])
+            pendingCourses.value = [...pendingCourses.value, course]
+            dialogPostCourse.value = false
 
-        titleRef.value = null
-        descriptionRef.value = null
-        categoryRef.value = categories.value.length > 0 ? categories.value[0] : null
-        thumbnailRef.value = null
-        thumbnailUrl.value = null
-        videoRef.value = null
-        videoUrl.value = null
+            titleRef.value = null
+            descriptionRef.value = null
+            categoryRef.value = categories.value.length > 0 ? categories.value[0] : null
+            thumbnailRef.value = null
+            thumbnailUrl.value = null
+            videoRef.value = null
+            videoUrl.value = null
 
-        toast("le cours a bien été soumis à validation", { type: 'success' })
-    } catch (error) {
-        console.error("error while posting course", error)
-        toast("erreur lors de la création de cours", { type: 'error' })
+            toast("le cours a bien été soumis à validation", { type: 'success' })
+        } catch (error) {
+            console.error("error while posting course", error)
+            toast("erreur lors de la création de cours", { type: 'error' })
+        } finally {
+            postCourseLoading.value = false
+        }
     }
 }
 
@@ -131,6 +158,17 @@ async function applyToBeReviewer() {
         toast("erreur lors de l'envoi de la candidature pour le post d'examinateur", { type: 'error' })
     }
 }
+
+async function validate(validationRequest) {
+    try {
+        await api.publishCourse(validationRequest.contentId.id)
+        reviewerValidationRequests.value = [...reviewerValidationRequests.value.filter(e => e.id !== validationRequest.id)]
+        toast('Le cours a bien été publié', { type: 'success' })
+    } catch (error) {
+        toast('erreur lors de la publication de cours!', { type: 'error' })
+        console.error("error on publishing course")
+    }
+}
 </script>
 
 <template>
@@ -141,63 +179,73 @@ async function applyToBeReviewer() {
             <v-divider></v-divider>
             <v-list>
                 <v-list-item>
-                    <v-dialog v-model="dialogPostCourse" persistent>
+                    <v-dialog v-model="dialogPostCourse" fullscreen persistent>
                         <template v-slot:activator="{ props }">
-                            <v-btn color="primary" v-bind="props">
+                            <v-btn class="w-100" color="primary" v-bind="props">
                                 Publier un cours
                             </v-btn>
                         </template>
-                        <v-card class="align-self-center w-75">
-                            <v-card-item>
-                                <v-card-title>Publier un cours</v-card-title>
-                            </v-card-item>
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
+                        <v-sheet>
+                            <v-toolbar color="primary">
+                                <v-toolbar-title>Publier un cours</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="dialogPostCourse = false">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </v-toolbar>
+                            <v-form v-model="postCourseForm" @submit.prevent="postCourse">
+                                <v-container class="d-flex flex-column">
+                                    <v-row class="w-100">
                                         <v-col cols="12">
-                                            <v-text-field label="Titre" id="titre" required
-                                                v-model="titleRef"></v-text-field>
+                                            <v-text-field label="Titre" id="titre" v-model.trim="titleRef"
+                                                :rules="[value => !!value || 'Veuillez saisir un titre']"></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-textarea label="Description" id="description" required
-                                                v-model="descriptionRef"></v-textarea>
+                                            <v-textarea label="Description" id="description" v-model.trim="descriptionRef"
+                                                :rules="[value => !!value || 'Veuillez saisir une description']"></v-textarea>
                                         </v-col>
                                         <v-col cols="12">
                                             <v-select v-model="categoryRef" :items="categories" item-title="title"
-                                                item-value="id" label="Catégorie" return-object>
+                                                item-value="id" label="Catégorie" return-object
+                                                :rules="[value => !!value || 'Veuillez choisir une catégorie']">
                                             </v-select>
                                         </v-col>
+                                        <v-col class="d-flex flex-column" cols="12">
+                                            <v-checkbox v-model="freeCourseRef" color="primary"
+                                                label="Cours gratuit"></v-checkbox>
+                                            <v-text-field v-if="!freeCourseRef" v-model.number="priceRef" label="Prix"
+                                                id="price" type="number"
+                                                :rules="[v => !!v || 'Veuillez saisir un prix', v => v >= 0 || 'Veuillez saisir une valeur valide']"></v-text-field>
+                                        </v-col>
                                         <v-col cols="12">
-                                            <v-file-input v-model="thumbnailRef" label="image" accept="image/*"
-                                                @update:modelValue="previewImage">
+                                            <v-file-input v-model="thumbnailRef" label="image" prepend-icon="mdi-camera"
+                                                accept="image/*" @update:modelValue="previewImage"
+                                                :rules="[value => (value && value[0]?.size > 0) || 'Veuillez choisir une image']">
                                             </v-file-input>
                                             <!-- <img class="w-50" :src="thumbnailUrl" v-if="thumbnailRef != null" /> -->
                                         </v-col>
                                         <v-col cols="12">
                                             <v-file-input v-model="videoRef" label="video" accept="video/*"
+                                                :rules="[value => (value && value[0]?.size > 0) || 'Veuillez choisir une video']"
                                                 @update:modelValue="previewVideo">
                                             </v-file-input>
                                             <!-- <video class="w-100 h-100 mt-6" controls :src="videoUrl" v-if="videoUrl != null"></video> -->
                                         </v-col>
                                     </v-row>
+                                    <v-row class="d-flex flex-row justify-end w-100">
+                                        <v-btn :loading="postCourseLoading" color="blue-darken-1" type="submit">
+                                            Publier
+                                        </v-btn>
+                                    </v-row>
                                 </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="postCourse()">
-                                    Publier
-                                </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="dialogPostCourse = false">
-                                    Fermer
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
+                            </v-form>
+                        </v-sheet>
                     </v-dialog>
                 </v-list-item>
                 <v-list-item v-if="!isReviewer">
                     <v-dialog v-model="dialogBeReviewer" persistent>
                         <template v-slot:activator="{ props }">
-                            <v-btn color="primary" v-bind="props">
+                            <v-btn class="w-100" color="primary" v-bind="props">
                                 Devenir examinateur
                             </v-btn>
                         </template>
@@ -241,17 +289,27 @@ async function applyToBeReviewer() {
                     </v-dialog>
                 </v-list-item>
                 <v-list-item v-else>
-                    <v-dialog v-model="dialogReview">
+                    <v-dialog v-model="dialogReview" fullscreen>
                         <template v-slot:activator="{ props }">
-                            <v-btn color="primary" v-bind="props">
-                                Demandes d'examination
+                            <v-btn class="w-100" color="primary" v-bind="props">
+                                Examiner
                             </v-btn>
                         </template>
-                        <v-card>
-                            <v-card-text>
-                                <span>A faire au même temps que l'implementation de dashboard examinateur.</span>
-                            </v-card-text>
-                        </v-card>
+                        <v-sheet>
+                            <v-toolbar color="primary">
+                                <v-toolbar-title>Examiner</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="dialogReview = false">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </v-toolbar>
+                            <NoElements :message="'Pas de demandes de validation'"
+                                v-if="reviewerValidationRequests.length === 0" />
+                            <v-container class="d-flex flex-column" v-else>
+                                <ValidationRequest v-for="validationRequest in reviewerValidationRequests"
+                                    :key="validationRequest.id" :request="validationRequest" :on-validate="validate" />
+                            </v-container>
+                        </v-sheet>
                     </v-dialog>
                 </v-list-item>
             </v-list>
@@ -287,3 +345,11 @@ async function applyToBeReviewer() {
         </v-container>
     </RequireRole>
 </template>
+
+<style scoped>
+.error-message {
+    color: red;
+    margin-top: 10px;
+    margin-bottom: 20px
+}
+</style>

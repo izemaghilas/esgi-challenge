@@ -92,7 +92,7 @@ class PublishCourseTest extends AbstractTest
         }
     }
 
-    private function publishCourse(?string $role = Role::CONTRIBUTOR->value): array
+    private function publishCourse(?string $role = Role::CONTRIBUTOR->value, ?float $price = 0.0): array
     {
         $contributorClient = self::createClientForRole($role);
         $this->course['categoryId'] = $this->findIriBy(Category::class, ['title' => self::CATEGORY_TITLE]);
@@ -105,6 +105,7 @@ class PublishCourseTest extends AbstractTest
                     'title' => $this->course['title'],
                     'description' => $this->course['description'],
                     'categoryId' => $this->course['categoryId'],
+                    'price' => $price
                 ],
                 'files' => [
                     'thumbnailFile' => $this->course['thumbnail'],
@@ -150,20 +151,48 @@ class PublishCourseTest extends AbstractTest
         ];
     }
 
-    public function testContributorPublishCourse()
+    public function testContributorPublishFreeCourse()
     {
-        $publishedCourse = $this->publishCourse();
+        $price = 0.0;
+        $publishedCourse = $this->publishCourse(price: $price);
+        $courseInDb = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(Content::class)
+            ->findOneBy(['id' => $publishedCourse['id']]);
 
         $this->assertResponseIsSuccessful();
         $this->assertMatchesResourceItemJsonSchema(Content::class);
         $this->assertNotNull($publishedCourse['thumbnail']);
         $this->assertNotNull($publishedCourse['mediaLink']);
-        $this->assertNotNull(
-            static::getContainer()
-                ->get('doctrine')
-                ->getRepository(Content::class)
-                ->findOneBy(['id' => $publishedCourse['id']])
-        );
+        $this->assertNotNull($courseInDb);
+        $this->assertEquals($price, $courseInDb->getPrice());
+    }
+
+    public function testContributorPublishPaidCourse()
+    {
+        $price = 15.99;
+        $publishedCourse = $this->publishCourse(price: $price);
+
+        $courseInDb = static::getContainer()
+            ->get('doctrine')
+            ->getRepository(Content::class)
+            ->findOneBy(['id' => $publishedCourse['id']]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertMatchesResourceItemJsonSchema(Content::class);
+        $this->assertNotNull($publishedCourse['thumbnail']);
+        $this->assertNotNull($publishedCourse['mediaLink']);
+        $this->assertNotNull($courseInDb);
+        $this->assertEquals($price, $courseInDb->getPrice());
+    }
+
+    public function testContributorPublishCourseWithNegativePriceValue() 
+    {
+        $this->expectException(ClientException::class);
+        $this->expectExceptionCode(422);
+
+        $price = -15.99;
+        $this->publishCourse(price: $price);
     }
 
     public function testAdminValidatePublishedCourse()
