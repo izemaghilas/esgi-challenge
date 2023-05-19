@@ -8,6 +8,8 @@ use App\Entity\Content;
 use App\Entity\User;
 use App\Enums\Role;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 final class ApiNormalizer implements DenormalizerInterface
@@ -39,6 +41,15 @@ final class ApiNormalizer implements DenormalizerInterface
             if (isset($data['mediaLinkFile'])) {
                 $mediaLinkFile = $data['mediaLinkFile'];
                 unset($data['mediaLinkFile']);
+            }
+
+            // check if price is numeric value
+            // as multipart parts are strings
+            // throw exception if not
+            if (is_numeric($data['price'])) {
+                settype($data['price'], 'float');
+            } else {
+                throw new UnprocessableEntityHttpException('price: This value should be a number');
             }
 
             $course = $this->decorator->denormalize($data, $type, $format);
