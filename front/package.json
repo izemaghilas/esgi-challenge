@@ -11,7 +11,7 @@
     "test": "echo 'functional tests'"
   },
   "dependencies": {
-    "@vue-stripe/vue-stripe": "^4.5.0",
+    "@stripe/stripe-js": "^1.52.1",
     "axios": "^1.2.6",
     "platformsh-config": "^2.4.1",
     "vue": "^3.2.45",
