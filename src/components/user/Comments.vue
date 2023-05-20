@@ -76,14 +76,16 @@ async function postComment() {
 }
 
 onMounted(async () => {
-    try {
-        loading.value = true
-        const response = await api.getCommentsByCourse(props.courseId)
-        data.comments = response
-    } catch (error) {
-        console.error(error)
-    } finally {
-        loading.value = false
+    if (props.courseId) {
+        try {
+            loading.value = true
+            const response = await api.getCommentsByCourse(props.courseId)
+            data.comments = response
+        } catch (error) {
+            console.error(error)
+        } finally {
+            loading.value = false
+        }
     }
 })
 
