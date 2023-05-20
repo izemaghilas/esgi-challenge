@@ -128,12 +128,12 @@ class PublishCourseTest extends AbstractTest
         ];
     }
 
-    private function sendValidationRequest()
+    private function sendValidationRequest(?string $reviewerEmail = null)
     {
         $publishedCourse = $this->publishCourse();
 
         $adminClient = self::createClientForRole(Role::ADMIN->value);
-        $reviewerIri = $this->findIriBy(User::class, ['email' => $this->getReviewerEmail()]);
+        $reviewerIri = $this->findIriBy(User::class, ['email' => $reviewerEmail !== null ? $reviewerEmail : $this->getReviewerEmail()]);
         $courseIri = $publishedCourse['iri'];
         $response = $adminClient->request('POST', self::VALIDATION_REQUESTS_ENDPOINT, [
             'headers' => [
@@ -186,7 +186,7 @@ class PublishCourseTest extends AbstractTest
         $this->assertEquals($price, $courseInDb->getPrice());
     }
 
-    public function testContributorPublishCourseWithNegativePriceValue() 
+    public function testContributorPublishCourseWithNegativePriceValue()
     {
         $this->expectException(ClientException::class);
         $this->expectExceptionCode(422);
@@ -333,5 +333,14 @@ class PublishCourseTest extends AbstractTest
         $adminClient->request('GET', $publishedCourse['mediaLink']);
 
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testAdminCanNotRequestValidationFromReviewerIfCourseOwner()
+    {
+        // contributor with email: contributor1@dev.fr is a reviewer also
+        $this->expectException(ClientException::class);
+        $this->expectExceptionCode(400);
+
+        $this->sendValidationRequest(reviewerEmail: $this->getContributorEmail());
     }
 }

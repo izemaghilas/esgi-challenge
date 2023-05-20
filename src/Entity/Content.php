@@ -17,6 +17,7 @@ use App\Controller\ThumbnailController;
 use App\Controller\VideoController;
 use App\Repository\ContentRepository;
 use App\State\ContentReviewProcessor;
+use App\State\PublishedCoursesProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,13 +33,16 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[
     ApiResource(
     operations: [
-            // TODO: users can view only active courses
-        new GetCollection(),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(uriTemplate: '/contents/published',
+            provider: PublishedCoursesProvider::class),
         new GetCollection(
             uriTemplate: '/users/{id}/contents',
             uriVariables: [
-                'id' => new Link(fromClass: User::class,
-                    fromProperty: 'contents')
+                'id' => new Link(
+                    fromClass: User::class,
+                    fromProperty: 'contents'
+                )
             ]
         ),
         new Post(
