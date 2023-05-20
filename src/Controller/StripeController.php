@@ -42,7 +42,6 @@ class StripeController extends AbstractController
         //get the content from the database
         $content = $this->entityManager->getRepository(Content::class)->findOneBy(['id' => $content_id]);
 
-        error_log($content->getPrice());
         if (!$content || !$content->getPrice()) {
             throw new NotFoundHttpException();
         }
