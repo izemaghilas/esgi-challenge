@@ -7,7 +7,3 @@ App\Entity\ValidationRequest:
     active: false
     reviewerId: '@user_2'
     contentId: '@content_1'
-  validation_request_2:
-    active: true
-    reviewerId: '@user_3'
-    contentId: '@content_4'

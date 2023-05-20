@@ -4,7 +4,6 @@ parameters:
     - reviewer2@dev.fr
     - reviewer3@dev.fr
   email_contributors:
-    - contributor1@dev.fr
     - contributor2@dev.fr
     - contributor3@dev.fr
   email_users:
@@ -28,7 +27,14 @@ App\Entity\User:
     plainPassword: reviewer
     roles: ['ROLE_REVIEWER']
     active: true
-  user_{4..6}:
+  user_4:
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
+    email (unique): 'contributor1@dev.fr'
+    plainPassword: contributor
+    roles: ['ROLE_CONTRIBUTOR', 'ROLE_REVIEWER']
+    active: true
+  user_{5..6}:
     firstname: '<firstName()>'
     lastname: '<lastName()>'
     email (unique): '<randomElement($email_contributors)>'

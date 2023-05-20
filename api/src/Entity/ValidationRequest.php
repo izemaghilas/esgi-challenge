@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ValidationRequestRepository;
+use App\State\ValidationRequestProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -17,20 +18,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[
     ApiResource(
-        operations: [
-            new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-            new GetCollection(
-                security: "is_granted('ROLE_REVIEWER')", 
-                uriTemplate: '/users/{id}/validation-requests',
-                uriVariables: [
-                    'id' => new Link(fromClass: User::class, toProperty: 'reviewerId')
-                ],
-            ),
-            new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE', object)"),
-        ],
-        normalizationContext: ['groups' => ['validation-request:read']],
-        denormalizationContext: ['groups' => ['validation-request:create']]
-    ),
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(
+            security: "is_granted('ROLE_REVIEWER')",
+            uriTemplate: '/users/{id}/validation-requests',
+            uriVariables: [
+                'id' => new Link(fromClass: User::class,
+                    toProperty: 'reviewerId')
+            ],
+        ),
+        new Post(securityPostDenormalize: "is_granted('VALIDATION_REQUEST_CREATE', object)",
+            processor: ValidationRequestProcessor::class),
+    ],
+    normalizationContext: ['groups' => ['validation-request:read']],
+    denormalizationContext: ['groups' => ['validation-request:create']]
+),
     ApiFilter(SearchFilter::class, properties: [
         'reviewerId' => 'exact',
         'contentId' => 'exact',

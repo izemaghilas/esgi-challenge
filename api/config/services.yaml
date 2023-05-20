@@ -96,6 +96,10 @@ services:
     
     App\State\PublishedCoursesProvider: ~
 
+    App\State\ValidationRequestProcessor:
+        bind:
+            $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+
     # App\Controller\SendEmailController:
     #     arguments: ['@app.mail_service']
     
