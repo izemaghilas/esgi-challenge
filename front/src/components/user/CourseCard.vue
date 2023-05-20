@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-card class="card" :elevation="hover ? 16 : 2" :class="{ 'on-hover': hover }">
-      <router-link :to="`/esgi-challenge/course/${course.id}`">
+      <router-link :to="{ name: APP_ROUTES.course, params: {id: course.id} }">
         <v-img :src="thumbnail" alt="" class="thumbnail"></v-img>
       </router-link>
       <v-card-title>{{ course.title }}</v-card-title>
@@ -14,86 +14,42 @@
         </v-row>
       </v-card-text>
       <div class="title-container">
-        <v-btn :to="`/esgi-challenge/course/${course.id}`" class="title" variant="tonal" color="primary">Voir le
+        <v-btn :to="{ name: APP_ROUTES.course, params: {id: course.id} }" class="title" variant="tonal" color="primary">Voir le
           cours</v-btn>
       </div>
     </v-card>
   </v-hover>
 </template>
 
-<script>
-import { StripeCheckout } from '@vue-stripe/vue-stripe';
-import useApi from '../../hooks/useApi';
-import { inject } from 'vue';
+<script setup>
+import { computed } from 'vue';
+import { APP_ROUTES } from '../../utils/constants';
 
-export default {
-  components: {
-    StripeCheckout,
-  },
-  props: {
-    course: {
-      required: true,
-    }
-  },
-  methods: {
-    submit() {
-      this.$refs.checkoutRef.redirectToCheckout();
-    },
-    async createStripeSession() {
-      let response
-
-      try {
-        response = await this.api.getStripeSessionId(
-          this.userData.id,
-          this.course.id,
-          import.meta.env.APP_VITE_FRONT_URL + 'payment/success',
-          import.meta.env.APP_VITE_FRONT_URL + 'payment/cancel'
-        )
-
-      } catch (error) {
-        console.log("error", error)
-      }
-
-      console.log("response", response?.id)
-      return response?.id
-
-    },
-    async createSession() {
-      const sessionId = await this.createStripeSession();
-      this.sessionId = sessionId;
-      this.$refs.checkoutRef.redirectToCheckout();
-    },
-  },
-  data() {
-    this.api = useApi()
-    const { state } = inject('store')
-    this.userData = state.user
-    this.publishableKey = import.meta.env.APP_STRIPE_PUBLISHABLE_KEY
-    return {
-      loading: false,
-      sessionId: null,
-    };
-  },
-  computed: {
-    thumbnail() {
-      const thumbnailUrl = this.course.thumbnailUrl;
-
-      if (thumbnailUrl.startsWith('/thumbnails/https://')) {
-        return thumbnailUrl.substring('/thumbnails/'.length);
-      } else if (thumbnailUrl.startsWith('/thumbnails/http://')) {
-        return thumbnailUrl.substring('/thumbnails/'.length);
-      } else {
-        return thumbnailUrl ?? '';
-      }
-    },
-    createdAt() {
-      const createdAt = new Date(this.course.createdAt).toLocaleDateString('fr-Fr', {
-        weekday: "long", year: "numeric", month: "short", day: "numeric"
-      })
-      return createdAt
-    }
+const props = defineProps({
+  course: {
+    required: true,
+    type: Object
   }
-}
+})
+
+const { course } = props
+const thumbnail = computed(() => {
+  const thumbnailUrl = course.thumbnailUrl;
+
+  if (thumbnailUrl.startsWith('/thumbnails/https://')) {
+    return thumbnailUrl.substring('/thumbnails/'.length);
+  } else if (thumbnailUrl.startsWith('/thumbnails/http://')) {
+    return thumbnailUrl.substring('/thumbnails/'.length);
+  } else {
+    return thumbnailUrl ?? '';
+  }
+})
+const createdAt = computed(() => {
+  const createdAt = new Date(course.createdAt).toLocaleDateString('fr-Fr', {
+    weekday: "long", year: "numeric", month: "short", day: "numeric"
+  })
+  return createdAt
+})
 </script>
 
 <style scoped>
