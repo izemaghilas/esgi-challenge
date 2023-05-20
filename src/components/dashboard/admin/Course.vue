@@ -50,6 +50,9 @@ const status = computed(() => {
         color: "info"
     }
 })
+const filteredReviewers = computed(() => {
+    return reviewers.filter(r => r.id !== course.creatorId.id)
+})
 
 async function requestReviewerHelp(reviewer) {
     try {
@@ -113,8 +116,8 @@ async function requestReviewerHelp(reviewer) {
         <v-dialog class="align-center mx-auto" v-model="dialog">
             <v-sheet class="d-flex flex-column align-center mx-auto w-50 px-5">
                 <NoElements :message="'pas d\'examinateurs'" v-if="reviewers.length === 0" />
-                <v-card class="d-flex flex-row align-center px-3 py-3 my-5 w-100" v-else v-for="reviewer in reviewers"
-                    :key="reviewer.id">
+                <v-card class="d-flex flex-row align-center px-3 py-3 my-5 w-100" v-else
+                    v-for="reviewer in filteredReviewers" :key="reviewer.id">
                     <div class="d-flex flex-row align-center w-25">
                         <img src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"
                             width="40" height="40" />

@@ -164,7 +164,7 @@ export default function useApi() {
 
   function getAllCourses() {
     return apiClient.get(
-      constructRequestUrl("contents?order[createdAt]=desc"),
+      constructRequestUrl("contents", { "order[createdAt]": "desc" }),
       userRef.value?.token
     );
   }
@@ -185,10 +185,6 @@ export default function useApi() {
 
   function getCoursesByCreatorId(creator_id) {
     return apiClient.get(`users/${creator_id}/contents`, userRef.value?.token);
-  }
-
-  function getAllCourses() {
-    return apiClient.get(constructRequestUrl("contents"), userRef.value?.token);
   }
 
   function postReportContent(data) {
@@ -376,8 +372,7 @@ export default function useApi() {
 
   function getAllActiveCourses() {
     return apiClient.get(
-      constructRequestUrl("contents", {
-        active: true,
+      constructRequestUrl("contents/published", {
         "order[createdAt]": "desc",
       })
     );
