@@ -90,7 +90,7 @@
 
 <script>
 import useApi from '../../hooks/useApi';
-import { onMounted, inject } from "vue"
+import { inject } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
 import Comments from './Comments.vue';
