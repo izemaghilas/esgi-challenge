@@ -177,8 +177,8 @@ export default {
                 response = await this.api.getStripeSessionId(
                     this.userData.id,
                     this.course.id,
-                    import.meta.env.APP_VITE_FRONT_URL + 'payment/success',
-                    import.meta.env.APP_VITE_FRONT_URL + 'payment/cancel'
+                    import.meta.env.APP_FRONT_URL + '/payment/success',
+                    import.meta.env.APP_FRONT_URL + '/payment/cancel'
                 )
 
             } catch (error) {

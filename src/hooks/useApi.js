@@ -3,9 +3,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { APP_ROUTES } from "../utils/constants";
 
-const API_URL = import.meta.env.DEV
-  ? "http://localhost:8000/api/"
-  : "https://www.main-bvxea6i-znec4f222hxdc.fr-3.platformsh.site/api/";
+const API_URL = import.meta.env.APP_API_URL;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
