@@ -24,57 +24,6 @@ web:
           allow: true
         \/(.+/?)+$:
           passthru: "/index.html"
-
-    # "/home":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # "/login":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # "/signup":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # ^(/dashboard/)(.+)$:
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # "/verify-registration":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # "/forget-password":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-    # "/reset-password":
-    #   root: "dist"
-    #   index:
-    #     - "index.html"
-    #   scripts: false
-    #   allow: true
-    #   expires: 300s
-        
   commands:
     start: sleep infinity
 
