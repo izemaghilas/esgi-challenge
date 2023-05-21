@@ -22,6 +22,8 @@ relationships:
 
 mounts:
   'var': { source: local, source_path: var }
+  'public/thumbnails': { source: local, source_path: thumbnails }
+  'public/videos': { source: local, source_path: videos }
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
