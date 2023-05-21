@@ -12,7 +12,7 @@ dependencies:
 web:
   # doc: https://docs.platform.sh/create-apps/web/static.html
   locations:
-    "/*":
+    "/":
       root: "dist"
       index:
         - "index.html"
@@ -22,7 +22,7 @@ web:
       rules:
         \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
           allow: true
-        \/(.*)*$:
+        \/(.+/?)+$:
           index:
           - "index.html"
 
