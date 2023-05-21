@@ -22,6 +22,8 @@ relationships:
 
 mounts:
   'var': { source: local, source_path: var }
+  'public/thumbnails': { source: local, source_path: thumbnails }
+  'public/videos': { source: local, source_path: videos }
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
@@ -32,6 +34,12 @@ web:
       root: "public"
       passthru: "/index.php"
       allow: true
+      rules:
+        \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
+          allow: true
+        \/(.+/?)+$:
+          passthru: "/index.php"
+
 
 hooks:
     build: |
