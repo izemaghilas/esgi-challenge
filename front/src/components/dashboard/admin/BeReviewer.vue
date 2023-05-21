@@ -27,23 +27,29 @@ onMounted(async () => {
     }
 })
 
-async function acceptApplication(application) {
+async function acceptApplication(application, setLoading) {
+    setLoading(true)
     try {
         const editedApplication = await api.acceptBeReviwerApplication(application.id)
         pendingApplications.value = [...pendingApplications.value.filter(e => e.id !== application.id)]
         acceptedApplications.value = [...acceptedApplications.value, editedApplication]
     } catch (error) {
         console.error("error on accepting be reviewer applications");
+    } finally {
+        setLoading(false)
     }
 }
 
-async function refuseApplication(application) {
+async function refuseApplication(application, setLoading) {
+    setLoading(true)
     try {
         const editedApplication = await api.refuseBeReviwerApplication(application.id)
         pendingApplications.value = [...pendingApplications.value.filter(e => e.id !== application.id)]
         refusedApplications.value = [...refusedApplications.value, editedApplication]
     } catch (error) {
         console.error("error on refusing be reviewer applications");
+    } finally {
+        setLoading(false)
     }
 }
 

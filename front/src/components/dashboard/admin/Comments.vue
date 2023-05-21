@@ -8,6 +8,7 @@ const comments = ref([])
 const loading = ref(false)
 const dialog = ref(false)
 const commentToRemove = ref()
+const onRemoveLoading = ref(false)
 
 onMounted(async () => {
     try {
@@ -22,7 +23,7 @@ onMounted(async () => {
 
 async function removeComment() {
     try {
-        loading.value = true
+        onRemoveLoading.value = true
         await api.removeComment(commentToRemove.value.id)
         comments.value = [...comments.value.filter(c => c.id !== commentToRemove.value.id)]
         dialog.value = false
@@ -30,7 +31,7 @@ async function removeComment() {
     } catch (error) {
         console.error("error on removing comment");
     } finally {
-        loading.value = false
+        onRemoveLoading.value = false
     }
 }
 
@@ -66,7 +67,7 @@ async function removeComment() {
             <v-dialog v-model="dialog">
                 <v-sheet class="mx-auto confirm-remove-comment">
                     <span>voulez vous supprimer ce commentaires ?</span>
-                    <v-btn color="error" @click="removeComment">supprimer</v-btn>
+                    <v-btn color="error" :loading="onRemoveLoading" @click="removeComment">supprimer</v-btn>
                 </v-sheet>
             </v-dialog>
         </template>

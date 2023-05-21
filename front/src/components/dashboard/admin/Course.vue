@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { toast } from 'vue3-toastify'
 import useApi from '../../../hooks/useApi';
 import NoElements from './NoElements.vue';
+import ReviewerHelp from './ReviewerHelp.vue';
 
 const api = useApi()
 const props = defineProps({
@@ -15,6 +16,7 @@ const show = ref(false)
 const video = ref(null)
 const validationRequest = ref(null)
 const dialog = ref(false)
+const onPublishLoading = ref(false)
 onMounted(async () => {
     try {
         video.value = await api.getCourseVideo(course.mediaLinkUrl)
@@ -65,7 +67,6 @@ async function requestReviewerHelp(reviewer) {
         dialog.value = false
     }
 }
-
 </script>
 
 <template>
@@ -105,7 +106,8 @@ async function requestReviewerHelp(reviewer) {
                 </div>
                 <div class="card-course-tools" v-if="!course.active">
                     <div class="d-flex flex-row w-25">
-                        <v-btn color="info" @click="onPublish(course)">publier</v-btn>
+                        <v-btn color="info" :loading="onPublishLoading"
+                            @click="() => { onPublishLoading = true; onPublish(course) }">publier</v-btn>
                     </div>
                     <div class="d-flex flex-row justify-end w-75" v-if="validationRequest == null">
                         <v-btn color="info" @click="dialog = true">aide d'un examinateur</v-btn>
@@ -116,17 +118,8 @@ async function requestReviewerHelp(reviewer) {
         <v-dialog class="align-center mx-auto" v-model="dialog">
             <v-sheet class="d-flex flex-column align-center mx-auto w-50 px-5">
                 <NoElements :message="'pas d\'examinateurs'" v-if="reviewers.length === 0" />
-                <v-card class="d-flex flex-row align-center px-3 py-3 my-5 w-100" v-else
-                    v-for="reviewer in filteredReviewers" :key="reviewer.id">
-                    <div class="d-flex flex-row align-center w-25">
-                        <img src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"
-                            width="40" height="40" />
-                        <span class="ml-3">{{ `${reviewer.lastname} ${reviewer.firstname}` }}</span>
-                    </div>
-                    <div class="d-flex flex-row justify-end w-75">
-                        <v-btn color="info" @click="requestReviewerHelp(reviewer)">envoyer</v-btn>
-                    </div>
-                </v-card>
+                <ReviewerHelp v-for="reviewer in filteredReviewers" :key="reviewer.id" :reviewer="reviewer"
+                    :on-help="requestReviewerHelp" />
             </v-sheet>
         </v-dialog>
     </v-card>

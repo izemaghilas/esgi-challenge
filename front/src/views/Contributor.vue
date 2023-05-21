@@ -38,7 +38,8 @@ const postCourseLoading = ref(false)
 
 const motivationRef = ref()
 const skillsRef = ref()
-const applyToBeReviewerLoading = ref(false)
+const beReviewerForm = ref(false)
+const beReviewerLoading = ref(false)
 
 onMounted(async () => {
     try {
@@ -149,13 +150,18 @@ async function postCourse() {
 }
 
 async function applyToBeReviewer() {
-    try {
-        beReviewerApplication.value = await api.sendBeReviewerApplication(motivationRef.value, skillsRef.value)
-        dialogBeReviewer.value = false
-        toast("candidature envoyée", { type: 'success' })
-    } catch (error) {
-        console.error("error while sending be reviewer application")
-        toast("erreur lors de l'envoi de la candidature pour le post d'examinateur", { type: 'error' })
+    if (beReviewerForm.value) {
+        try {
+            beReviewerLoading.value = true
+            beReviewerApplication.value = await api.sendBeReviewerApplication(motivationRef.value, skillsRef.value)
+            dialogBeReviewer.value = false
+            toast("candidature envoyée", { type: 'success' })
+        } catch (error) {
+            console.error("error while sending be reviewer application")
+            toast("erreur lors de l'envoi de la candidature pour le post d'examinateur", { type: 'error' })
+        } finally {
+            beReviewerLoading.value = false
+        }
     }
 }
 
@@ -179,7 +185,7 @@ async function validate(validationRequest) {
             <v-divider></v-divider>
             <v-list>
                 <v-list-item>
-                    <v-dialog v-model="dialogPostCourse" fullscreen persistent>
+                    <v-dialog v-model="dialogPostCourse" fullscreen>
                         <template v-slot:activator="{ props }">
                             <v-btn class="w-100" color="primary" v-bind="props">
                                 Publier un cours
@@ -243,41 +249,48 @@ async function validate(validationRequest) {
                     </v-dialog>
                 </v-list-item>
                 <v-list-item v-if="!isReviewer">
-                    <v-dialog v-model="dialogBeReviewer" persistent>
+                    <v-dialog v-model="dialogBeReviewer" fullscreen v-if="beReviewerApplication == null">
                         <template v-slot:activator="{ props }">
                             <v-btn class="w-100" color="primary" v-bind="props">
                                 Devenir examinateur
                             </v-btn>
                         </template>
-                        <v-card class="align-self-center w-50" v-if="beReviewerApplication == null">
-                            <v-card-item>
-                                <v-card-title>Devenir examinateur</v-card-title>
-                            </v-card-item>
-                            <v-card-text>
-                                <v-container>
+                        <v-sheet>
+                            <v-toolbar color="primary">
+                                <v-toolbar-title>Devenir examinateur</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="dialogBeReviewer = false">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </v-toolbar>
+                            <v-form v-model="beReviewerForm" @submit.prevent="applyToBeReviewer">
+                                <v-container class="d-flex flex-column">
                                     <v-row>
                                         <v-col cols="12">
-                                            <v-textarea label="Motivation" id="motivation" required
-                                                v-model="motivationRef"></v-textarea>
+                                            <v-textarea label="Motivation" id="motivation" v-model.trim="motivationRef"
+                                                :rules="[value => !!value || 'Veuillez expliquer vos motivations']"></v-textarea>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-textarea label="Compétences" id="skills" required
-                                                v-model="skillsRef"></v-textarea>
+                                            <v-textarea label="Compétences" id="skills" v-model.trim="skillsRef"
+                                                :rules="[value => !!value || 'Veuillez saisir vos compétences']"></v-textarea>
                                         </v-col>
                                     </v-row>
+                                    <v-row class="d-flex flex-row justify-end w-100">
+                                        <v-btn :loading="beReviewerLoading" color="blue-darken-1" type="submit">
+                                            Envoyer
+                                        </v-btn>
+                                    </v-row>
                                 </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="applyToBeReviewer">
-                                    Envoyer
-                                </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="dialogBeReviewer = false">
-                                    Fermer
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                        <v-card class="align-self-center w-50" v-else>
+                            </v-form>
+                        </v-sheet>
+                    </v-dialog>
+                    <v-dialog v-model="dialogBeReviewer" v-else>
+                        <template v-slot:activator="{ props }">
+                            <v-btn class="w-100" color="primary" v-bind="props">
+                                Devenir examinateur
+                            </v-btn>
+                        </template>
+                        <v-card class="align-self-center w-50">
                             <v-card-text>{{ beReviewerStatus }}</v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>

@@ -25,6 +25,15 @@ const status = computed(() => {
     return statuses[application.status]
 })
 const show = ref(false)
+const onAcceptLoading = ref(false)
+const onRefuseLoading = ref(false)
+
+function setOnAcceptLoading(v) {
+    onAcceptLoading.value = v
+}
+function setOnRefuseLoading(v) {
+    onRefuseLoading.value = v
+}
 </script>
 
 <template>
@@ -61,8 +70,10 @@ const show = ref(false)
             </div>
         </div>
         <div class="card-application-tools" v-if="application.status === 'PENDING' && show">
-            <v-btn color="info" @click="onAccept(application)">accepter</v-btn>
-            <v-btn color="error" @click="onRefuse(application)">refuser</v-btn>
+            <v-btn color="info" :disabled="onRefuseLoading" :loading="onAcceptLoading"
+                @click="onAccept(application, setOnAcceptLoading)">accepter</v-btn>
+            <v-btn color="error" :disabled="onAcceptLoading" :loading="onRefuseLoading"
+                @click="onRefuse(application, setOnRefuseLoading)">refuser</v-btn>
         </div>
     </v-card>
 </template>
