@@ -43,7 +43,7 @@ web:
       scripts: false
       allow: true
       expires: 300s
-    "/dashboard":
+    ^(/dashboard/)(.+)$:
       root: "dist"
       index:
         - "index.html"
