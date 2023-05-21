@@ -22,6 +22,10 @@ web:
       rules:
         \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
           allow: true
+        \/(.*)*$:
+          index:
+          - "index.html"
+
     # "/home":
     #   root: "dist"
     #   index:
