@@ -34,7 +34,6 @@ web:
       root: "public"
       passthru: "/index.php"
       allow: true
-      scripts: false
       rules:
         \.(css|js|gif|jpe?g|png|ttf|eot|woff2?|otf|html|ico|svg?)$:
           allow: true
