@@ -34,6 +34,9 @@ web:
       root: "public"
       passthru: "/index.php"
       allow: true
+      rules:
+        \/(.+/?)+$:
+          passthru: "/index.php"
 
 hooks:
     build: |
