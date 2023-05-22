@@ -29,7 +29,7 @@
                     <v-col cols="12" sm="8">
                         <v-card-title class="title">{{ course.title }}</v-card-title>
                         <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
-                        <v-btn v-if="isCoursePurchased" @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
+                        <v-btn v-if="isCoursePurchased || (course.price == null || course.price === 0)" @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
                             style="color:white; background-color: #251d5d;">
                             Commencer le cours
                         </v-btn>
