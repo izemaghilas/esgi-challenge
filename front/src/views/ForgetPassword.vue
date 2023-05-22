@@ -28,7 +28,7 @@ async function sendMail() {
             if (error.response.status === 400) {
                 errorMessage.value = "veuillez saisir une adresse mail valide !"
             } else if (error.response.status === 404) {
-                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', position: 'top-right' })
+                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error' })
                 router.replace({ name: APP_ROUTES.signup, replace: true })
             } else {
                 errorMessage.value = "erreur lors de l'envoi de lien !"

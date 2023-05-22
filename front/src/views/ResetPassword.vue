@@ -24,17 +24,17 @@ async function resetPassword() {
     try {
         loading.value = true
         await api.resetPassword(password.value, route.query['url'])
-        toast("votre mot passe a bien été réinitialiser", { type: 'success', position: 'top-right' })
+        toast("votre mot passe a bien été réinitialiser", { type: 'success' })
         router.replace({ name: APP_ROUTES.login, replace: true })
     } catch (error) {
         if (error instanceof AxiosError) {
             if (error.response.status === 400) {
-                toast("lien expiré !", { type: 'error', position: 'top-right' })
+                toast("lien expiré !", { type: 'error' })
                 router.replace({ name: APP_ROUTES.forgetPassword, replace: true })
             } else if (error.response.status === 404) {
-                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', position: 'top-right' })
+                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error' })
                 router.replace({ name: APP_ROUTES.signup, replace: true })
-            } else if (error.response.status === 422) { 
+            } else if (error.response.status === 422) {
                 resetPasswordErrorMessage.value = "Le mot de passe se retrouve dans la liste des mots de passe les plus utilisés, Veuillez en choisir un autre. !"
             } else {
                 resetPasswordErrorMessage.value = "erreur lors de la réinitialisation de mot de passe !"
