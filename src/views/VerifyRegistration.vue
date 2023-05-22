@@ -24,16 +24,16 @@ onMounted(async () => {
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response.status === 400) {
-                    toast("lien expiré !", { type: 'error', position: 'top-right' })
+                    toast("lien expiré !", { type: 'error' })
                 } else if (error.response.status === 404) {
-                    toast("compte introuvable, veuillez  vous inscrire", { type: 'error', position: 'top-right' })
+                    toast("compte introuvable, veuillez  vous inscrire", { type: 'error' })
                     router.replace({ name: APP_ROUTES.signup, replace: true })
                 } else {
-                    toast("erreur lors de la confirmation de l'adresse mail !", { type: 'error', position: 'top-right' })
+                    toast("erreur lors de la confirmation de l'adresse mail !", { type: 'error' })
                 }
             }
             else {
-                toast("erreur lors de la confirmation de l'adresse mail !", { type: 'error', position: 'top-right' })
+                toast("erreur lors de la confirmation de l'adresse mail !", { type: 'error' })
             }
 
         } finally {
@@ -54,15 +54,15 @@ async function sendVerificationEmail() {
     } catch (error) {
         if (error instanceof AxiosError) {
             if (error.response.status === 400) {
-                toast("veuillez saisir une adresse mail valide !", { type: 'error', position: 'top-right' })
+                toast("veuillez saisir une adresse mail valide !", { type: 'error', })
             } else if (error.response.status === 404) {
-                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', position: 'top-right' })
+                toast("compte introuvable, veuillez  vous inscrire !", { type: 'error', })
                 router.replace({ name: APP_ROUTES.signup, replace: true })
             } else {
-                toast("erreur lors de l'envoi de lien !", { type: 'error', position: 'top-right' })
+                toast("erreur lors de l'envoi de lien !", { type: 'error', })
             }
         } else {
-            toast("erreur lors de l'envoi de lien !", { type: 'error', position: 'top-right' })
+            toast("erreur lors de l'envoi de lien !", { type: 'error', })
         }
     } finally {
         loading.value = false
