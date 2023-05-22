@@ -9,11 +9,11 @@ const links = ref({
         to: dashboardAdmin.courses,
     },
     [dashboardAdmin.validationRequests]: {
-        label: "Demandes de validation d'un examinateur",
+        label: "Demandes de validation",
         to: dashboardAdmin.validationRequests,
     },
     [dashboardAdmin.beReviewer]: {
-        label: "Candidatures examinateur",
+        label: "Candidatures",
         to: dashboardAdmin.beReviewer,
     },
     [dashboardAdmin.comments]: {
@@ -31,38 +31,10 @@ const links = ref({
         <v-divider></v-divider>
         <v-list>
             <v-list-item v-for="link in links" :key="link">
-                <router-link class="link" :to="link.to" exact-active-class="link-active">
+                <v-btn class="w-100" color="primary" :to="link.to">
                     <span>{{ link.label }}</span>
-                </router-link>
+                </v-btn>
             </v-list-item>
         </v-list>
     </v-navigation-drawer>
 </template>
-
-<style scoped>
-nav {
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-}
-
-.link {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 50px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #11161a;
-    text-decoration: none;
-}
-
-.link span {
-    margin-left: 15px;
-}
-
-.link-active {
-    background-color: #d6dee4;
-}
-</style>
