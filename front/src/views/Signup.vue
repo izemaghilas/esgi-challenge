@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, watch } from "vue"
+import { toast } from 'vue3-toastify';
 import useApi from '../hooks/useApi';
 import { useRouter } from 'vue-router'
 import { APP_ROUTES } from "../utils/constants";
@@ -25,6 +26,7 @@ const isContributorRef = ref(false)
 async function postNewUser() {
     try {
         const data = await api.register(emailRef.value, passwordRef.value, firstNameRef.value, lastNameRef.value, isContributorRef.value)
+        toast("Inscription réussi. \nUn mail de validation du compte est envoyé vers l'adresse mail saisie.", { type: 'success' })
         if (data.id) {
             router.push({ name: APP_ROUTES.login })
         }
