@@ -29,7 +29,8 @@
                     <v-col cols="12" sm="8">
                         <v-card-title class="title">{{ course.title }}</v-card-title>
                         <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
-                        <v-btn v-if="isCoursePurchased" @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
+                        <v-btn v-if="isCoursePurchased || (course.price == null || course.price === 0)"
+                            @click="handleVideoPlayClick" prepend-icon="mdi-play" class="button"
                             style="color:white; background-color: #251d5d;">
                             Commencer le cours
                         </v-btn>
@@ -39,7 +40,7 @@
                         </v-btn>
                     </v-col>
                     <v-dialog v-model="dialogVideo" fullscreen :scrim="false" transition="dialog-bottom-transition">
-                        <v-card>
+                        <v-sheet>
                             <v-toolbar dark color="#251d5d">
                                 <v-btn icon dark color="#f4a118" @click="dialogVideo = false">
                                     <v-icon>mdi-close</v-icon>
@@ -47,10 +48,20 @@
                                 <v-toolbar-title class="video-title">{{ course.title }}</v-toolbar-title>
                                 <v-spacer></v-spacer>
                             </v-toolbar>
-                            <div class="video-container">
-                                <iframe allowfullscreen :src="videoLink"></iframe>
-                            </div>
-                        </v-card>
+                            <v-container>
+                                <div class="d-flex flex-row justify-center align-center w-100 h-50" v-if="loadingVideo">
+                                    <Loader />
+                                </div>
+                                <div class="d-flex flex-column align-center w-100" v-else-if="courseVideo == null">
+                                    <v-icon icon="mdi-alert-circle-outline" size="64"></v-icon>
+                                    <span class="font-weight-bold mt-5">erreur lors de chargement de la vidéo !</span>
+                                </div>
+
+                                <div class="d-flex flex-row justify-center align-center w-100 h-100" v-else>
+                                    <video class="w-100 h-100" controls :src="courseVideo"></video>
+                                </div>
+                            </v-container>
+                        </v-sheet>
                     </v-dialog>
                 </v-row>
                 <v-card class="comments">
@@ -101,7 +112,7 @@ export default {
     components: {
         Comments,
         Loader,
-        RequireAuth
+        RequireAuth,
     },
     data() {
         this.route = useRoute()
@@ -121,7 +132,9 @@ export default {
             snackBarShow: false,
             thumbnail: '',
             videoLink: '',
-            sessionId: 'session'
+            sessionId: 'session',
+            courseVideo: null,
+            loadingVideo: false,
         }
     },
     async beforeMount() {
@@ -130,7 +143,6 @@ export default {
             const responseGetCourse = await this.api.getCourseById(this.route.params.id)
             this.course = responseGetCourse
             this.setVideoThumbnail()
-            this.setVideoLink()
 
             const responseIsCoursePurchased = await this.api.getPurchase(this.userData?.id, this.route.params.id)
             if (responseIsCoursePurchased && responseIsCoursePurchased?.length > 0) {
@@ -154,21 +166,19 @@ export default {
                 this.thumbnail = thumbnailUrl ?? '';
             }
         },
-        setVideoLink() {
-            const video = this.course.mediaLinkUrl;
-
-            if (video && video.startsWith('/videos/https://')) {
-                this.videoLink = video.substring('/videos/'.length);
-            } else {
-                this.videoLink = video ?? '';
-            }
-        },
         handleReportClick() {
             this.dialogReport = true
         },
-
-        handleVideoPlayClick() {
+        async handleVideoPlayClick() {
             this.dialogVideo = true
+            this.loadingVideo = true
+            try {
+                this.courseVideo = await this.api.getCourseVideo(this.course.mediaLinkUrl)
+            } catch (error) {
+                console.error("error fetching course video ", error)
+            } finally {
+                this.loadingVideo = false
+            }
         },
         async createStripeSession() {
             let response
@@ -273,14 +283,5 @@ export default {
     overflow: hidden;
     padding-top: 56.25%;
     position: relative;
-}
-
-.video-container iframe {
-    border: 0;
-    width: 100%;
-    height: 80%;
-    left: 0;
-    position: absolute;
-    top: 0;
 }
 </style>

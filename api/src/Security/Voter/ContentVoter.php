@@ -65,6 +65,9 @@ class ContentVoter extends Voter
                 if ($this->authorizationChecker->isAdminOrReviewer() && !$subject->isActive()) {
                     return true;
                 }
+                if (null === $subject->getPrice() || $subject->getPrice() == 0) {
+                    return true;
+                }
                 # TODO: check if user subscribed to the course (once payment functionality is implemented)
                 break;
         }
