@@ -411,6 +411,14 @@ export default function useApi() {
     );
   }
 
+  function createCategory(title) {
+    return apiClient.post("categories", {
+      data: {title: title }, 
+      contentType: "application/ld+json", 
+      token: userRef.value?.token,
+    });
+  }
+
   return {
     login,
     getAllUsers,
@@ -447,5 +455,6 @@ export default function useApi() {
     sendResetPasswordMail,
     resetPassword,
     getPurchase,
+    createCategory,
   };
 }

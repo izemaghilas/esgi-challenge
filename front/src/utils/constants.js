@@ -30,6 +30,7 @@ const APP_ROUTES = {
           validationRequests: "validation-requests",
           beReviewer: "be-reviewer",
           comments: "comments",
+          categories: "categories",
         },
       },
     },

@@ -67,6 +67,11 @@ const router = createRouter({
               name: dashboardAdmin.views.beReviewer,
               component: () => import("./components/dashboard/admin/BeReviewer.vue"),
             },
+            {
+              path: 'categories',
+              name: dashboardAdmin.views.categories,
+              component: () => import("./components/dashboard/admin/Categories.vue"),
+            },
           ],
         },
       ],

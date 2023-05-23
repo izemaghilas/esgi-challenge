@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(securityPostDenormalize: "is_granted('CATEGORY_CREATE')"),
+        new Post(securityPostDenormalize: "is_granted('CATEGORY_CREATE', object)"),
         new Put(security: "is_granted('CATEGORY_EDIT')"),
         new Delete(security: "is_granted('CATEGORY_DELETE')"),
     ],
