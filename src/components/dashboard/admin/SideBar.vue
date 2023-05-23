@@ -8,6 +8,10 @@ const links = ref({
         label: "Cours",
         to: dashboardAdmin.courses,
     },
+    [dashboardAdmin.categories]: {
+        label: "Catégories des cours",
+        to: dashboardAdmin.categories,
+    },
     [dashboardAdmin.validationRequests]: {
         label: "Demandes de validation",
         to: dashboardAdmin.validationRequests,
