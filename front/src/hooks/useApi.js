@@ -355,13 +355,11 @@ export default function useApi() {
     );
   }
 
-  function getStripeSessionId(userId, contentId, successUrl, cancelUrl) {
+  function getStripeSessionId(userId, contentId) {
     return apiClient.post("stripe-session", {
       data: {
         userId: userId,
         contentId: contentId,
-        successUrl: successUrl,
-        cancelUrl: cancelUrl,
       },
       contentType: "application/ld+json",
       token: userRef.value?.token,

@@ -34,7 +34,7 @@
                             style="color:white; background-color: #251d5d;">
                             Commencer le cours
                         </v-btn>
-                        <v-btn v-else @click="createSession" prepend-icon="mdi-play" class="button"
+                        <v-btn v-else :loading="loadingBuyCourse" @click="createSession" prepend-icon="mdi-play" class="button"
                             style="color:white; background-color: #251d5d;">
                             Acheter le cours
                         </v-btn>
@@ -135,6 +135,7 @@ export default {
             sessionId: 'session',
             courseVideo: null,
             loadingVideo: false,
+            loadingBuyCourse: false,
         }
     },
     async beforeMount() {
@@ -199,6 +200,7 @@ export default {
 
         },
         async createSession() {
+            this.loadingBuyCourse = true
             const sessionId = await this.createStripeSession();
 
             const stripe = await loadStripe(import.meta.env.APP_STRIPE_PUBLISHABLE_KEY)
