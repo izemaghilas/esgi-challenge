@@ -18,14 +18,14 @@
         </template>
 
         <v-list>
-          <v-list-item v-for="category in data.categories" :key="i" :value="title" :prepend-icon="icon">
-            <v-btn class="category" :to="`/esgi-challenge/list/${category.id}/${category.title}`">
+          <v-list-item v-for="category in data.categories" :key="category.id" :value="category.title">
+            <v-btn class="category" :to="{ name: APP_ROUTES.list, params: { id: category.id, name: category.title } }">
               {{ category.title }}
             </v-btn></v-list-item>
         </v-list>
       </v-menu>
     </div>
-    <h2 class="mt-2 ml-5 grey--text">{{ props.heading }}</h2>
+    <!-- <h2 class="mt-2 ml-5 grey--text">{{ props.heading }}</h2> -->
     <v-container fluid>
       <v-row>
         <v-col cols="12" sm="3" v-for="course in data.courses" :key="course.id">
@@ -41,8 +41,8 @@ import CourseCard from './CourseCard.vue'
 import useApi from '../../hooks/useApi';
 import { reactive, onMounted, ref } from "vue"
 import Loader from '../Loader.vue';
+import { APP_ROUTES } from '../../utils/constants';
 
-const props = defineProps(['heading'])
 
 const api = useApi()
 const loading = ref(false)

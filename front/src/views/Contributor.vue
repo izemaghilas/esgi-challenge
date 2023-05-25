@@ -180,7 +180,11 @@ async function validate(validationRequest) {
 <template>
     <RequireRole :role="ROLES.contributor.value">
         <v-navigation-drawer permanent>
-            <v-sheet color="grey-lighten-4" class="pa-4">
+            <v-sheet class="d-flex flex-row align-center px-2 py-3" color="grey-lighten-4">
+                <v-avatar size="30px">
+                    <v-img src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"></v-img>
+                </v-avatar>
+                <span class="ml-2 text-md font-weight-bold">{{ `${state.user.lastname.toUpperCase()} ${state.user.firstname.charAt(0).toUpperCase() + state.user.firstname.slice(1)}` }}</span>
             </v-sheet>
             <v-divider></v-divider>
             <v-list>

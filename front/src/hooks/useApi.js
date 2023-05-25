@@ -169,7 +169,7 @@ export default function useApi() {
 
   function getCourseByCategoryId(id) {
     return apiClient.get(
-      constructRequestUrl("contents?order[createdAt]=desc&categoryId=" + id),
+      constructRequestUrl("contents/published?order[createdAt]=desc&categoryId=" + id),
       userRef.value?.token
     );
   }
