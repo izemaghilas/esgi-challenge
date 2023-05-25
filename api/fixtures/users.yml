@@ -14,8 +14,8 @@ parameters:
 
 App\Entity\User:
   user_0:
-    firstname: 'admin'
-    lastname: 'admin'
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
     email: 'admin@dev.fr'
     plainPassword: admin
     roles: ['ROLE_ADMIN']
