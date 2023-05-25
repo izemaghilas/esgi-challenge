@@ -34,8 +34,8 @@
                             style="color:white; background-color: #251d5d;">
                             Commencer le cours
                         </v-btn>
-                        <v-btn v-else :loading="loadingBuyCourse" @click="createSession" prepend-icon="mdi-play" class="button"
-                            style="color:white; background-color: #251d5d;">
+                        <v-btn v-else :loading="loadingBuyCourse" @click="createSession" prepend-icon="mdi-play"
+                            class="button" style="color:white; background-color: #251d5d;">
                             Acheter le cours
                         </v-btn>
                     </v-col>
@@ -144,13 +144,17 @@ export default {
             const responseGetCourse = await this.api.getCourseById(this.route.params.id)
             this.course = responseGetCourse
             this.setVideoThumbnail()
-
-            const responseIsCoursePurchased = await this.api.getPurchase(this.userData?.id, this.route.params.id)
-            if (responseIsCoursePurchased && responseIsCoursePurchased?.length > 0) {
+            if (this.userData?.id === responseGetCourse.creatorId.id) {
                 this.isCoursePurchased = true
             }
+            else {
+                const responseIsCoursePurchased = await this.api.getPurchase(this.userData?.id, this.route.params.id)
+                if (responseIsCoursePurchased && responseIsCoursePurchased?.length > 0) {
+                    this.isCoursePurchased = true
+                }
+            }
         } catch (error) {
-            console.error(error)
+            console.error('error on loading course')
         } finally {
             this.loading = false
         }
@@ -201,10 +205,12 @@ export default {
         },
         async createSession() {
             this.loadingBuyCourse = true
-            const sessionId = await this.createStripeSession();
-
-            const stripe = await loadStripe(import.meta.env.APP_STRIPE_PUBLISHABLE_KEY)
-            stripe.redirectToCheckout({ sessionId: sessionId })
+            const sessionId = await this.createStripeSession()
+            if (sessionId != null) {
+                const stripe = await loadStripe(import.meta.env.APP_STRIPE_PUBLISHABLE_KEY)
+                stripe.redirectToCheckout({ sessionId: sessionId })
+            }
+            this.loadingBuyCourse = false
         },
         async postReport() {
             try {
