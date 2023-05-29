@@ -1,10 +1,13 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-card class="card" :elevation="hover ? 16 : 2" :class="{ 'on-hover': hover }">
-      <router-link :to="{ name: APP_ROUTES.course, params: {id: course.id} }">
+      <router-link :to="{ name: APP_ROUTES.course, params: { id: course.id } }">
         <v-img :src="thumbnail" alt="" class="thumbnail"></v-img>
       </router-link>
-      <v-card-title>{{ course.title }}</v-card-title>
+      <v-card-title class="d-flex flex-row align-center">
+        {{ course.title }}
+        <PriceBadge :class="'ml-2 font-weight-bold'" :price="course.price" />
+      </v-card-title>
       <v-card-subtitle class="description">{{ course.description }}</v-card-subtitle>
       <v-card-text>
         <v-row align="center" class="mx-0">
@@ -14,7 +17,8 @@
         </v-row>
       </v-card-text>
       <div class="title-container">
-        <v-btn :to="{ name: APP_ROUTES.course, params: {id: course.id} }" class="title" variant="tonal" color="primary">Voir le
+        <v-btn :to="{ name: APP_ROUTES.course, params: { id: course.id } }" class="title" variant="tonal"
+          color="primary">Voir le
           cours</v-btn>
       </div>
     </v-card>
@@ -24,6 +28,7 @@
 <script setup>
 import { computed } from 'vue';
 import { APP_ROUTES } from '../../utils/constants';
+import PriceBadge from '../PriceBadge.vue';
 
 const props = defineProps({
   course: {

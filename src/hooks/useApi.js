@@ -162,14 +162,14 @@ export default function useApi() {
 
   function getAllCourses() {
     return apiClient.get(
-      constructRequestUrl("contents", { "order[createdAt]": "desc" }),
+      constructRequestUrl("contents/all", { "order[createdAt]": "desc" }),
       userRef.value?.token
     );
   }
 
   function getCourseByCategoryId(id) {
     return apiClient.get(
-      constructRequestUrl("contents/published?order[createdAt]=desc&categoryId=" + id),
+      constructRequestUrl("contents", { "order[createdAt]": "desc", "categoryId": `/api/categories/${id}` }),
       userRef.value?.token
     );
   }
@@ -368,7 +368,7 @@ export default function useApi() {
 
   function getAllActiveCourses() {
     return apiClient.get(
-      constructRequestUrl("contents/published", {
+      constructRequestUrl("contents", {
         "order[createdAt]": "desc",
       })
     );
@@ -417,6 +417,10 @@ export default function useApi() {
     });
   }
 
+  function getUserPurchases(userId) {
+    return apiClient.get(`users/${userId}/purchases`, userRef.value?.token)
+  }
+
   return {
     login,
     getAllUsers,
@@ -454,5 +458,6 @@ export default function useApi() {
     resetPassword,
     getPurchase,
     createCategory,
+    getUserPurchases,
   };
 }

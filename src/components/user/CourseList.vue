@@ -17,7 +17,8 @@
             <v-container fluid>
                 <v-row>
                     <v-col cols="12" sm="3" v-for="category in data.categories" :key="category.id">
-                        <v-btn color="secondary" class="category" :to="`/esgi-challenge/list/${category.id}`">
+                        <v-btn color="secondary" class="category"
+                            :to="{ name: APP_ROUTES.list, params: { id: category.id, name: category.title } }">
                             {{ category.title }}
                         </v-btn>
                     </v-col>
@@ -40,6 +41,7 @@ import { reactive, onMounted, ref } from "vue"
 import { useRoute } from 'vue-router'
 import Loader from '../Loader.vue';
 import CourseCard from './CourseCard.vue'
+import { APP_ROUTES } from '../../utils/constants';
 
 const route = useRoute()
 const api = useApi()
