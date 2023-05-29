@@ -46,7 +46,7 @@ const links = computed(() => {
                 label: "ACCUEIL",
                 to: APP_ROUTES.home
             },
-            ...(userRole.value != ROLES.user.value && { [userRole.homepage]: { label: "MON ESPACE", to: userRole.homepage } }),
+            [userRole.homepage]: { label: "MON ESPACE", to: userRole.homepage },
             [APP_ROUTES.logout]: {
                 label: "DECONNEXION",
                 to: APP_ROUTES.logout

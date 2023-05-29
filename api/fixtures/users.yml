@@ -7,7 +7,7 @@ parameters:
     - contributor2@dev.fr
     - contributor3@dev.fr
   email_users:
-    - user1@dev.fr 
+    - user1@dev.fr
     - user2@dev.fr 
     - user3@dev.fr 
     - user4@dev.fr

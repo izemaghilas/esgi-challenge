@@ -8,6 +8,7 @@ import Loader from '../components/Loader.vue';
 import Course from '../components/dashboard/contributor/Course.vue';
 import NoElements from '../components/dashboard/admin/NoElements.vue';
 import ValidationRequest from '../components/dashboard/reviewer/ValidationRequest.vue';
+import PurchaseList from '../components/PurchaseList.vue';
 
 const { state } = inject("store");
 const api = useApi()
@@ -16,6 +17,7 @@ const loading = ref(false)
 const dialogPostCourse = ref(false)
 const dialogBeReviewer = ref(false)
 const dialogReview = ref(false)
+const dialogPurchasedCourse = ref(false)
 const tab = ref("pending")
 
 const categories = ref([])
@@ -182,12 +184,33 @@ async function validate(validationRequest) {
         <v-navigation-drawer permanent>
             <v-sheet class="d-flex flex-row align-center px-2 py-3" color="grey-lighten-4">
                 <v-avatar size="30px">
-                    <v-img src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"></v-img>
+                    <v-img
+                        src="https://www.pngmart.com/files/22/User-Avatar-Profile-Download-PNG-Isolated-Image.png"></v-img>
                 </v-avatar>
-                <span class="ml-2 text-md font-weight-bold">{{ `${state.user.lastname.toUpperCase()} ${state.user.firstname.charAt(0).toUpperCase() + state.user.firstname.slice(1)}` }}</span>
+                <span class="ml-2 text-md font-weight-bold">{{ `${state.user.lastname.toUpperCase()}
+                                    ${state.user.firstname.charAt(0).toUpperCase() + state.user.firstname.slice(1)}` }}</span>
             </v-sheet>
             <v-divider></v-divider>
             <v-list>
+                <v-list-item>
+                    <v-dialog v-model="dialogPurchasedCourse" fullscreen>
+                        <template v-slot:activator="{ props }">
+                            <v-btn class="w-100" color="primary" v-bind="props">
+                                Cours achetés
+                            </v-btn>
+                        </template>
+                        <v-sheet>
+                            <v-toolbar color="primary">
+                                <v-toolbar-title>Cours achetés</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="dialogPurchasedCourse = false">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </v-toolbar>
+                            <PurchaseList />
+                        </v-sheet>
+                    </v-dialog>
+                </v-list-item>
                 <v-list-item>
                     <v-dialog v-model="dialogPostCourse" fullscreen>
                         <template v-slot:activator="{ props }">
