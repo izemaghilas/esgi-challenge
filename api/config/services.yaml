@@ -94,11 +94,13 @@ services:
     
     App\State\ReviewersProvider: ~
     
-    App\State\PublishedCoursesProvider: ~
-
     App\State\ValidationRequestProcessor:
         bind:
             $persistProcessor: '@api_platform.doctrine.orm.state.persist_processor'
+    
+    App\Doctrine\ActiveCourseExtension:
+        tags:
+            - { name: api_platform.doctrine.orm.query_extension.collection }
 
     # App\Controller\SendEmailController:
     #     arguments: ['@app.mail_service']

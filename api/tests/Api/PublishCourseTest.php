@@ -309,7 +309,8 @@ class PublishCourseTest extends AbstractTest
 
     public function testAdminCanNotViewCourseVideoIfPublished()
     {
-        $publishedCourse = $this->publishCourse();
+        // if free course video is accessible
+        $publishedCourse = $this->publishCourse(price: 15.99);
         $adminClient = $this->createClientForRole(Role::ADMIN->value);
         $adminClient->request('PATCH', $publishedCourse['iri'], [
             'headers' => [

@@ -17,7 +17,6 @@ use App\Controller\ThumbnailController;
 use App\Controller\VideoController;
 use App\Repository\ContentRepository;
 use App\State\ContentReviewProcessor;
-use App\State\PublishedCoursesProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -33,9 +32,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[
     ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new GetCollection(uriTemplate: '/contents/published',
-            provider: PublishedCoursesProvider::class),
+        new GetCollection(
+            uriTemplate: '/contents/all',
+            security: "is_granted('ROLE_ADMIN')"
+        ),
+        new GetCollection(),
         new GetCollection(
             uriTemplate: '/users/{id}/contents',
             uriVariables: [
@@ -85,12 +86,12 @@ class Content
     #[ORM\Column(type: UuidType::NAME)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['content:read', 'validation-request:read'])]
+    #[Groups(['content:read', 'validation-request:read', 'purchase:read'])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['content:read', 'content:create', 'validation-request:read'])]
+    #[Groups(['content:read', 'content:create', 'validation-request:read', 'purchase:read'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
