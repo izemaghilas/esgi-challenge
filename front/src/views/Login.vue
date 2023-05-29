@@ -102,7 +102,7 @@ label {
     margin-top: 20px;
     text-align: center;
     text-decoration: none;
-    color: #535693;
+    color:#8d7612;
     padding: 3px 0;
     border-radius: 5px;
 }
@@ -115,7 +115,7 @@ button[type="submit"] {
     flex-direction: row;
     display: block;
     padding: 10px 20px;
-    background-color: rgb(65, 65, 160);
+    background-color: rgb(0 37 73);
     color: white;
     border-radius: 5px;
     border: none;
