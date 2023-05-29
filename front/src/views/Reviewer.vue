@@ -5,6 +5,8 @@ import useApi from '../hooks/useApi';
 import Loader from '../components/Loader.vue';
 import NoElements from '../components/dashboard/admin/NoElements.vue';
 import ValidationRequest from '../components/dashboard/reviewer/ValidationRequest.vue';
+import RequireRole from '../components/RequireRole.vue';
+import { ROLES } from '../utils/constants';
 
 const { state } = inject("store")
 const api = useApi()
@@ -36,14 +38,16 @@ async function validate(validationRequest) {
 </script>
 
 <template>
-    <v-container class="d-flex flex-column p-0 h-100">
-        <Loader v-if="loading" />
-        <template v-else>
-            <NoElements :message="'Pas de demandes de validation'" v-if="reviewerValidationRequests.length === 0" />
-            <v-container class="d-flex flex-column" v-else>
-                <ValidationRequest v-for="validationRequest in reviewerValidationRequests" :key="validationRequest.id"
-                    :request="validationRequest" :on-validate="validate" />
-            </v-container>
-        </template>
-    </v-container>
+    <RequireRole :role="ROLES.reviewer.value">
+        <v-container class="d-flex flex-column p-0 h-100">
+            <Loader v-if="loading" />
+            <template v-else>
+                <NoElements :message="'Pas de demandes de validation'" v-if="reviewerValidationRequests.length === 0" />
+                <v-container class="d-flex flex-column" v-else>
+                    <ValidationRequest v-for="validationRequest in reviewerValidationRequests" :key="validationRequest.id"
+                        :request="validationRequest" :on-validate="validate" />
+                </v-container>
+            </template>
+        </v-container>
+    </RequireRole>
 </template>
