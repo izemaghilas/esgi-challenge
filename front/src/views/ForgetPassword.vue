@@ -8,7 +8,7 @@ import { APP_ROUTES } from '../utils/constants';
 
 const router = useRouter()
 const api = useApi()
-const mailSent = ref(false)
+const mailSent = ref(true)
 const errorMessage = ref("")
 const loading = ref(false)
 const emailRef = ref("")
@@ -49,11 +49,8 @@ async function sendMail() {
             <div class="form-container">
                 <h1>Confirmation d'envoi</h1>
                 <div class="mt-5">
-                    Un lien sécurisé vous permettant de créer votre nouveau mot de passe a été envoyé à l'adresse mail
+                    Un lien vous permettant de créer votre nouveau mot de passe a été envoyé à l'adresse mail
                     saisie.
-                    <br />
-                    Vous n'avez pas reçu d'email ? Vérifiez que celui-ci n'est pas dans votre dossier « SPAM » ou « courrier
-                    indésirable ».
                 </div>
             </div>
         </div>
