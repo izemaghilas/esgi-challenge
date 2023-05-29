@@ -8,6 +8,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -21,18 +22,19 @@ class StripeController extends AbstractController
         private readonly string $front_url,
         private readonly EntityManagerInterface $entityManager,
     ) {
-  
+
     }
 
 
     #[Route('/api/stripe-session', name: 'stripe-session', methods: ['POST'])]
-    public function createSession(Request $request) {
+    public function createSession(Request $request)
+    {
         \Stripe\Stripe::setApiKey($this->stripe_publichable_key);
 
         header('Content-Type: application/json');
 
         $data = json_decode($request->getContent(), true);
-        
+
         $user_id = $data['userId'] ?? '';
         $content_id = $data['contentId'] ?? '';
 
@@ -41,24 +43,30 @@ class StripeController extends AbstractController
 
         //get the content from the database
         $content = $this->entityManager->getRepository(Content::class)->findOneBy(['id' => $content_id]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $user_id]);
 
-        if (!$content || !$content->getPrice()) {
+        if (!$content || !$content->getPrice() || $user === null) {
             throw new NotFoundHttpException();
         }
 
-        
+        if ($content->getCreatorId() === $user) {
+            throw new BadRequestHttpException('course owner');
+        }
+
         try {
             $checkout_session = \Stripe\Checkout\Session::create([
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'unit_amount' => $content->getPrice() * 100,
-                        'product_data' => [
-                            'name' => $content->getTitle(),
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'unit_amount' => $content->getPrice() * 100,
+                            'product_data' => [
+                                'name' => $content->getTitle(),
+                            ],
                         ],
-                    ],
-                    'quantity' => 1,
-                ]],
+                        'quantity' => 1,
+                    ]
+                ],
                 'mode' => 'payment',
                 'success_url' => $success_url,
                 'cancel_url' => $cancel_url,
@@ -67,7 +75,7 @@ class StripeController extends AbstractController
                     'content_id' => $content_id
                 ],
             ]);
-        } catch(\UnexpectedValueException $e) {
+        } catch (\UnexpectedValueException $e) {
             http_response_code(400);
         }
 
@@ -84,48 +92,50 @@ class StripeController extends AbstractController
         $payload = @file_get_contents('php://input');
         $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
         $event = null;
-        
+
         try {
-        $event = \Stripe\Webhook::constructEvent(
-            $payload, $sig_header, $endpoint_secret
-        );
-        } catch(\UnexpectedValueException $e) {
-        // Invalid payload
-        http_response_code(400);
-        exit();
-        } catch(\Stripe\Exception\SignatureVerificationException $e) {
-        // Invalid signature
-        http_response_code(400);
-        exit();
+            $event = \Stripe\Webhook::constructEvent(
+                $payload,
+                $sig_header,
+                $endpoint_secret
+            );
+        } catch (\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            // Invalid signature
+            http_response_code(400);
+            exit();
         }
-        
+
         switch ($event->type) {
             case 'checkout.session.completed':
-                
-            $content_id = $event->data->object->metadata->content_id;
-            $user_id = $event->data->object->metadata->user_id;
 
-            //get the content from the database
-            $content = $this->entityManager->getRepository(Content::class)->findOneBy(['id' => $content_id]);
-            
-            if (!$content) {
-                throw new NotFoundHttpException();
-            }
-            
-            $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $user_id]);
+                $content_id = $event->data->object->metadata->content_id;
+                $user_id = $event->data->object->metadata->user_id;
 
-            if (!$user) {
-                throw new NotFoundHttpException();
-            }
+                //get the content from the database
+                $content = $this->entityManager->getRepository(Content::class)->findOneBy(['id' => $content_id]);
 
-            $puchases = new Purchase();
-            $puchases->setBuyer($user);
-            $puchases->setCourse($content);
+                if (!$content) {
+                    throw new NotFoundHttpException();
+                }
 
-            $this->entityManager->persist($puchases);
-            $this->entityManager->flush();
+                $user = $this->entityManager->getRepository(User::class)->findOneBy(['id' => $user_id]);
 
-            return $this->json(['message' => "success"]);
+                if (!$user) {
+                    throw new NotFoundHttpException();
+                }
+
+                $puchases = new Purchase();
+                $puchases->setBuyer($user);
+                $puchases->setCourse($content);
+
+                $this->entityManager->persist($puchases);
+                $this->entityManager->flush();
+
+                return $this->json(['message' => "success"]);
 
             default:
                 break;

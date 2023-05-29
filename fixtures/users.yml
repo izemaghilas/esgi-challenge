@@ -7,15 +7,15 @@ parameters:
     - contributor2@dev.fr
     - contributor3@dev.fr
   email_users:
-    - user1@dev.fr 
+    - user1@dev.fr
     - user2@dev.fr 
     - user3@dev.fr 
     - user4@dev.fr
 
 App\Entity\User:
   user_0:
-    firstname: 'admin'
-    lastname: 'admin'
+    firstname: '<firstName()>'
+    lastname: '<lastName()>'
     email: 'admin@dev.fr'
     plainPassword: admin
     roles: ['ROLE_ADMIN']

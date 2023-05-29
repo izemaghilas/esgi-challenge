@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Link;
 use App\Repository\PurchaseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
@@ -15,16 +16,23 @@ use ApiPlatform\Metadata\GetCollection;
 #[ORM\Entity(repositoryClass: PurchaseRepository::class)]
 #[
     ApiResource(
-        normalizationContext: ['groups' => ['purchase:read']],
-        operations: [
-            new GetCollection(),
-        ]
-    ), 
+    normalizationContext: ['groups' => ['purchase:read']],
+    operations: [
+        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/users/{id}/purchases',
+            uriVariables: [
+                'id' => new Link(fromClass: User::class,
+                    toProperty: 'buyer')
+            ]
+        ),
+    ]
+),
     ApiFilter(SearchFilter::class, properties: [
         'buyer' => 'exact',
         'course' => 'exact',
     ]),
-    
+
 ]
 class Purchase
 {

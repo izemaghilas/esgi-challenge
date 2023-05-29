@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Purchase;
 use App\Service\AuthorizationChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -65,7 +66,15 @@ class ContentVoter extends Voter
                 if ($this->authorizationChecker->isAdminOrReviewer() && !$subject->isActive()) {
                     return true;
                 }
-                # TODO: check if user subscribed to the course (once payment functionality is implemented)
+                if (null === $subject->getPrice() || $subject->getPrice() == 0) {
+                    return true;
+                }
+
+                $purchase = $this->entityManagerInterface->getRepository(Purchase::class)->findOneBy(['course' => $subject->getId()]);
+                if ($purchase !== null && $purchase->getBuyer() === $user) {
+                    return true;
+                }
+
                 break;
         }
 

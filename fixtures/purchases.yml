@@ -1,0 +1,10 @@
+App\Entity\Purchase:
+  purchase_0:
+    buyer: '@user_9'
+    course: '@content_1'
+  purchase_1:
+    buyer: '@user_4'
+    course: '@content_2'
+  purchase_2:
+    buyer: '@user_4'
+    course: '@content_3'
