@@ -4,6 +4,7 @@ import { toast } from 'vue3-toastify'
 import useApi from '../../../hooks/useApi';
 import NoElements from './NoElements.vue';
 import ReviewerHelp from './ReviewerHelp.vue';
+import PriceBadge from '../../PriceBadge.vue';
 
 const api = useApi()
 const props = defineProps({
@@ -73,9 +74,11 @@ async function requestReviewerHelp(reviewer) {
     <v-card :class="['card-course', { 'card-course-show': show }]">
         <div class="d-flex flex-row w-100 align-center">
             <div class="d-flex flex-column justify-center w-25">
-                <span class="title">{{ course.title }}</span>
-                <span class="category">{{ course.categoryId.title }}</span>
-                <span class="price">{{ course.price == null || course.price === 0 ? '0 €' : `${course.price} €` }}</span>
+                <span class="title">
+                    {{ course.title }}
+                    <PriceBadge :class="'ml-2 font-weight-bold'" :price="course.price" />
+                </span>
+                <span class="category mt-2">{{ course.categoryId.title }}</span>
             </div>
             <div class="d-flex flex-row justify-end align-center w-75">
                 <v-badge class="mr-6" :color="status.color" :content="status.text" inline></v-badge>
@@ -142,6 +145,9 @@ async function requestReviewerHelp(reviewer) {
 }
 
 .title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     font-size: 20px;
     font-weight: bold;
     color: #000;

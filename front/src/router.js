@@ -29,6 +29,11 @@ const router = createRouter({
       component: () => import("./views/Dashboard.vue"),
       children: [
         {
+          path: "user",
+          name: APP_ROUTES.dashboard.views.user,
+          component: () => import("./views/User.vue"),
+        },
+        {
           path: "contributor",
           name: APP_ROUTES.dashboard.views.contributor,
           component: () =>
