@@ -89,7 +89,7 @@ async function register() {
                     </div>
                 </button>
             </form>
-            <RouterLink class="login" to="/esgi-challenge/login">Se connecter</RouterLink>
+            <RouterLink class="login" :to="{ name: APP_ROUTES.login }">Se connecter</RouterLink>
         </div>
     </v-container>
 </template>
