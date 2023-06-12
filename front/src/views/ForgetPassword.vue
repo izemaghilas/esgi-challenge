@@ -8,7 +8,7 @@ import { APP_ROUTES } from '../utils/constants';
 
 const router = useRouter()
 const api = useApi()
-const mailSent = ref(true)
+const mailSent = ref(false)
 const errorMessage = ref("")
 const loading = ref(false)
 const emailRef = ref("")
