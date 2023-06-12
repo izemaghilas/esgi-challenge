@@ -2,7 +2,7 @@
     <header>
         <nav class="navbar">
             <RouterLink :to="{ name: APP_ROUTES.home, replace: true }">
-                <img style="width: 160px" src="../assets/logo.png" alt="masterclass">
+                <img style="width: 160px; ;" src="../assets/logo15.png" alt="masterclass">
             </RouterLink>
             <ul class="nav-menu">
                 <li class="nav-item custom-header-li" v-for="link in links" :key="link">

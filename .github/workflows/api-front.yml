@@ -11,7 +11,6 @@ jobs:
   
   test-api:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
     services:
       postgres:
         image: postgres
@@ -39,8 +38,6 @@ jobs:
       API_DEFAULT_URI: ${{ secrets.TEST_API_DEFAULT_URI }}
       API_CLIENT_URL: ${{ secrets.TEST_API_CLIENT_URL }}
       TRANSACTIONAL_EMAIL_ADDRESS: ${{ secrets.TEST_TRANSACTIONAL_EMAIL_ADDRESS }}
-      STRIPE_PUBLISHABLE_KEY: ${{ secrets.TEST_STRIPE_PUBLISHABLE_KEY }}
-      END_POINT_SECRET: ${{ secrets.TEST_END_POINT_SECRET }}
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
@@ -69,7 +66,7 @@ jobs:
           cd ./api
           php bin/phpunit
 
-  push-front:
+  deploy-front:
     runs-on: ubuntu-latest
     needs: test-front
     if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
@@ -90,22 +87,15 @@ jobs:
 
   push-api:
     runs-on: ubuntu-latest
-    needs: test-api
-    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+    # needs: test-api
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Copy api deploy workflow
-        run: |
-          mkdir ./api/.github && mkdir ./api/.github/workflows
-          cp ./.github/workflows/deploy-api.yml ./api/.github/workflows/deploy-api.yml
-      - name: Push to api branch
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: self
-          BRANCH: api
-          FOLDER: api
-          MESSAGE: "deploy api"
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - uses: axelerant/platformsh-deploy-action@v1
+        with:
+          project-id: ${{ secrets.PLATFORM_PROJECT_ID }}
+          cli-token: ${{ secrets.PLATFORM_CLI_TOKEN }}
+          php-version: 8.1
+          force-push: true
 
   publish-docker-image:
     runs-on: ubuntu-latest
