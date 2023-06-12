@@ -12,7 +12,7 @@
                             <v-icon class="playIcon" @click="handleVideoPlayClick">mdi-play</v-icon>
                         </div>
 
-                        <v-spacer></v-spacer>
+                        <!-- <v-spacer></v-spacer>
 
                         <v-btn size="x-large" color="surface-variant" variant="text" icon="mdi-heart"></v-btn>
 
@@ -21,7 +21,7 @@
                         <v-btn size="x-large" color="surface-variant" variant="text" icon="mdi-share-variant"></v-btn>
 
                         <v-btn size="x-large" icon="mdi-flag" @click="handleReportClick" color="surface-variant"
-                            variant="text"></v-btn>
+                            variant="text"></v-btn> -->
 
                     </v-col>
                 </v-row>
