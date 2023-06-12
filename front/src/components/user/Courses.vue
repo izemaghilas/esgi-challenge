@@ -12,7 +12,7 @@
     <div class="categoriesListContainer">
       <v-menu>
         <template v-slot:activator="{ props }">
-          <v-btn variant="outlined" color="primary" v-bind="props">
+          <v-btn variant="outlined" color="darkslategray" v-bind="props">
             Voir les catégories
           </v-btn>
         </template>
